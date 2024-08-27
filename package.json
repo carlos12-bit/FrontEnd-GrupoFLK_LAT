@@ -9,7 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.21"
+    "@supabase/supabase-js": "^2.45.2",
+    "bootstrap": "^5.3.3",
+    "path": "^0.12.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.4.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

@@ -1,0 +1,19 @@
+body {
+    background-color: #262624;
+    color: white;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: #BF5630;
+  }
+  
+  .btn-primary {
+    background-color: #BF5630;
+    border-color: #BF5630;
+  }
+  
+  .btn-primary:hover {
+    background-color: #8C2F1B;
+    border-color: #8C2F1B;
+  }
+  
