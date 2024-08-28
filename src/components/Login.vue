@@ -10,7 +10,12 @@
           <label for="password" class="form-label">Contraseña</label>
           <input type="password" class="form-control" id="password" v-model="password" placeholder="Tu contraseña" required>
         </div>
-        <button type="submit" class="btn btn-primary">Ingresar</button>
+        <div>
+          <button type="submit" class="btn btn-primary">Ingresar</button>
+          <router-link class="navbar-brand" to="/Register">
+          <button type="submit" class="btn btn-warning">Registrarse</button>
+          </router-link>
+        </div>
       </form>
       <p v-if="error" class="text-danger">{{ error }}</p>
     </div>
