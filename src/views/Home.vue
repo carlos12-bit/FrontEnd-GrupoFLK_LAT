@@ -1,4 +1,5 @@
 <template>
+  <navbar></navbar>
     <div class="home">
       <div class="jumbotron text-center" style="background-color: #8C3A1C; color: white;">
         <h1 class="display-4">Inspección de Maquinaria Pesada</h1>
@@ -10,8 +11,12 @@
   </template>
   
   <script>
+  import Navbar from '@/components/Home/Navbar.vue';
   export default {
-    name: 'Home'
+    name: 'Home',
+    components: {
+    Navbar
+  }
   };
   </script>
   
