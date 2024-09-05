@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.2",
-    "bcrypt": "^5.1.1",
     "bootstrap": "^5.3.3",
     "path": "^0.12.7",
     "vue": "^3.4.21",
