@@ -4,10 +4,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
-import AdminDashboard from '@/components/Dashboards/Admin/Dashboard.vue';
-import RecepcionistDashboard from '@/components/Dashboards/receptionist/Dashboard.vue';
+// Importar Daashboards
+import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
+import RecepcionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
+import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
 
-import OperationsAssistantDashboard from '@/components/Dashboards/Op.Asist/Dashboard.vue';
+//Importar Funciones de Gestion
+import ManageInspectionTypes from '@/views/ManageInspectionTypes.vue';
 
 // Definir las rutas
 const routes = [
@@ -20,6 +23,11 @@ const routes = [
     path: '/admin-dashboard',
     component: AdminDashboard,
     meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+  },
+  {
+    path: '/ManageInspectionTypes',
+    component: ManageInspectionTypes,
+    meta: { requiresAuth: true, role: 'Recepcionista' }, // Protegida por autenticación y rol
   },
 
   //Requiere Rol de Recepcionista
