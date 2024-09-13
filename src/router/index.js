@@ -5,7 +5,8 @@ import Home from '@/views/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import AdminDashboard from '@/components/Dashboards/Admin/Dashboard.vue';
-import ReceptionistDashboard from '@/components/Dashboards/Receptionist/Dashboard.vue';
+import RecepcionistDashboard from '@/components/Dashboards/receptionist/Dashboard.vue';
+
 import OperationsAssistantDashboard from '@/components/Dashboards/Op.Asist/Dashboard.vue';
 
 // Definir las rutas
@@ -24,7 +25,7 @@ const routes = [
   //Requiere Rol de Recepcionista
   {
     path: '/receptionist-dashboard',
-    component: ReceptionistDashboard,
+    component: RecepcionistDashboard,
     meta: { requiresAuth: true, role: 'Recepcionista' }, // Protegida por autenticación y rol
   },
   //Requiere Rol de Asistente de Operaciones
