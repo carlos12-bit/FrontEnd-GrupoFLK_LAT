@@ -11,12 +11,20 @@ import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.
 
 //Importar Funciones de Gestion
 import ManageInspectionTypes from '@/views/ManageInspectionTypes.vue';
+import Services from '@/views/Website/Services.vue';
+import About from '@/views/Website/About.vue';
+import Contact from '@/views/Website/Contact.vue';
+
 
 // Definir las rutas
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
+  { path: '/services', component: Services },
+  { path: '/about', component: About },
+  { path: '/contact', component: Contact },
+  
   
   //Requiere Rol de Administrador
   {
