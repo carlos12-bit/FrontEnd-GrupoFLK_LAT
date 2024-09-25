@@ -7,6 +7,7 @@
           <th scope="col">ID</th>
           <th scope="col">Nombre</th>
           <th scope="col">Descripción</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -14,6 +15,10 @@
           <td>{{ inspeccion.id }}</td>
           <td>{{ inspeccion.nombre }}</td>
           <td>{{ inspeccion.descripcion }}</td>
+          <td>
+            <button class="btn btn-warning" @click="EditService" >Editar</button>
+            <button class="btn btn-danger">Eliminar</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -25,10 +30,12 @@
 import { ref, onMounted } from 'vue';
 import { supabase } from '../../supabase';
 import CreateService from '@/components/ManagementeGeneral/CreateService.vue';
+import EditService from '@/components/ManagementeGeneral/EdistService.vue';
 
 export default {
   components: {
-    CreateService
+    CreateService,
+    EditService
   },
   setup() {
     const tipo_de_inspeccion = ref([]);
@@ -52,7 +59,8 @@ export default {
     return {
       tipo_de_inspeccion,
       showCreateService,
-      createTipoInspeccion
+      createTipoInspeccion,
+      EditService
     };
   }
 };
