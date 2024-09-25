@@ -5,8 +5,9 @@ import Home from '@/views/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import AdminDashboard from '@/components/Dashboards/Admin/Dashboard.vue';
-import ReceptionistDashboard from '@/components/Dashboards/Receptionist/Dashboard.vue';
+import ReceptionistDashboard from '@/components/Dashboards/receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/components/Dashboards/Op.Asist/Dashboard.vue';
+import ServicesManagement from '../views/ManagementGeneral/ServicesManagement.vue';
 
 // Definir las rutas
 const routes = [
@@ -18,6 +19,12 @@ const routes = [
   {
     path: '/admin-dashboard',
     component: AdminDashboard,
+    meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+  },
+
+  {
+    path: '/ServicesManagement',
+    component: ServicesManagement,
     meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
   },
 
