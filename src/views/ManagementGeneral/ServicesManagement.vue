@@ -22,7 +22,12 @@
         </tr>
       </tbody>
     </table>
-    <CreateService v-if="showCreateService" @close="showCreateService = false" />
+    <SeleccionarServicio
+      v-if="showModal"
+      @close="showModal = false"
+      @serviceSelected="handleServiceSelected"
+    />
+
   </div>
 </template>
 
