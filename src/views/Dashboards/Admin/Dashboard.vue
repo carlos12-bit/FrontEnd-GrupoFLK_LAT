@@ -1,41 +1,8 @@
-<template>
+ <template>
   <div class="dashboard-container">
     <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="logo">
-        <h2>Mi Dashboard</h2>
-      </div>
-      <nav>
-        <ul>
-          <li>
-            <router-link to="/dashboard" class="nav-link">
-              <i class="fas fa-home"></i> Inicio
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/profile" class="nav-link">
-              <i class="fas fa-user"></i> Perfil
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/settings" class="nav-link">
-              <i class="fas fa-cog"></i> Configuración
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/reports" class="nav-link">
-              <i class="fas fa-chart-bar"></i> Reportes
-            </router-link>
-          </li>
-          <li>
-            <button @click="logout" class="nav-link logout-btn">
-              <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
-
+    <Sidebar /> <!-- Componente Sidebar para reutilizar -->
+    
     <!-- Main Content -->
     <div class="dashboard">
       <h1>Hola, Administrador</h1>
@@ -46,8 +13,12 @@
 
 <script>
 import { supabase } from '@/supabase.js';
+import Sidebar from '@/views/Dashboards/Admin/Sidebar.vue'; // Importa el sidebar si es un componente separado
 
 export default {
+  components: {
+    Sidebar,
+  },
   methods: {
     async logout() {
       await supabase.auth.signOut();
@@ -85,50 +56,6 @@ export default {
   font-size: 24px;
 }
 
-nav ul {
-  list-style: none;
-  padding: 0;
-  width: 100%;
-}
-
-nav ul li {
-  width: 100%;
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  color: #fff;
-  text-decoration: none;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-.nav-link i {
-  margin-right: 10px;
-}
-
-.nav-link:hover {
-  background-color: #444;
-}
-
-.logout-btn {
-  background: none;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  padding: 15px 20px;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-  background-color: #444;
-}
-
 .dashboard {
   margin-left: 250px; /* Añadido margen para no solaparse con el sidebar */
   padding: 20px;
@@ -146,5 +73,3 @@ nav ul li {
   border-color: #8C2F1B;
 }
 </style>
-
-  

@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="sidebar">
     <div class="logo">
       <h2>Mi Dashboard</h2>
@@ -25,6 +25,12 @@
             <i class="fas fa-chart-bar"></i> Reportes
           </router-link>
         </li>
+        <!-- Nueva opción para gestionar solicitudes -->
+        <li>
+          <router-link to="/manage-requests" class="nav-link">
+            <i class="fas fa-tasks"></i> Gestionar Solicitudes
+          </router-link>
+        </li>
         <li>
           <button @click="logout" class="nav-link logout-btn">
             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -49,6 +55,7 @@ export default {
 </script>
 
 <style scoped>
+/* El estilo permanece igual que el original */
 .sidebar {
   width: 250px;
   height: 100vh;
