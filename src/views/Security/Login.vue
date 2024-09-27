@@ -1,30 +1,33 @@
 <template>
-  <div class="login container my-5">
-    <h2>Iniciar Sesión</h2>
-    <form @submit.prevent="handleLogin">
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input
-          type="email"
-          class="form-control"
-          v-model="email"
-          placeholder="Tu email"
+ <div class="login-container">
+    <form @submit.prevent="handleLogin" class="login-form">
+      <h1>Login</h1>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input 
+          type="email" 
+          id="email" 
+          v-model="email" 
           required
-        />
+          :class="{ 'invalid': emailError }"
+        >
+        <span class="error-message" v-if="emailError">{{ emailError }}</span>
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input
-          type="password"
-          class="form-control"
-          v-model="password"
-          placeholder="Tu contraseña"
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input 
+          type="password" 
+          id="password" 
+          v-model="password" 
           required
-        />
+          :class="{ 'invalid': passwordError }"
+        >
+        <span class="error-message" v-if="passwordError">{{ passwordError }}</span>
       </div>
-      <button type="submit" class="btn btn-primary">Ingresar</button>
+      <button type="submit" :disabled="isLoading">
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
     </form>
-    <p v-if="error" class="text-danger">{{ error }}</p>
   </div>
 </template>
 <script>
@@ -89,17 +92,90 @@ export default {
 };
 </script>
 <style scoped>
-.container {
-  color: #BF5630;
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1a1a1a;
 }
 
-.btn-primary {
-  background-color: #BF5630;
-  border-color: #BF5630;
+.login-form {
+  background-color: #000000;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
 }
 
-.btn-primary:hover {
-  background-color: #8C2F1B;
-  border-color: #8C2F1B;
+h1 {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #333333;
+  border-radius: 4px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+input:focus {
+  outline: none;
+  border-color: #ff9800;
+}
+
+input.invalid {
+  border-color: #ff4444;
+}
+
+.error-message {
+  color: #ff4444;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #ff9800;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #ffa726;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.login-form {
+  animation: fadeIn 0.5s ease-out;
 }
 </style>
