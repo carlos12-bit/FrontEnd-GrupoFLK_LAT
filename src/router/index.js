@@ -7,8 +7,6 @@ import Register from '@/views/Security/Register.vue';
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
 import ReceptionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
-import ServicesManagement from '@/views/ManagementGeneral/ServicesManagement.vue';
-import ManageInspectionTypes from '@/views/ManageInspectionTypes.vue';
 import ManageRequest from '@/views/Dashboards/Admin/ManageRequest.vue';
 import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
@@ -31,18 +29,8 @@ const routes = [
     meta: { requiresAuth: true, role: 'Administrador' },
   },
   {
-    path: '/ManageInspectionTypes',
-    component: ManageInspectionTypes,
-    meta: { requiresAuth: true, role: 'Recepcionista' },
-  },
-  {
     path: '/manage-requests',
     component: ManageRequest,
-    meta: { requiresAuth: true, role: 'Administrador' },
-  },
-  {
-    path: '/ServicesManagement',
-    component: ServicesManagement,
     meta: { requiresAuth: true, role: 'Administrador' },
   },
 
