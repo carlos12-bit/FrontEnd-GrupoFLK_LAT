@@ -4,17 +4,17 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
-// Importar Daashboards
+// Importar Dashboards
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
 import RecepcionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
 
-//Importar Funciones de Gestion
+// Importar Funciones de Gestión
 import ManageInspectionTypes from '@/views/ManageInspectionTypes.vue';
+import ManageRequest from '@/views/Dashboards/Admin/ManageRequest.vue'; // Nueva importación
 import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
 import Contact from '@/views/Website/Contact.vue';
-
 
 // Definir las rutas
 const routes = [
@@ -25,8 +25,7 @@ const routes = [
   { path: '/about', component: About },
   { path: '/contact', component: Contact },
   
-  
-  //Requiere Rol de Administrador
+  // Requiere Rol de Administrador
   {
     path: '/admin-dashboard',
     component: AdminDashboard,
@@ -37,14 +36,19 @@ const routes = [
     component: ManageInspectionTypes,
     meta: { requiresAuth: true, role: 'Recepcionista' }, // Protegida por autenticación y rol
   },
+  {
+    path: '/manage-requests',
+    component: ManageRequest,  // Nueva ruta para gestionar solicitudes
+    meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+  },
 
-  //Requiere Rol de Recepcionista
+  // Requiere Rol de Recepcionista
   {
     path: '/receptionist-dashboard',
     component: RecepcionistDashboard,
     meta: { requiresAuth: true, role: 'Recepcionista' }, // Protegida por autenticación y rol
   },
-  //Requiere Rol de Asistente de Operaciones
+  // Requiere Rol de Asistente de Operaciones
   {
     path: '/operations-assistant-dashboard',
     component: OperationsAssistantDashboard,
