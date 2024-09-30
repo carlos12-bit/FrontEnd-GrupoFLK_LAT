@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Importar componentes
-import Home from '@/views/Home.vue';
+import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
