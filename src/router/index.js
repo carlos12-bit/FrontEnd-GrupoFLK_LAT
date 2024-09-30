@@ -22,6 +22,7 @@ const routes = [
   { path: '/services', component: Services },
   { path: '/about', component: About },
   { path: '/contact', component: Contact },
+
   
   // Requiere Rol de Administrador
   {
