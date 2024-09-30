@@ -4,14 +4,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
-// Importar Dashboards
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
-import RecepcionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
+import ReceptionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
-
-// Importar Funciones de Gestión
+import ServicesManagement from '@/views/ManagementGeneral/ServicesManagement.vue';
 import ManageInspectionTypes from '@/views/ManageInspectionTypes.vue';
-import ManageRequest from '@/views/Dashboards/Admin/ManageRequest.vue'; // Nueva importación
+import ManageRequest from '@/views/Dashboards/Admin/ManageRequest.vue';
 import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
 import Contact from '@/views/Website/Contact.vue';
@@ -29,30 +27,36 @@ const routes = [
   {
     path: '/admin-dashboard',
     component: AdminDashboard,
-    meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+    meta: { requiresAuth: true, role: 'Administrador' },
   },
   {
     path: '/ManageInspectionTypes',
     component: ManageInspectionTypes,
-    meta: { requiresAuth: true, role: 'Recepcionista' }, // Protegida por autenticación y rol
+    meta: { requiresAuth: true, role: 'Recepcionista' },
   },
   {
     path: '/manage-requests',
-    component: ManageRequest,  // Nueva ruta para gestionar solicitudes
-    meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+    component: ManageRequest,
+    meta: { requiresAuth: true, role: 'Administrador' },
+  },
+  {
+    path: '/ServicesManagement',
+    component: ServicesManagement,
+    meta: { requiresAuth: true, role: 'Administrador' },
   },
 
   // Requiere Rol de Recepcionista
   {
     path: '/receptionist-dashboard',
-    component: RecepcionistDashboard,
-    meta: { requiresAuth: true, role: 'Recepcionista' }, // Protegida por autenticación y rol
+    component: ReceptionistDashboard,
+    meta: { requiresAuth: true, role: 'Recepcionista' },
   },
+  
   // Requiere Rol de Asistente de Operaciones
   {
     path: '/operations-assistant-dashboard',
     component: OperationsAssistantDashboard,
-    meta: { requiresAuth: true, role: 'Asistente de Operaciones' }, // Protegida por autenticación y rol
+    meta: { requiresAuth: true, role: 'Asistente de Operaciones' },
   },
 ];
 
