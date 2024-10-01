@@ -10,14 +10,14 @@
 </template>
 
 <script>
-import Navbar from '@/components/Home/Navbar.vue';
-import Jumbotron from '@/components/Home/Jumbotron.vue';
-import CarouselSection from '@/components/Home/CarouselSection.vue';
-import Certifications from '@/components/Home/Certifications.vue';
-import WhyChooseUs from '@/components/Home/WhyChooseUs.vue';
-import FAQSection from '@/components/Home/FAQSection.vue';
-import FooterSection from '@/components/Home/FooterSection.vue';
-import Services from '@/components/Home/Services.vue';
+import Navbar from '@/components/Website/Navbar.vue';
+import Jumbotron from '@/components/Website/Home/Jumbotron.vue';
+import CarouselSection from '@/components/Website/Home/CarouselSection.vue';
+import Certifications from '@/components/Website/Home/Certifications.vue';
+import WhyChooseUs from '@/components/Website/Home/WhyChooseUs.vue';
+import FAQSection from '@/components/Website/Home/FAQSection.vue';
+import FooterSection from '@/components/Website/Home/FooterSection.vue';
+import Services from '@/components/Website/Home/Services.vue';
 export default {
   name: 'Home',
   components: {

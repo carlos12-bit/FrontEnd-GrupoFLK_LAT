@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/Home/Navbar.vue';
+import Navbar from '@/components/Website/Navbar.vue';
 import { supabase } from '@/supabase.js';
 
 export default {

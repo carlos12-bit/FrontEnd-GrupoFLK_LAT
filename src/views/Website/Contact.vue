@@ -51,7 +51,7 @@
     </template>
     
     <script>
-    import navbar from '@/components/Home/Navbar.vue' 
+    import navbar from '@/components/Website/Navbar.vue' 
     export default {name:"Contact",components:{navbar}};
     </script>
 

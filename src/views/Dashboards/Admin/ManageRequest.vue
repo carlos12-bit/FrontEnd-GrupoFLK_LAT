@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import navbar from '@/components/Home/Navbar.vue';
+import navbar from '@/components/Website/Navbar.vue';
 import { supabase } from '@/supabase.js';
 
 export default {
