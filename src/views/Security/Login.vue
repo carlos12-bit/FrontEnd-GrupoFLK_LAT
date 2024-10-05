@@ -1,5 +1,5 @@
 <template>
- <div class="login-container">
+  <div class="login-container">
     <form @submit.prevent="handleLogin" class="login-form">
       <h1>Login</h1>
       <div class="form-group">
@@ -27,9 +27,11 @@
       <button type="submit" :disabled="isLoading">
         {{ isLoading ? 'Logging in...' : 'Login' }}
       </button>
+      <span class="error-message" v-if="error">{{ error }}</span>
     </form>
   </div>
 </template>
+
 <script>
 import { supabase } from '../../supabase.js'; // Asegúrate de que la ruta sea correcta
 
@@ -40,34 +42,48 @@ export default {
       email: '',
       password: '',
       error: null,
+      isLoading: false,
+      emailError: null,
+      passwordError: null,
     };
   },
   methods: {
     async handleLogin() {
+      this.isLoading = true;
+      this.error = null;
+
       try {
-        console.log("Intentando iniciar sesión con el correo:", this.email);
+        // Autenticación con Supabase usando email y password
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: this.email,
+          password: this.password,
+        });
+
+        if (error) {
+          this.error = 'Error en el login: ' + error.message;
+          this.isLoading = false;
+          console.error('Error de autenticación:', error);
+          return;
+        }
+
+        // Si la autenticación es exitosa, redirigir según el rol del usuario
+        const { user } = data;
+
+        console.log('Usuario autenticado:', user);
+
+        // Obtener el perfil del usuario
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('id, email, password, rol')
-          .eq('email', this.email)
+          .select('id, email, rol')
+          .eq('id', user.id) // Usamos el ID del usuario autenticado
           .single();
 
         if (profileError || !profile) {
-          this.error = 'Correo electrónico no encontrado o error al obtener el perfil.';
+          this.error = 'Error al obtener el perfil del usuario.';
+          this.isLoading = false;
           console.error('Error al obtener el perfil:', profileError);
           return;
         }
-
-        console.log("Perfil encontrado:", profile);
-
-        // Verificar la contraseña
-        if (profile.password !== this.password) {
-          this.error = 'Contraseña incorrecta.';
-          console.log("Contraseña incorrecta ingresada");
-          return;
-        }
-
-        console.log("Contraseña correcta, rol del usuario:", profile.rol);
 
         // Almacenar el perfil del usuario en localStorage
         localStorage.setItem('user', JSON.stringify(profile));
@@ -81,16 +97,19 @@ export default {
           this.$router.push('/operations-assistant-dashboard');
         } else {
           this.error = 'Acceso no permitido para este rol.';
-          console.log("Rol no permitido:", profile.rol);
+          console.log('Rol no permitido:', profile.rol);
         }
       } catch (error) {
         console.error('Error durante el proceso de login:', error);
         this.error = 'Ocurrió un error inesperado. Inténtalo nuevamente.';
+      } finally {
+        this.isLoading = false;
       }
     },
   },
 };
 </script>
+
 <style scoped>
 .login-container {
   display: flex;

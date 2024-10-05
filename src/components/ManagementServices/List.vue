@@ -1,83 +1,104 @@
 <template>
-  <div class="container mt-4">
-    <button class="btn btn-primary mb-4" @click="showCreateForm">Crear Nuevo</button>
-
-    <table id="datatable" class="table table-striped table-bordered" style="width:100%">
+  <div class="mt-4">
+    <h2 class="mb-4 text-center">Lista de Servicios</h2>
+    <table id="servicesTable" class="table table-striped table-bordered">
       <thead>
         <tr>
           <th>ID</th>
           <th>Nombre</th>
           <th>Descripción</th>
-          <th>Fecha de Creación</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in tipoDeInspeccion" :key="item.id">
-          <td>{{ item.id }}</td>
-          <td>{{ item.nombre }}</td>
-          <td>{{ item.descripcion }}</td>
-          <td>{{ item.fecha_de_creacion }}</td>
+        <tr v-for="service in services" :key="service.id">
+          <td>{{ service.id }}</td>
+          <td>{{ service.nombre }}</td>
+          <td>{{ service.descripcion }}</td>
           <td>
-            <button class="btn btn-sm btn-info">Editar</button>
-            <button class="btn btn-sm btn-danger" @click="deleteItem(item.id)">Eliminar</button>
+            <button class="btn btn-primary btn-sm me-2" @click="editService(service)">Editar</button>
+            <button class="btn btn-danger btn-sm" @click="deleteService(service.id)">Eliminar</button>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <!-- Modales para Editar y Eliminar -->
+    <Edit v-if="selectedService" :service="selectedService" @serviceUpdated="fetchServices" />
+    <Delete v-if="serviceToDelete" :serviceId="serviceToDelete" @serviceDeleted="fetchServices" />
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import { supabase } from '@/supabase';  // Corrigiendo la referencia a supabase
-import $ from 'jquery';                 // Importando jQuery
-import 'datatables.net-bs5';            // Importando DataTables con Bootstrap 5
+import $ from 'jquery';
+import 'datatables.net-bs5'; // Importar DataTables con Bootstrap 5
+import Edit from './Edit.vue';
+import Delete from './Delete.vue';
+import { supabase } from '@/supabase'; // Conectar con Supabase
 
 export default {
-  props: ['showCreateForm'],
-  setup(props) {
-    const tipoDeInspeccion = ref([]);
-
-    const fetchData = async () => {
-      let { data, error } = await supabase
-        .from('tipo_de_inspeccion')
-        .select('*');
-      
-      if (error) {
-        console.error(error);
-      } else {
-        tipoDeInspeccion.value = data;
-
-        // Inicializar DataTable después de cargar los datos
-        $(document).ready(function () {
-          $('#datatable').DataTable();
-        });
-      }
-    };
-
-    const deleteItem = async (id) => {
-      const { error } = await supabase
-        .from('tipo_de_inspeccion')
-        .delete()
-        .eq('id', id);
-      if (!error) {
-        fetchData(); // Refrescar la lista después de eliminar
-      }
-    };
-
-    onMounted(() => {
-      fetchData();
-    });
-
+  components: {
+    Edit,
+    Delete,
+  },
+  data() {
     return {
-      tipoDeInspeccion,
-      deleteItem,
+      services: [], // Lista de servicios
+      selectedService: null,
+      serviceToDelete: null,
     };
+  },
+  mounted() {
+    this.fetchServices(); // Llamada para obtener los servicios al montar el componente
+  },
+  watch: {
+    services() {
+      // Cuando cambian los servicios, reiniciar DataTable
+      this.$nextTick(() => {
+        $('#servicesTable').DataTable().destroy(); // Destruir la instancia anterior
+        this.initDataTable(); // Inicializar DataTable nuevamente
+      });
+    },
+  },
+  methods: {
+    async fetchServices() {
+      // Llamada a Supabase para obtener los servicios
+      const { data, error } = await supabase
+        .from('tipo_de_inspeccion') // Asegúrate de que este es el nombre correcto de la tabla
+        .select('*');
+
+      if (error) {
+        console.error('Error al obtener servicios:', error.message);
+      } else {
+        this.services = data; // Asignar los datos obtenidos a la variable 'services'
+        this.initDataTable(); // Inicializar DataTable con los datos obtenidos
+      }
+    },
+    initDataTable() {
+      // Inicializar DataTables
+      this.$nextTick(() => {
+        $('#servicesTable').DataTable({
+          paging: true,
+          searching: true,
+        });
+      });
+    },
+    editService(service) {
+      this.selectedService = service; // Establecer el servicio seleccionado para edición
+    },
+    deleteService(serviceId) {
+      this.serviceToDelete = serviceId; // Establecer el ID del servicio que será eliminado
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Aquí puedes agregar estilos adicionales si es necesario */
+.table {
+  margin-top: 20px;
+}
+
+.text-center {
+  text-align: center;
+}
 </style>
