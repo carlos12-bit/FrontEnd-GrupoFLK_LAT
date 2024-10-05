@@ -22,7 +22,6 @@ const routes = [
   { path: '/about', component: About },
   { path: '/contact', component: Contact },
 
-  
   // Requiere Rol de Administrador
   {
     path: '/admin-dashboard',
@@ -31,7 +30,7 @@ const routes = [
   },
 
   {
-    path: '/ManagementServices',
+    path: '/admin-dashboard/ManagementServices',
     component: ManagementServices,
     meta: { requiresAuth: true, role: 'Administrador' },
   },
