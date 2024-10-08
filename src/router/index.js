@@ -7,11 +7,14 @@ import Register from '@/views/Security/Register.vue';
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
 import ReceptionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
-import ManageRequest from '@/views/Dashboards/Admin/ManageRequest.vue';
+import ManageRequest from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageRequest/View.vue';
 import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
 import Contact from '@/views/Website/Contact.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
+
+// Importar el nuevo componente Details.vue
+import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/Details.vue';
 
 // Definir las rutas
 const routes = [
@@ -22,14 +25,12 @@ const routes = [
   { path: '/about', component: About },
   { path: '/contact', component: Contact },
 
-  
   // Requiere Rol de Administrador
   {
     path: '/admin-dashboard',
     component: AdminDashboard,
     meta: { requiresAuth: true, role: 'Administrador' },
   },
-
   {
     path: '/ManagementServices',
     component: ManagementServices,
@@ -40,6 +41,12 @@ const routes = [
     component: ManageRequest,
     meta: { requiresAuth: true, role: 'Administrador' },
   },
+  {
+    path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud
+    name: 'Details',  // Nombre de la ruta que estás usando
+    component: Details,
+    meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+  },  
 
   // Requiere Rol de Recepcionista
   {
@@ -87,3 +94,4 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
+
