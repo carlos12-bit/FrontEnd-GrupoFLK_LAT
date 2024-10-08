@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
+
 // Importar Daashboards
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
 import RecepcionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
@@ -15,6 +16,8 @@ import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
 import Contact from '@/views/Website/Contact.vue';
 
+// Gestionar Personal
+import GestionarPersonal from '@/views/GestionarPersonal/Lista.vue';
 
 // Definir las rutas
 const routes = [
