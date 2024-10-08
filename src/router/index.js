@@ -34,6 +34,10 @@ const routes = [
     path: '/admin-dashboard',
     component: AdminDashboard,
     meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+  }, {
+    path: '/gestionarpersonal',
+    component: GestionarPersonal,
+    
   },
   {
     path: '/ManageInspectionTypes',

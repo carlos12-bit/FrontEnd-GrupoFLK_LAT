@@ -136,15 +136,15 @@
   
   <script>
   import { supabase } from '@/supabase.js';
-  import ConsultarAsistente from '@/components/ConsultarAsistente.vue';
-  import ConsultarCertificador from '@/components/ConsultarCertificador.vue';
-  import ConsultarInspector from '@/components/ConsultarInspector.vue';
-  import EditarAsistente from '@/components/EditarAsistente.vue';
-  import EditarCertificador from '@/components/EditarCertificador.vue';
-  import EditarInspector from '@/components/EditarInspector.vue';
-  import EliminarAsistente from '@/components/EliminarAsistente.vue';
-  import EliminarCertificador from '@/components/EliminarCertificador.vue';
-  import EliminarInspector from '@/components/EliminarInspector.vue';
+  import ConsultarAsistente from '@/components/GestionarPersonal/AsistentedeOperaciones/ConsultarAsistente.vue';
+  import ConsultarCertificador from '@/components/GestionarPersonal/Certificador/ConsultarCertificador.vue';
+  import ConsultarInspector from '@/components/GestionarPersonal/Inspector/ConsultaInspector.vue';
+  import EditarAsistente from '@/components/GestionarPersonal/AsistentedeOperaciones/EditarAsistente.vue';
+  import EditarCertificador from '@/components/GestionarPersonal/Certificador/EditarCertificador.vue';
+  import EditarInspector from '@/components/GestionarPersonal/Inspector/EditarInspector.vue';
+  import EliminarAsistente from '@/components/GestionarPersonal/AsistentedeOperaciones/EliminarAsistente.vue';
+  import EliminarCertificador from '@/components/GestionarPersonal/Certificador/EliminarCertificador.vue';
+  import EliminarInspector from '@/components/GestionarPersonal/Inspector/EliminarInspector.vue';
 
   export default {  
     components: {
