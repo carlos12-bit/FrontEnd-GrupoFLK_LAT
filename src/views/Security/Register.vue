@@ -26,64 +26,92 @@
       </div>
       <div class="mb-3">
         <label for="rol" class="form-label">Selecciona tu rol</label>
-        <select class="form-control" v-model="rol" required>
+        <select class="form-control" v-model="selectedRol" required>
           <option value="">Elige un rol</option>
-          <option value="Administrador">Administrador</option>
-          <option value="Recepcionista">Recepcionista</option>
-          <option value="Asistente de Operaciones">Asistente de Operaciones</option>
+          <option v-for="rol in roles" :key="rol.id" :value="rol.id">{{ rol.nombre }}</option>
         </select>
       </div>
       <button type="submit" class="btn btn-primary">Registrar</button>
     </form>
     <p v-if="error" class="text-danger">{{ error }}</p>
+    <p v-if="message" class="text-success">{{ message }}</p>
   </div>
 </template>
 
 <script>
 import { supabase } from '../../supabase.js'; // Asegúrate de que la ruta sea correcta
+import { ref, onMounted } from 'vue';
 
 export default {
-  name: 'Register',
-  data() {
-    return {
-      email: '',
-      password: '',
-      rol: '', // Se añadirá el rol aquí
-      error: null,
-    };
-  },
-  methods: {
-    async handleRegister() {
-      // Verificar que el usuario haya seleccionado un rol
-      if (!this.rol) {
-        this.error = 'Por favor, selecciona un rol.';
-        return;
+  setup() {
+    const email = ref('');
+    const password = ref('');
+    const selectedRol = ref('');
+    const roles = ref([]);
+    const error = ref(null);
+    const message = ref(null);
+
+    // Obtener roles desde la base de datos
+    const fetchRoles = async () => {
+      const { data, error: rolesError } = await supabase
+        .from('roles')
+        .select('*');
+      if (rolesError) {
+        error.value = 'Error al cargar los roles';
+      } else {
+        roles.value = data;
       }
+    };
+
+    // Llamar a la función de carga de roles cuando el componente se monta
+    onMounted(() => {
+      fetchRoles();
+    });
+
+    // Función para manejar el registro
+    const handleRegister = async () => {
+      error.value = null;
+      message.value = null;
 
       try {
-        // Insertar el usuario directamente en la tabla profiles
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              email: this.email,
-              password: this.password, // La contraseña ahora se guarda en la tabla profiles
-              rol: this.rol,
-            },
-          ]);
+        // Crear el usuario en Supabase
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: email.value,
+          password: password.value,
+        });
 
-        if (profileError) {
-          this.error = 'Error al registrar: ' + profileError.message;
-        } else {
-          this.error = null;
-          // Redirigir al usuario después de un registro exitoso
-          this.$router.push('/login');
+        if (signUpError) throw signUpError;
+
+        const user = signUpData.user;
+
+        // Asegurarse de que el usuario fue creado correctamente
+        if (user) {
+          // Insertar en la tabla 'AsignacionDeUsuario' usando el UUID del usuario creado
+          const { error: insertError } = await supabase
+            .from('asignaciondeusuario') // Nombre correcto de la tabla
+            .insert([
+              { id: user.id, rol: selectedRol.value }, // Insertamos el UUID del usuario y el rol
+            ]);
+
+          if (insertError) throw insertError;
+
+          // Registro exitoso
+          message.value = 'Registro exitoso. Por favor revisa tu email para confirmar.';
         }
-      } catch (error) {
-        console.error("Error durante el registro:", error);
-        this.error = "Ocurrió un error inesperado. Inténtalo nuevamente.";
+      } catch (err) {
+        error.value = err.message || 'Error en el proceso de registro.';
       }
-    },
+    };
+
+    return {
+      email,
+      password,
+      selectedRol,
+      roles,
+      error,
+      message,
+      handleRegister,
+    };
   },
 };
 </script>

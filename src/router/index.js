@@ -1,58 +1,55 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { getSession, buscarRol } from '../auth'; // Importar funciones de autenticación
 
-// Importar componentes
+// Importar componentes y layouts
 import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
+import AdminLayout from '../views/Dashboards/Admin/AdminLayout.vue'; // El layout fijo del dashboard de administrador
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
-import ReceptionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
+import ManagementServices from '../views/UseCases/Admin/ManagementServices/View.vue';
+import ManagementtypeInspeccion from '../views/UseCases/Admin/ManagementTypesInspeccion/View.vue';
+import ReceptionistDashboard from '@/views/Dashboards/Receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
-import ManageRequest from '@/views/Dashboards/Admin/ManageRequest.vue';
-import Services from '@/views/Website/Services.vue';
-import About from '@/views/Website/About.vue';
-import Contact from '@/views/Website/Contact.vue';
-import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 
 // Definir las rutas
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/services', component: Services },
-  { path: '/about', component: About },
-  { path: '/contact', component: Contact },
 
-  // Requiere Rol de Administrador
+  // Rutas del dashboard de administrador con layout persistente
   {
     path: '/admin-dashboard',
-    component: AdminDashboard,
+    component: AdminLayout, // El layout principal del administrador que siempre se muestra
     meta: { requiresAuth: true, role: 'Administrador' },
+    children: [
+      {
+        path: 'home',
+        component: AdminDashboard, // Vista de inicio del dashboard
+      },
+      {
+        path: 'management-services',
+        component: ManagementServices, // Vista de gestión de servicios
+      },
+      {
+        path: 'management-inspections',
+        component: ManagementtypeInspeccion, // Vista de gestión de inspecciones
+      }
+    ]
   },
 
-  {
-    path: '/admin-dashboard/ManagementServices',
-    component: ManagementServices,
-    meta: { requiresAuth: true, role: 'Administrador' },
+  // Rutas para otros roles (Recepcionista y Asistente de Operaciones)
+  { 
+    path: '/receptionist-dashboard', 
+    component: ReceptionistDashboard, 
+    meta: { requiresAuth: true, role: 'Recepcionista' } 
   },
-  {
-    path: '/manage-requests',
-    component: ManageRequest,
-    meta: { requiresAuth: true, role: 'Administrador' },
-  },
-
-  // Requiere Rol de Recepcionista
-  {
-    path: '/receptionist-dashboard',
-    component: ReceptionistDashboard,
-    meta: { requiresAuth: true, role: 'Recepcionista' },
-  },
-  
-  // Requiere Rol de Asistente de Operaciones
-  {
-    path: '/operations-assistant-dashboard',
-    component: OperationsAssistantDashboard,
-    meta: { requiresAuth: true, role: 'Asistente de Operaciones' },
-  },
+  { 
+    path: '/operations-assistant-dashboard', 
+    component: OperationsAssistantDashboard, 
+    meta: { requiresAuth: true, role: 'Asistente de Operaciones' } 
+  }
 ];
 
 // Crear el router
@@ -62,27 +59,53 @@ const router = createRouter({
 });
 
 // Guard para proteger rutas según autenticación y rol
-router.beforeEach((to, from, next) => {
-  const user = JSON.parse(localStorage.getItem('user')); // Obtener el perfil del usuario de localStorage
+router.beforeEach(async (to, from, next) => {
+  try {
+    const session = await getSession(); // Obtener la sesión
 
-  // Si la ruta requiere autenticación
-  if (to.meta.requiresAuth) {
-    if (!user) {
-      console.warn("Ruta protegida. Redirigiendo a login.");
-      return next({ path: '/login' }); // Redirige a login si no hay sesión
+    if (to.meta.requiresAuth) {
+      if (!session) {
+        return next('/login'); // Redirigir al login si no hay sesión
+      }
+
+      const user = session.user; // Obtener el usuario autenticado
+
+      // Obtener el rol del usuario desde la base de datos (tabla AsignacionDeUsuario)
+      const { rolId } = await buscarRol(user.id); // Consultar el rol del usuario
+
+      // Verificar si el rol del usuario coincide con el requerido en la ruta
+      if (to.meta.role && to.meta.role !== getNombreRol(rolId)) {
+        return next('/'); // Redirigir a la página de inicio si el rol no coincide
+      }
     }
 
-    console.log("Usuario autenticado:", user);
-
-    // Verificar el rol del usuario
-    if (to.meta.role && to.meta.role !== user.rol) {
-      console.warn(`Acceso denegado. Se requiere rol ${to.meta.role}, pero el usuario tiene rol ${user.rol}.`);
-      return next({ path: '/' }); // Redirigir a la página de inicio si el rol no coincide
-    }
+    next(); // Permitir el acceso si todo está bien
+  } catch (error) {
+    console.error('Error al verificar la autenticación o rol:', error);
+    return next('/login'); // Redirigir al login en caso de error
   }
-
-  // Si todo está bien, permitir el acceso
-  next();
 });
+
+// Función para obtener el nombre del rol basado en el ID del rol
+function getNombreRol(rolId) {
+  switch (rolId) {
+    case 1:
+      return 'Nuevo';
+    case 2:
+      return 'Asistente de Operaciones';
+    case 3:
+      return 'Administrador';
+    case 4:
+      return 'Recepcionista';
+    case 5:
+      return 'Operador';
+    case 6:
+      return 'Instructor';
+    case 7:
+      return 'Formador';
+    default:
+      return null;
+  }
+}
 
 export default router;

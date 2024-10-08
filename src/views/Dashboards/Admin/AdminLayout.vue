@@ -1,13 +1,10 @@
 <template>
   <div>
-    <!-- Botón de menú (hamburger) para pantallas pequeñas -->
-    <!-- Usamos clases de Bootstrap para mostrar el botón en pantallas pequeñas -->
-    <button 
-      @click="toggleSidebar" 
-      class="btn btn-primary d-md-none" 
-      type="button"
-    >
-      <i class="fas fa-bars"></i>
+    <!-- Botón de menú para mostrar/ocultar el sidebar -->
+    <!-- El botón permanece visible, tanto para abrir como para cerrar el sidebar -->
+    <button @click="toggleSidebar" class="btn btn-primary menu-btn" type="button">
+      <i v-if="!isSidebarVisible" class="fas fa-bars"></i> <!-- Icono de hamburger -->
+      <i v-else class="fas fa-times"></i> <!-- Icono de cerrar -->
     </button>
     
     <!-- Sidebar -->
@@ -59,12 +56,12 @@ import { supabase } from '@/supabase.js';
 export default {
   data() {
     return {
-      isSidebarVisible: true, // Controla la visibilidad del sidebar
+      isSidebarVisible: false, // Sidebar oculto por defecto
     };
   },
   methods: {
     toggleSidebar() {
-      this.isSidebarVisible = !this.isSidebarVisible; // Muestra/oculta el sidebar
+      this.isSidebarVisible = !this.isSidebarVisible; // Alternar visibilidad del sidebar
     },
     async logout() {
       await supabase.auth.signOut();
@@ -73,7 +70,6 @@ export default {
   }
 };
 </script>
-
 <style>
 /* Estilos personalizados para la barra lateral */
 .sidebar {
@@ -89,7 +85,7 @@ export default {
   align-items: center;
   padding-top: 20px;
   transition: transform 0.3s ease;
-  z-index: 1000;
+  z-index: 1000; /* Sidebar tiene z-index alto */
 }
 
 .sidebar-hidden {
@@ -123,18 +119,33 @@ export default {
   background-color: #444;
 }
 
-/* Estilos responsivos con Bootstrap */
+/* Botón de menú */
+.menu-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: #333;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  z-index: 1100; /* El botón tiene un z-index más alto que el sidebar */
+  cursor: pointer;
+}
+
+/* Responsividad: estilos específicos para pantallas pequeñas */
 @media (max-width: 768px) {
   .sidebar {
-    transform: translateX(-100%); /* Oculta el sidebar por defecto en pantallas pequeñas */
+    transform: translateX(-100%); /* Sidebar oculto por defecto */
   }
 
   .sidebar:not(.sidebar-hidden) {
-    transform: translateX(0); /* Muestra el sidebar cuando esté visible */
+    transform: translateX(0); /* Muestra el sidebar cuando está visible */
   }
 
-  .btn {
-    margin: 20px;
+  .menu-btn {
+    display: block; /* Mostrar el botón de menú */
+    z-index: 1100; /* Asegurarse de que el botón esté por encima del sidebar */
   }
 }
+
 </style>
