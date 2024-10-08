@@ -39,13 +39,13 @@ const routes = [
   {
     path: '/manage-requests',
     component: ManageRequest,
-    meta: { requiresAuth: true, role: 'Administrador' },
+    
   },
   {
     path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud
     name: 'Details',  // Nombre de la ruta que estás usando
     component: Details,
-    meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+     
   },  
 
   // Requiere Rol de Recepcionista
