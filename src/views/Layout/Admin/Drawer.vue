@@ -1,0 +1,180 @@
+<template>
+  <!-- Menú lateral (drawer) con diseño profesional -->
+  <el-menu
+    default-active="2"
+    class="el-menu-vertical-demo"
+    :collapse="isCollapse"
+    @open="handleOpen"
+    @close="handleClose"
+  >
+    <el-sub-menu index="1">
+      <template #title>
+        <el-icon><location /></el-icon>
+        <span>Navigator One</span>
+      </template>
+      <el-menu-item-group>
+        <template #title><span>Group One</span></template>
+        <el-menu-item index="1-1">Item One</el-menu-item>
+        <el-menu-item index="1-2">Item Two</el-menu-item>
+      </el-menu-item-group>
+      <el-menu-item-group title="Group Two">
+        <el-menu-item index="1-3">Item Three</el-menu-item>
+      </el-menu-item-group>
+      <el-sub-menu index="1-4">
+        <template #title><span>Item Four</span></template>
+        <el-menu-item index="1-4-1">Item One</el-menu-item>
+      </el-sub-menu>
+    </el-sub-menu>
+    <el-menu-item index="2">
+      <el-icon><icon-menu /></el-icon>
+      <template #title>Navigator Two</template>
+    </el-menu-item>
+    <el-menu-item index="3" disabled>
+      <el-icon><document /></el-icon>
+      <template #title>Navigator Three</template>
+    </el-menu-item>
+    <el-menu-item index="4">
+      <el-icon><setting /></el-icon>
+      <template #title>Navigator Four</template>
+    </el-menu-item>
+  </el-menu>
+
+  <!-- Botón de hamburguesa -->
+  <button 
+    class="hamburger-menu"
+    @click="toggleCollapse"
+    :class="{ 'active': isCollapse }"
+  >
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import {
+  Document,
+  Menu as IconMenu,
+  Location,
+  Setting,
+} from '@element-plus/icons-vue'
+
+const isCollapse = ref(false)
+
+const toggleCollapse = () => {
+  isCollapse.value = !isCollapse.value
+}
+
+const handleOpen = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+
+const handleClose = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+</script>
+
+<style scoped>
+/* Drawer negro con diseño corporativo */
+.el-menu-vertical-demo {
+  background-color: #6c6c70a9; /* Negro elegante */
+  color: #000000; /* Naranja corporativo */
+  border-right: none;
+  transition: all 0.3s ease-in-out;
+  width: 200px;
+  font-size: 18px; /* Aumento general del tamaño de la letra */
+}
+
+.el-menu-vertical-demo.el-menu--collapse {
+  width: 64px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Estilo de los ítems del menú */
+.el-menu-item {
+  color: #000000;
+  transition: color 0.3s ease;
+  font-size: 20px; /* Ajuste del tamaño de fuente */
+  font-weight: 600; /* Peso equilibrado */
+}
+
+.el-menu-item.is-active {
+  background-color: rgba(255, 165, 0, 0.1); /* Fondo suave cuando está activo */
+  color: #000000;
+}
+
+.el-menu-item:hover {
+  color: #000000; /* Un tono más oscuro de naranja en hover */
+}
+
+/* Submenús y títulos */
+.el-sub-menu .el-menu-item-group__title, .el-sub-menu .el-sub-menu__title {
+  color: #000000;
+  transition: color 0.3s ease;
+  font-size: 19px; /* Aumento de tamaño en los títulos */
+  font-weight: 600; /* Títulos más destacados */
+}
+
+.el-sub-menu__title:hover {
+  color: #000000;
+}
+
+/* Iconos dentro del menú (naranja corporativo) */
+.el-menu-item .el-icon, .el-sub-menu .el-icon {
+  color: #000000;
+}
+
+.el-menu-item.is-active .el-icon, .el-menu-item:hover .el-icon {
+  color: #000000; /* Mismo cambio de color en hover para los iconos */
+}
+
+/* Estilos del botón de hamburguesa */
+.hamburger-menu {
+  position: relative;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 35px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Barras del botón */
+.hamburger-menu .bar {
+  width: 100%;
+  height: 4px;
+  background-color: #ffa500;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Cambios en el botón cuando el menú está activo */
+.hamburger-menu.active .bar:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+  background-color: #000000;
+}
+
+.hamburger-menu.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.active .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+  background-color: #000000;
+}
+
+/* Efecto hover para el botón */
+.hamburger-menu:hover .bar {
+  background-color: #e69500; /* Un cambio suave al pasar el mouse */
+}
+
+
+
+</style>

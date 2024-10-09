@@ -5,12 +5,12 @@ import { getSession, buscarRol } from '../auth'; // Importar funciones de autent
 import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
-import AdminLayout from '../views/Dashboards/Admin/AdminLayout.vue'; // El layout fijo del dashboard de administrador
-import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
+import AdminLayout from '../views/Layout/Admin/AdminLayout.vue';
+import ReceptionistLayout from '../views/Layout/Receptionist/ReceptionistLayout.vue';
+import OperationsAssistantLayout from '../views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import ManagementServices from '../views/UseCases/Admin/ManagementServices/View.vue';
 import ManagementtypeInspeccion from '../views/UseCases/Admin/ManagementTypesInspeccion/View.vue';
-import ReceptionistDashboard from '@/views/Dashboards/Receptionist/Dashboard.vue';
-import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
+import AccessDenied from '../views/Security/AccessDenied.vue';
 
 // Definir las rutas
 const routes = [
@@ -26,7 +26,7 @@ const routes = [
     children: [
       {
         path: 'home',
-        component: AdminDashboard, // Vista de inicio del dashboard
+        component: AccessDenied, // Vista de inicio del dashboard
       },
       {
         path: 'management-services',
@@ -42,13 +42,41 @@ const routes = [
   // Rutas para otros roles (Recepcionista y Asistente de Operaciones)
   { 
     path: '/receptionist-dashboard', 
-    component: ReceptionistDashboard, 
-    meta: { requiresAuth: true, role: 'Recepcionista' } 
+    component: ReceptionistLayout, 
+    meta: { requiresAuth: true, role: 'Recepcionista' },
+    children: [
+      {
+        path: 'home',
+        component: AccessDenied, // Vista de inicio del dashboard
+      },
+      {
+        path: 'management-services',
+        component: ManagementServices, // Vista de gestión de servicios
+      },
+      {
+        path: 'management-inspections',
+        component: ManagementtypeInspeccion, // Vista de gestión de inspecciones
+      }
+    ]
   },
   { 
     path: '/operations-assistant-dashboard', 
-    component: OperationsAssistantDashboard, 
-    meta: { requiresAuth: true, role: 'Asistente de Operaciones' } 
+    component: OperationsAssistantLayout, 
+    meta: { requiresAuth: true, role: 'Asistente de Operaciones' },
+    children: [
+      {
+        path: 'home',
+        component: AccessDenied, // Vista de inicio del dashboard
+      },
+      {
+        path: 'management-services',
+        component: ManagementServices, // Vista de gestión de servicios
+      },
+      {
+        path: 'management-inspections',
+        component: ManagementtypeInspeccion, // Vista de gestión de inspecciones
+      }
+    ]
   }
 ];
 
