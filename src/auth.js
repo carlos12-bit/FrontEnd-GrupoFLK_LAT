@@ -16,11 +16,10 @@ export async function login(email, password) {
   const user = data.user; // Obtener el usuario autenticado
   const userId = user.id; // Obtener el ID del usuario
   const jwt = session.access_token; // Obtener el token JWT
-
   // Guardar el JWT y el usuario en localStorage
   localStorage.setItem('jwt', jwt); // Asegurarse de que el JWT se guarde correctamente
   localStorage.setItem('user', JSON.stringify(user)); // Guardar los datos del usuario
-  localStorage.setItem('userid', userId); // Guardar los datos del usuario
+  localStorage.setItem('useriddsadd', userId); // Guardar los datos del usuario
   console.log('Usuario', user.id, 'ha iniciado sesión'); // Mostrar mensaje en consola
 
   // Obtener el rol del usuario desde la tabla AsignacionDeUsuario

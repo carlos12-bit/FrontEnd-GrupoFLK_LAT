@@ -5,6 +5,7 @@ import { getSession, buscarRol } from '../auth'; // Importar funciones de autent
 import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
+import Services from '@/views/Website/Services.vue';
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionist/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
@@ -15,7 +16,7 @@ const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-
+  { path: '/Services', component: Services },
   // Rutas del dashboard de administrador con layout persistente
   {
     path: '/admin-dashboard',

@@ -21,10 +21,11 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from '@/supabase'
 import { GetUser } from '../../auth';
-
+import { getJWT } from '../../auth';
 export default {
   setup(props, { emit }) {
     const form = ref({
+      jwt: getJWT(),
       Nombre: '',
       Tipo_De_Maquinaria_id: null,
       Descripcion: '',
