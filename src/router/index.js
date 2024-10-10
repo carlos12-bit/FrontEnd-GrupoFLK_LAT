@@ -16,6 +16,7 @@ import Contact from '@/views/Website/Contact.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 import Courses from '@/views/UseCases/Operator/Courses/View.vue';
 
+
 // Definir las rutas
 const routes = [
   { path: '/', component: Home },
@@ -65,6 +66,7 @@ const routes = [
       component: Courses,
       /* meta: { requiresAuth: true, role: 'Administrador' } */
     },
+
    // Requiere Rol de Instructor
    {
     path: '/instructor-dashboard',

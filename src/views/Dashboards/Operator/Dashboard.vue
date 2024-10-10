@@ -6,7 +6,6 @@
       <!-- Main Content -->
       <div class="dashboard">
         <h1>Hola, Operador</h1>
-        <button @click="logout" class="btn btn-primary">Cerrar Sesión</button>
       </div>
     </div>
   </template>
