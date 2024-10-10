@@ -11,10 +11,6 @@ import ManageRequest from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/
 import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
 import Contact from '@/views/Website/Contact.vue';
-import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
-import View from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCourses/View.vue'; // Nueva importación
-import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/Details.vue';
-import CreateCourse from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageCourses/Create.vue'; // Nueva importación
 
 // Definir las rutas
 const routes = [
@@ -24,15 +20,8 @@ const routes = [
   { path: '/services', component: Services },
   { path: '/about', component: About },
   { path: '/contact', component: Contact },
-
-  // Rutas que requieren rol de Administrador
   {
-    path: '/admin-dashboard',
-    component: AdminDashboard,
-    meta: { requiresAuth: true, role: 'Administrador' },
-  },
-  {
-    path: '/ManagementServices',
+    path: '/admin-dashboard/ManagementServices',
     component: ManagementServices,
     meta: { requiresAuth: true, role: 'Administrador' },
   },
@@ -102,5 +91,3 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
-
-
