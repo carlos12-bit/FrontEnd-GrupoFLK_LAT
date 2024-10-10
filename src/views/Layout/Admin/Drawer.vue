@@ -8,15 +8,22 @@
     @open="handleOpen"
     @close="handleClose"
   >
+  <div class="logo">
+    <img src="@/assets/SELLO_FLK.png" alt="Logo" />
+  </div>
     <el-sub-menu index="1">
       <template #title>
-        <el-icon><location /></el-icon>
-        <span>Navigator One</span>
+        <el-icon><icon-menu  /></el-icon>
+        <span>Gestion General</span>
       </template>
       <el-menu-item-group>
-        <template #title><span>Group One</span></template>
-        <el-menu-item index="1-1">Item One</el-menu-item>
-        <el-menu-item index="1-2">Item Two</el-menu-item>
+        <template #title><span>Gestion Operativa</span></template>
+        <el-menu-item index="1-1">
+          <router-link class="nav-link" to="/admin-dashboard/ManagementServices">Gestionar Servicios</router-link>
+        </el-menu-item>
+        <el-menu-item index="1-2">
+          <router-link class="nav-link" to="/admin-dashboard/MangementPersonal">Gestionar Personal</router-link>
+        </el-menu-item>
       </el-menu-item-group>
       <el-menu-item-group title="Group Two">
         <el-menu-item index="1-3">Item Three</el-menu-item>
@@ -42,7 +49,7 @@
 
     <!-- Botón de Cerrar Sesión -->
     <el-menu-item @click="handleLogout">
-      <el-icon><setting /></el-icon>
+      <el-icon><CircleClose /></el-icon>
       <template #title>Cerrar Sesión</template>
     </el-menu-item>
   </el-menu>
@@ -71,6 +78,7 @@ import {
   Menu as IconMenu,
   Location,
   Setting,
+  User,
 } from '@element-plus/icons-vue'
 
 // Estado para controlar si el menú está colapsado o no
@@ -144,8 +152,8 @@ onBeforeUnmount(() => {
 .el-menu-item {
   color: #000000;
   transition: color 0.3s ease;
-  font-size: 20px; /* Ajuste del tamaño de fuente */
-  font-weight: 600; /* Peso equilibrado */
+  font-size: relative; /* Ajuste del tamaño de fuente */
+  font-weight: relative; /* Peso equilibrado */
 }
 
 .el-menu-item.is-active {
@@ -222,5 +230,12 @@ onBeforeUnmount(() => {
 /* Efecto hover para el botón */
 .hamburger-menu:hover .bar {
   background-color: #e69500; /* Un cambio suave al pasar el mouse */
+}
+.logo img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 20px auto; /* Center the logo horizontally */
+  display: block; /* Ensure the image is treated as a block element */
 }
 </style>

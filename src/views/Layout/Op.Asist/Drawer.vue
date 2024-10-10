@@ -8,7 +8,10 @@
     @open="handleOpen"
     @close="handleClose"
   >
-  <el-sub-menu index="1">
+  <div class="logo">
+    <img src="@/assets/SELLO_FLK.png" alt="Logo" />
+  </div>
+    <el-sub-menu index="1">
       <template #title>
         <el-icon><location /></el-icon>
         <span>Navigator One</span>
@@ -36,7 +39,14 @@
     </el-menu-item>
     <el-menu-item index="4">
       <el-icon><setting /></el-icon>
+      <router-link class="nav-link" to="/admin-dashboard/ManageTypeMachinery">Inicio</router-link>
       <template #title>Navigator Four</template>
+    </el-menu-item>
+
+    <!-- Botón de Cerrar Sesión -->
+    <el-menu-item @click="handleLogout">
+      <el-icon><setting /></el-icon>
+      <template #title>Cerrar Sesión</template>
     </el-menu-item>
   </el-menu>
 
@@ -55,6 +65,10 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { supabase } from '@/supabase'
+import { useRouter } from 'vue-router'
+
+// Importar íconos de Element Plus
 import {
   Document,
   Menu as IconMenu,
@@ -66,6 +80,20 @@ import {
 const isCollapse = ref(false)
 // Estado para detectar si es móvil o no
 const isMobile = ref(false)
+
+// Obtener la funcionalidad del enrutador para redirigir al usuario
+const router = useRouter()
+
+// Función para cerrar sesión
+const handleLogout = async () => {
+  try {
+    await supabase.auth.signOut()
+    localStorage.removeItem('user') // Eliminar el usuario del almacenamiento local
+    router.push('/login') // Redirigir al login después de cerrar sesión
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error)
+  }
+}
 
 // Función para alternar el estado del menú
 const toggleCollapse = () => {
@@ -97,7 +125,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkMobile)
 })
-
 </script>
 
 <style scoped>
@@ -198,5 +225,12 @@ onBeforeUnmount(() => {
 /* Efecto hover para el botón */
 .hamburger-menu:hover .bar {
   background-color: #e69500; /* Un cambio suave al pasar el mouse */
+}
+.logo img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 20px auto; /* Center the logo horizontally */
+  display: block; /* Ensure the image is treated as a block element */
 }
 </style>
