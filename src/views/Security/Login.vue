@@ -47,15 +47,16 @@ export default {
 
       try {
         // Llamar a la función de login
-        const { user, rolId } = await login(this.email, this.password);
+        const { user, rolId, jwt } = await login(this.email, this.password);
 
-        // Guardar el usuario en localStorage
-        localStorage.setItem('user', JSON.stringify(user));
+        // Guardar el usuario y el JWT en localStorage
+        localStorage.setItem('user', JSON.stringify(user)); // Esto ya se hace en la función login
+        localStorage.setItem('jwt', jwt); // El JWT también ya se guarda en la función
 
         // Redirigir al dashboard correspondiente según el rol del usuario
         switch (rolId) {
           case 1: // Nuevo
-            this.$router.push('/home'); // Puedes redirigir a una página general o de bienvenida
+            this.$router.push('/home');
             break;
           case 2: // Asistente de Operaciones
             this.$router.push('/operations-assistant-dashboard');
@@ -80,7 +81,6 @@ export default {
         }
 
       } catch (error) {
-        // Manejar error de credenciales inválidas o cualquier otro error
         this.error = error.message;
         console.error('Error de login:', error);
       } finally {
@@ -90,7 +90,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .login-container {
   display: flex;

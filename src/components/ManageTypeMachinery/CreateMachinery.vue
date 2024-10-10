@@ -1,51 +1,49 @@
 <template>
   <el-form :model="form" label-width="120px">
     <el-form-item label="Descripción">
-      <el-input v-model="descripcion" placeholder="Descripción"></el-input>
+      <el-input v-model="form.descripcion" placeholder="Descripción"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="handleSubmit">Guardar</el-button>
+      <el-button type="primary" class="neon-button" @click="handleSubmit">Guardar</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
+import { ref } from 'vue'
 import { supabase } from '@/supabase'
+import { GetUser } from '../../auth';
 
 export default {
-  data() {
-    return {
-      descripcion: '', // Descripción del tipo de maquinaria
-    }
-  },
-  methods: {
-    async handleSubmit() {
-      // Verificar si la descripción está vacía
-      if (!this.descripcion) {
-        this.$message.error('La descripción no puede estar vacía');
-        return;
-      }
+  setup(props, { emit }) {
+    const form = ref({
+      descripcion: '',
+      userId: GetUser() // Asume que GetUser solo devuelve el ID
+    })
 
+    const handleSubmit = async () => {
       try {
-        // Inserción de datos
         const { data, error } = await supabase
           .from('tipo_de_maquinaria')
-          .insert([{ descripcion: this.descripcion }]) // Solo enviamos la descripción
-          .select();
+          .insert([
+            {
+              descripcion: form.value.descripcion,
+              autor: form.value.userId,
+              ultimo_autor: form.value.userId
+            }
+          ])
 
-        if (error) {
-          throw new Error('Error al crear el tipo de maquinaria: ' + error.message);
-        }
-
-        // Mensaje de éxito
-        this.$message.success('Tipo de maquinaria creado con éxito');
-        this.$emit('created', data[0]);
-
+        if (error) throw error
+        emit('created') // Emite un evento para actualizar la lista
       } catch (error) {
-        // Manejar error
-        this.$message.error(`Error: ${error.message}`);
+        console.error('Error al insertar:', error.message)
       }
-    },
-  },
+    }
+
+    return {
+      form,
+      handleSubmit
+    }
+  }
 }
 </script>

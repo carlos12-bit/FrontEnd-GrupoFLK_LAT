@@ -36,6 +36,7 @@
     </el-menu-item>
     <el-menu-item index="4">
       <el-icon><setting /></el-icon>
+      <router-link class="nav-link" to="/admin-dashboard/ManageTypeMachinery">Inicio</router-link>
       <template #title>Navigator Four</template>
     </el-menu-item>
 
