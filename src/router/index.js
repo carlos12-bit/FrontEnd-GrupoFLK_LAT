@@ -14,6 +14,7 @@ import Contact from '@/views/Website/Contact.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 import View from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCourses/View.vue'; // Nueva importación
 import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/Details.vue';
+import CreateCourse from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageCourses/Create.vue'; // Nueva importación
 
 // Definir las rutas
 const routes = [
@@ -24,7 +25,7 @@ const routes = [
   { path: '/about', component: About },
   { path: '/contact', component: Contact },
 
-  // Requiere Rol de Administrador
+  // Rutas que requieren rol de Administrador
   {
     path: '/admin-dashboard',
     component: AdminDashboard,
@@ -38,19 +39,21 @@ const routes = [
   {
     path: '/manage-requests',
     component: ManageRequest,
-    
   },
   {
     path: '/manage-courses',
     component: View,
-    
+  },
+  {
+    path: '/create-course',
+    name: 'CreateCourse',  // Nombre de la ruta para el formulario de creación de cursos
+    component: CreateCourse,
   },
   
   {
     path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud
     name: 'Details',  // Nombre de la ruta que estás usando
     component: Details,
-     
   },  
 
   // Requiere Rol de Recepcionista
@@ -99,4 +102,5 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
+
 
