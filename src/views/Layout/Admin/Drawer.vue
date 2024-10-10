@@ -8,7 +8,7 @@
     @open="handleOpen"
     @close="handleClose"
   >
-  <el-sub-menu index="1">
+    <el-sub-menu index="1">
       <template #title>
         <el-icon><location /></el-icon>
         <span>Navigator One</span>
@@ -38,6 +38,12 @@
       <el-icon><setting /></el-icon>
       <template #title>Navigator Four</template>
     </el-menu-item>
+
+    <!-- Botón de Cerrar Sesión -->
+    <el-menu-item @click="handleLogout">
+      <el-icon><setting /></el-icon>
+      <template #title>Cerrar Sesión</template>
+    </el-menu-item>
   </el-menu>
 
   <!-- Botón de hamburguesa (solo visible en móviles) -->
@@ -55,6 +61,10 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { supabase } from '@/supabase'
+import { useRouter } from 'vue-router'
+
+// Importar íconos de Element Plus
 import {
   Document,
   Menu as IconMenu,
@@ -66,6 +76,20 @@ import {
 const isCollapse = ref(false)
 // Estado para detectar si es móvil o no
 const isMobile = ref(false)
+
+// Obtener la funcionalidad del enrutador para redirigir al usuario
+const router = useRouter()
+
+// Función para cerrar sesión
+const handleLogout = async () => {
+  try {
+    await supabase.auth.signOut()
+    localStorage.removeItem('user') // Eliminar el usuario del almacenamiento local
+    router.push('/login') // Redirigir al login después de cerrar sesión
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error)
+  }
+}
 
 // Función para alternar el estado del menú
 const toggleCollapse = () => {
@@ -97,7 +121,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkMobile)
 })
-
 </script>
 
 <style scoped>
