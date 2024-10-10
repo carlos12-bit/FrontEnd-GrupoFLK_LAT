@@ -11,7 +11,6 @@ import ManageRequest from '@/views/Dashboards/Admin/ManageRequest.vue';
 import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
 import Contact from '@/views/Website/Contact.vue';
-import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 
 // Definir las rutas
 const routes = [
@@ -26,8 +25,8 @@ const routes = [
   {
     path: '/admin-dashboard',
     component: AdminDashboard,
-    meta: { requiresAuth: true, role: 'Administrador' },
-  },
+    meta: { requiresAuth: true, role: 'Administrador' }, // Protegida por autenticación y rol
+  }, 
 
   {
     path: '/admin-dashboard/ManagementServices',
