@@ -5,13 +5,13 @@ import { getSession, buscarRol } from '../auth'; // Importar funciones de autent
 import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
-import AdminLayout from '../views/Layout/Admin/AdminLayout.vue';
-import ReceptionistLayout from '../views/Layout/Receptionist/ReceptionistLayout.vue';
-import OperationsAssistantLayout from '../views/Layout/Op.Asist/OperationsAssistantLayout.vue';
-import ManagementServices from '../views/UseCases/Admin/ManagementServices/View.vue';
-import ManagementtypeInspeccion from '../views/UseCases/Admin/ManagementTypesInspeccion/View.vue';
-import AccessDenied from '../views/Security/AccessDenied.vue';
-
+import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
+import ReceptionistLayout from '@/views/Layout/Receptionist/ReceptionistLayout.vue';
+import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
+import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
+import ManagementtypeInspeccion from '@/views/UseCases/Admin/ManagementTypesInspeccion/View.vue';
+import AccessDenied from '@/views/Security/AccessDenied.vue';
+import ManageTypeMachinery from '@/views/UseCases/Admin/ManageTypeMachinery/View.vue';
 // Definir las rutas
 const routes = [
   { path: '/', component: Home },
@@ -35,6 +35,10 @@ const routes = [
       {
         path: 'management-inspections',
         component: ManagementtypeInspeccion, // Vista de gestión de inspecciones
+      },      
+      {
+        path: 'ManageTypeMachinery',
+        component: ManageTypeMachinery, // Vista de gestión de inspecciones
       }
     ]
   },
