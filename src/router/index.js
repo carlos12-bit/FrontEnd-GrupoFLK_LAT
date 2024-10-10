@@ -7,15 +7,7 @@ import Register from '@/views/Security/Register.vue';
 import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
 import ReceptionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
-import TrainerDashboard from '@/views/Dashboards/Trainer/Dashboard.vue';
-import OperatorDashboard from '@/views/Dashboards/Operator/Dashboard.vue';
-import InstructorDashboard from '@/views/Dashboards/Instructor /Dashboard.vue';
-import Services from '@/views/Website/Services.vue';
-import About from '@/views/Website/About.vue';
-import Contact from '@/views/Website/Contact.vue';
-import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
-import Courses from '@/views/UseCases/Operator/Courses/View.vue';
-
+import ManageRequest from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageRequest/View.vue';
 
 // Definir las rutas
 const routes = [
@@ -25,17 +17,31 @@ const routes = [
   { path: '/services', component: Services },
   { path: '/about', component: About },
   { path: '/contact', component: Contact },
-
-  // Requiere Rol de Administrador
-  {
-    path: '/admin-dashboard',
-    component: AdminDashboard,
-  },
   {
     path: '/admin-dashboard/ManagementServices',
     component: ManagementServices,
-    /* meta: { requiresAuth: true, role: 'Administrador' } */
+    meta: { requiresAuth: true, role: 'Administrador' },
   },
+  {
+    path: '/manage-requests',
+    component: ManageRequest,
+  },
+  {
+    path: '/manage-courses',
+    component: View,
+  },
+  {
+    path: '/create-course',
+    name: 'CreateCourse',  // Nombre de la ruta para el formulario de creación de cursos
+    component: CreateCourse,
+  },
+  
+  {
+    path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud
+    name: 'Details',  // Nombre de la ruta que estás usando
+    component: Details,
+  },  
+
   // Requiere Rol de Recepcionista
   {
     path: '/receptionist-dashboard',
