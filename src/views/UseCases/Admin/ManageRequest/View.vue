@@ -46,7 +46,7 @@
     <div class="main-content">
       <navbar></navbar>
       <div class="container">
-        <h1 class="page-title">Gestión de Solicitudes de Capacitación</h1>
+        
         <table class="solicitudes-table">
           <thead>
             <tr>
