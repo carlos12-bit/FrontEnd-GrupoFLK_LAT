@@ -8,9 +8,6 @@ import AdminDashboard from '@/views/Dashboards/Admin/Dashboard.vue';
 import ReceptionistDashboard from '@/views/Dashboards/receptionist/Dashboard.vue';
 import OperationsAssistantDashboard from '@/views/Dashboards/Op.Asist/Dashboard.vue';
 import ManageRequest from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageRequest/View.vue';
-import Services from '@/views/Website/Services.vue';
-import About from '@/views/Website/About.vue';
-import Contact from '@/views/Website/Contact.vue';
 
 // Definir las rutas
 const routes = [
@@ -49,15 +46,39 @@ const routes = [
   {
     path: '/receptionist-dashboard',
     component: ReceptionistDashboard,
-    meta: { requiresAuth: true, role: 'Recepcionista' },
+    /* meta: { requiresAuth: true, role: 'Recepcionista' } */
   },
   
   // Requiere Rol de Asistente de Operaciones
   {
     path: '/operations-assistant-dashboard',
     component: OperationsAssistantDashboard,
-    meta: { requiresAuth: true, role: 'Asistente de Operaciones' },
+    /* meta: { requiresAuth: true, role: 'Asistente de Operaciones' } */
   },
+  // Requiere Rol de Trainer(Formador)
+  {
+    path: '/trainer-dashboard',
+    component: TrainerDashboard,
+    /* meta: { requiresAuth: true, role: 'Formador' }, */
+  },
+    // Requiere Rol de Operator
+   {
+      path: '/operator-dashboard',
+      component: OperatorDashboard,
+      /* meta: { requiresAuth: true, role: 'Operador' } */
+    }, 
+    {
+      path: '/operator-dashboard/Courses',
+      component: Courses,
+      /* meta: { requiresAuth: true, role: 'Administrador' } */
+    },
+
+   // Requiere Rol de Instructor
+   {
+    path: '/instructor-dashboard',
+    component: InstructorDashboard,
+   /*  meta: { requiresAuth: true, role: 'Instructor' } */
+   },
 ];
 
 // Crear el router
