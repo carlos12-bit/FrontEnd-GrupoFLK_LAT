@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="sidebar">
     <div class="logo">
       <h2>Mi Dashboard</h2>
@@ -29,6 +29,12 @@
         <li>
           <router-link to="/manage-requests" class="nav-link">
             <i class="fas fa-tasks"></i> Gestionar Solicitudes
+          </router-link>
+        </li>
+        <!-- Nueva opción para gestionar cursos -->
+        <li>
+          <router-link to="/manage-courses" class="nav-link">
+            <i class="fas fa-book"></i> Gestionar Cursos
           </router-link>
         </li>
         <li>

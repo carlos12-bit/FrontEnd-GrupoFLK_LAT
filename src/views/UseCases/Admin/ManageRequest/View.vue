@@ -8,31 +8,36 @@
       <nav>
         <ul>
           <li>
-            <router-link to="/dashboard" class="nav-link">
+            <router-link to="/dashboard" class="nav-link" active-class="active-link">
               <i class="fas fa-home"></i> Inicio
             </router-link>
           </li>
           <li>
-            <router-link to="/profile" class="nav-link">
+            <router-link to="/profile" class="nav-link" active-class="active-link">
               <i class="fas fa-user"></i> Perfil
             </router-link>
           </li>
           <li>
-            <router-link to="/settings" class="nav-link">
+            <router-link to="/settings" class="nav-link" active-class="active-link">
               <i class="fas fa-cog"></i> Configuración
             </router-link>
           </li>
           <li>
-            <router-link to="/reports" class="nav-link">
+            <router-link to="/reports" class="nav-link" active-class="active-link">
               <i class="fas fa-chart-bar"></i> Reportes
             </router-link>
           </li>
           <!-- Nueva opción para gestionar solicitudes -->
           <li>
-            <router-link to="/manage-requests" class="nav-link">
+            <router-link to="/manage-requests" class="nav-link" active-class="active-link">
               <i class="fas fa-tasks"></i> Gestionar Solicitudes
             </router-link>
           </li> 
+          <li>
+            <router-link to="/manage-courses" class="nav-link" active-class="active-link">
+              <i class="fas fa-book"></i> Gestionar Cursos
+            </router-link>
+          </li>
           <li>
             <button @click="logout" class="nav-link logout-btn">
               <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -44,9 +49,7 @@
 
     <!-- Contenido principal de la página -->
     <div class="main-content">
-      <navbar></navbar>
       <div class="container">
-        
         <table class="solicitudes-table">
           <thead>
             <tr>
@@ -77,12 +80,10 @@
 </template>
 
 <script>
-import navbar from '@/components/Website/Navbar.vue';
 import { supabase } from '@/supabase.js';
 
 export default {
   name: "GestionarSolicitudes",
-  components: { navbar },
   data() {
     return {
       solicitudes: []  // Array para almacenar las solicitudes
@@ -124,7 +125,7 @@ export default {
 </script>
 
 <style scoped>
-/* Layout */
+/* Estructura del layout */
 .dashboard-layout {
   display: flex;
   height: 100vh;
@@ -178,6 +179,11 @@ nav ul li {
 
 .nav-link:hover {
   background-color: #444;
+}
+
+/* Enlace activo */
+.active-link {
+  background-color: #1ABC9C; /* Color para el enlace activo */
 }
 
 .logout-btn {

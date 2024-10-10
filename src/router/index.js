@@ -12,8 +12,7 @@ import Services from '@/views/Website/Services.vue';
 import About from '@/views/Website/About.vue';
 import Contact from '@/views/Website/Contact.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
-
-// Importar el nuevo componente Details.vue
+import View from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCourses/View.vue'; // Nueva importación
 import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/Details.vue';
 
 // Definir las rutas
@@ -41,6 +40,12 @@ const routes = [
     component: ManageRequest,
     
   },
+  {
+    path: '/manage-courses',
+    component: View,
+    
+  },
+  
   {
     path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud
     name: 'Details',  // Nombre de la ruta que estás usando
