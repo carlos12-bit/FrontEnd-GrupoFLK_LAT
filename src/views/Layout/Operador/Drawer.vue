@@ -8,37 +8,44 @@
     @open="handleOpen"
     @close="handleClose"
   >
-    <div class="logo">
-      <img src="@/assets/SELLO_FLK.png" alt="Logo" />
-    </div>
+  <div class="logo">
+    <img src="@/assets/SELLO_FLK.png" alt="Logo" />
+  </div>
     <el-sub-menu index="1">
       <template #title>
-        <el-icon><icon-menu  /></el-icon>
-        <span>Gestion General</span>
+        <el-icon><location /></el-icon>
+        <span>Navigator One</span>
       </template>
-      <el-menu-item-group title="Gestion Operativa">
-        <el-menu-item index="1-1">
-          <router-link class="nav-link" to="/admin-dashboard/ManagementServices">Gestionar Servicios</router-link>
-        </el-menu-item>
-        <el-menu-item index="1-2">
-          <router-link class="nav-link" to="/admin-dashboard/MangementPersonal">Gestionar Personal</router-link>
-        </el-menu-item>
+      <el-menu-item-group>
+        <template #title><span>Group One</span></template>
+        <el-menu-item index="1-1">Item One</el-menu-item>
+        <el-menu-item index="1-2">Item Two</el-menu-item>
       </el-menu-item-group>
-      <el-menu-item-group title="Gestion de Alumnos">
-        <!-- Aquí envuelvo el texto con un div para mejor control del estilo -->
-        <el-menu-item index="1-3">
-          <router-link class="menu-item-long-text" to="/admin-dashboard/ManageRequest">Solicitudes de Capacitación</router-link>
-        </el-menu-item>
+      <el-menu-item-group title="Group Two">
+        <el-menu-item index="1-3">Item Three</el-menu-item>
       </el-menu-item-group>
+      <el-sub-menu index="1-4">
+        <template #title><span>Item Four</span></template>
+        <el-menu-item index="1-4-1">Item One</el-menu-item>
+      </el-sub-menu>
     </el-sub-menu>
     <el-menu-item index="2">
       <el-icon><icon-menu /></el-icon>
       <template #title>Navigator Two</template>
     </el-menu-item>
+    <el-menu-item index="3" disabled>
+      <el-icon><document /></el-icon>
+      <template #title>Navigator Three</template>
+    </el-menu-item>
+    <el-menu-item index="4">
+      <el-icon><setting /></el-icon>
+      <router-link class="nav-link" to="/admin-dashboard/ManageTypeMachinery">Inicio</router-link>
+      <template #title>Navigator Four</template>
+    </el-menu-item>
 
     <!-- Botón de Cerrar Sesión -->
     <el-menu-item @click="handleLogout">
-      <el-icon><User/></el-icon>
+      <el-icon><setting /></el-icon>
       <template #title>Cerrar Sesión</template>
     </el-menu-item>
   </el-menu>
@@ -67,7 +74,6 @@ import {
   Menu as IconMenu,
   Location,
   Setting,
-  User,
 } from '@element-plus/icons-vue'
 
 // Estado para controlar si el menú está colapsado o no
@@ -141,10 +147,8 @@ onBeforeUnmount(() => {
 .el-menu-item {
   color: #000000;
   transition: color 0.3s ease;
-  font-size: relative; /* Ajuste del tamaño de fuente */
-  font-weight: relative; /* Peso equilibrado */
-  height: auto !important; /* Asegura que los ítems del menú ajusten su altura */
-  overflow: visible; /* Permite que el contenido no se corte */
+  font-size: 20px; /* Ajuste del tamaño de fuente */
+  font-weight: 600; /* Peso equilibrado */
 }
 
 .el-menu-item.is-active {
@@ -175,16 +179,6 @@ onBeforeUnmount(() => {
 
 .el-menu-item.is-active .el-icon, .el-menu-item:hover .el-icon {
   color: #000000; /* Mismo cambio de color en hover para los iconos */
-}
-
-/* Estilo para los textos largos en el menú */
-.menu-item-long-text {
-  white-space: normal; /* Permite que el texto se ajuste en varias líneas */
-  word-wrap: break-word; /* Ajusta el texto en palabras largas */
-  max-width: 180px; /* Establece un ancho máximo para los ítems del menú */
-  line-height: 1.5; /* Ajusta la altura de línea para mejor legibilidad */
-  overflow-wrap: break-word; /* Fuerza el ajuste del texto cuando es necesario */
-  padding: 10px 0; /* Aumenta el espacio vertical para evitar que el texto se vea comprimido */
 }
 
 /* Estilos del botón de hamburguesa */

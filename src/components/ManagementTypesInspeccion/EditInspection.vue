@@ -43,7 +43,7 @@
       const handleSubmit = async () => {
         try {
           const { data, error } = await supabase
-            .from('Tipo_de_Inspeccion')
+            .from('tipo_de_inspeccion')
             .update({
               Nombre: form.value.Nombre,
               Tipo_De_Maquinaria_id: form.value.Tipo_De_Maquinaria_id,
@@ -61,7 +61,7 @@
   
       const fetchMaquinarias = async () => {
         const { data, error } = await supabase
-          .from('Tipo_De_Maquinaria')
+          .from('tipo_de_maquinaria')
           .select('id, descripcion');
           
         if (!error) {

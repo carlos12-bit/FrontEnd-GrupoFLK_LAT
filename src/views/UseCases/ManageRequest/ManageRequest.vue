@@ -1,5 +1,4 @@
 <template>
-  <navbar></navbar>
   <h1 class="page-title">Gestión de Solicitudes de Capacitación</h1>
   <div class="card-group" id="solicitud-cards"></div>
 </template>

@@ -15,7 +15,7 @@
       async handleDelete() {
         try {
           const { error } = await supabase
-            .from('Tipo_de_Inspeccion')
+            .from('tipo_de_inspeccion')
             .delete()
             .eq('id', this.inspectionId)
   

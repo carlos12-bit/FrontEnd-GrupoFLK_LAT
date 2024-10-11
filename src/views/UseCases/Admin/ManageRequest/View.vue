@@ -1,53 +1,4 @@
 <template>
-  <div class="dashboard-layout">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="logo">
-        <h2>Mi Dashboard</h2>
-      </div>
-      <nav>
-        <ul>
-          <li>
-            <router-link to="/dashboard" class="nav-link" active-class="active-link">
-              <i class="fas fa-home"></i> Inicio
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/profile" class="nav-link" active-class="active-link">
-              <i class="fas fa-user"></i> Perfil
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/settings" class="nav-link" active-class="active-link">
-              <i class="fas fa-cog"></i> Configuración
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/reports" class="nav-link" active-class="active-link">
-              <i class="fas fa-chart-bar"></i> Reportes
-            </router-link>
-          </li>
-          <!-- Nueva opción para gestionar solicitudes -->
-          <li>
-            <router-link to="/manage-requests" class="nav-link" active-class="active-link">
-              <i class="fas fa-tasks"></i> Gestionar Solicitudes
-            </router-link>
-          </li> 
-          <li>
-            <router-link to="/manage-courses" class="nav-link" active-class="active-link">
-              <i class="fas fa-book"></i> Gestionar Cursos
-            </router-link>
-          </li>
-          <li>
-            <button @click="logout" class="nav-link logout-btn">
-              <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
-
-    <!-- Contenido principal de la página -->
     <div class="main-content">
       <div class="container">
         <table class="solicitudes-table">
@@ -76,7 +27,6 @@
         </table>
       </div>
     </div>
-  </div>
 </template>
 
 <script>

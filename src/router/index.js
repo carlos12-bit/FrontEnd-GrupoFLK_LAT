@@ -11,6 +11,7 @@ import ReceptionistLayout from '@/views/Layout/Receptionist/ReceptionistLayout.v
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 import MangementPersonal from '@/views/UseCases/Admin/MangementPersonal/View.vue';
+import ManageRequest from '../views/UseCases/ManageRequest/ManageRequest.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue';
 // Definir las rutas
 const routes = [
@@ -35,6 +36,10 @@ const routes = [
       {
         path: 'MangementPersonal',
         component: MangementPersonal, // Vista de gestión de servicios
+      },      
+      {
+        path: 'ManageRequest',
+        component: ManageRequest, // Vista de gestión de servicios
       }
     ]
   },
@@ -45,6 +50,10 @@ const routes = [
     component: ReceptionistLayout, 
     meta: { requiresAuth: true, role: 'Recepcionista' },
     children: [
+      {
+        path: 'home',
+        component: AccessDenied, // Vista de inicio del dashboard
+      },
       {
         path: 'home',
         component: AccessDenied, // Vista de inicio del dashboard
