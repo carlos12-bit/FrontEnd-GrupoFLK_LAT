@@ -7,11 +7,13 @@ import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import Services from '@/views/Website/Services.vue';
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
-import ReceptionistLayout from '@/views/Layout/Receptionist/ReceptionistLayout.vue';
+import ReceptionistLayout from '@/views/Layout/receptionist/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
-import MangementPersonal from '@/views/UseCases/Admin/MangementPersonal/View.vue';
-import ManageRequest from '../views/UseCases/ManageRequest/ManageRequest.vue';
+import MangementPersonal from '@/views/UseCases/Admin/MangementPersonal/view.vue';
+import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
+import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
+
 import AccessDenied from '@/views/Security/AccessDenied.vue';
 // Definir las rutas
 const routes = [
@@ -35,11 +37,15 @@ const routes = [
       },
       {
         path: 'MangementPersonal',
-        component: MangementPersonal, // Vista de gestión de servicios
+        component: MangementPersonal, // Vista de gestión de personal
       },      
       {
         path: 'ManageRequest',
-        component: ManageRequest, // Vista de gestión de servicios
+        component: ManageRequest, // Vista de gestión de solicitudes
+      },
+      {
+        path: 'ManageCourses',
+        component: ManageCourses, // Vista de gestión de cursos
       }
     ]
   },
