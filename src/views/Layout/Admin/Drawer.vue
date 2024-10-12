@@ -2,7 +2,7 @@
   <!-- Menú lateral (drawer) con diseño profesional -->
   <el-menu
     v-if="!isMobile || !isCollapse"
-    default-active="2"
+    default-active="1-1"
     class="el-menu-vertical-demo"
     :collapse="isCollapse"
     @open="handleOpen"
@@ -11,34 +11,54 @@
     <div class="logo">
       <img src="@/assets/SELLO_FLK.png" alt="Logo" />
     </div>
+
+    <!-- Submenú Gestión General -->
     <el-sub-menu index="1">
       <template #title>
-        <el-icon><icon-menu  /></el-icon>
-        <span>Gestion General</span>
+        <el-icon><icon-menu /></el-icon>
+        <span>Gestión Operativa</span>
       </template>
-      <el-menu-item-group title="Gestion Operativa">
+     
+        <!-- Subgrupo de Gestión Operativa con opciones -->
         <el-menu-item index="1-1">
-          <router-link class="nav-link" to="/admin-dashboard/ManagementServices">Gestionar Servicios</router-link>
+          <router-link class="nav-link" to="/admin-dashboard/ManagementServices">
+            Gestionar Servicios
+          </router-link>
         </el-menu-item>
         <el-menu-item index="1-2">
-          <router-link class="nav-link" to="/admin-dashboard/MangementPersonal">Gestionar Personal</router-link>
+          <router-link class="nav-link" to="/admin-dashboard/MangementPersonal">
+            Gestionar Personal
+          </router-link>
         </el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="Gestion de Alumnos">
-        <!-- Aquí envuelvo el texto con un div para mejor control del estilo -->
-        <el-menu-item index="1-3">
-          <router-link class="menu-item-long-text" to="/admin-dashboard/ManageRequest">Solicitudes de Capacitación</router-link>
-        </el-menu-item>
-      </el-menu-item-group>
+  
     </el-sub-menu>
-    <el-menu-item index="2">
-      <el-icon><icon-menu /></el-icon>
-      <template #title>Navigator Two</template>
-    </el-menu-item>
+
+    <!-- Submenú Gestión de Alumnos y Solicitudes -->
+    <el-sub-menu index="2">
+      <template #title>
+        <el-icon><icon-menu /></el-icon>
+        <span>Gestión </span>
+      </template>
+      <el-menu-item index="2-1">
+        <router-link class="nav-link" to="/admin-dashboard/ManageStudents">
+          Gestionar Alumnos
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="2-2">
+        <router-link class="nav-link" to="/admin-dashboard/ManageRequest">
+          Gestionar Solicitudes
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="2-3">
+        <router-link class="nav-link" to="/admin-dashboard/ManageCourses">
+          Gestionar Cursos
+        </router-link>
+      </el-menu-item>
+    </el-sub-menu>
 
     <!-- Botón de Cerrar Sesión -->
-    <el-menu-item @click="handleLogout">
-      <el-icon><User/></el-icon>
+    <el-menu-item index="3" @click="handleLogout">
+      <el-icon><User /></el-icon>
       <template #title>Cerrar Sesión</template>
     </el-menu-item>
   </el-menu>
@@ -62,13 +82,7 @@ import { supabase } from '@/supabase'
 import { useRouter } from 'vue-router'
 
 // Importar íconos de Element Plus
-import {
-  Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
-  User,
-} from '@element-plus/icons-vue'
+import { Document, Menu as IconMenu, Location, Setting, User } from '@element-plus/icons-vue'
 
 // Estado para controlar si el menú está colapsado o no
 const isCollapse = ref(false)
@@ -236,7 +250,7 @@ onBeforeUnmount(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  margin: 20px auto; /* Center the logo horizontally */
-  display: block; /* Ensure the image is treated as a block element */
+  margin: 20px auto; /* Centra el logo horizontalmente */
+  display: block; /* Asegura que la imagen se trate como un bloque */
 }
 </style>

@@ -1,332 +1,212 @@
 <template>
-  <div class="dashboard-layout">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="logo">
-        <h2>Mi Dashboard</h2>
-      </div>
-      <nav>
-        <ul>
-          <li>
-            <router-link to="/dashboard" class="nav-link">
-              <i class="fas fa-home"></i> Inicio
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/profile" class="nav-link">
-              <i class="fas fa-user"></i> Perfil
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/settings" class="nav-link">
-              <i class="fas fa-cog"></i> Configuración
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/reports" class="nav-link">
-              <i class="fas fa-chart-bar"></i> Reportes
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/manage-requests" class="nav-link">
-              <i class="fas fa-tasks"></i> Gestionar Solicitudes
-            </router-link>
-          </li> 
-          <li>
-            <router-link to="/manage-courses" class="nav-link">
-              <i class="fas fa-book"></i> Gestionar Cursos
-            </router-link>
-          </li>
-          <li>
-            <button @click="logout" class="nav-link logout-btn">
-              <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
   
-    <!-- Contenido principal -->
-    <div class="main-content">
-      <h1 class="page-title">Gestión de Cursos</h1>
-
-      <!-- Botón para crear un curso -->
-      <button @click="crearCurso" class="btn-crear">Crear Curso</button>
-      
-      <!-- Lista de cursos en una tabla -->
-      <div class="table-responsive">
-        <table class="cursos-table">
-          <thead>
-            <tr>
-              <th>Título del Curso</th>
-              <th>Docente Teoría</th>
-              <th>Docente Práctico</th>
-              <th>Opciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="curso in cursos" :key="curso.Pk_Curso">
-              <td>{{ curso.titulo_curso }}</td>
-              <td>{{ curso.Fk_docenteteoria }}</td>
-              <td>{{ curso.Fk_docentepractico }}</td>
-              <td>
-                <button @click="leerCurso(curso.Pk_Curso)" class="btn-crud">Leer</button>
-                <button @click="actualizarCurso(curso.Pk_Curso)" class="btn-crud">Actualizar</button>
-                <button @click="eliminarCurso(curso.Pk_Curso)" class="btn-crud btn-danger">Eliminar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
+import { ref } from 'vue';
 import { supabase } from '@/supabase.js';
+import Drawer from '@/views/Layout/Admin/Drawer.vue'; // Importamos el Drawer
 
 export default {
-  data() {
+  components: {
+    Drawer, // Registramos el componente Drawer
+  },
+  setup() {
+    const cursos = ref([]);
+    const isMobile = ref(window.innerWidth <= 768);
+    const isSidebarOpen = ref(false);
+
+    const fetchCourses = async () => {
+      let { data: Cursos, error } = await supabase.from('Cursos').select('*');
+      if (!error) {
+        cursos.value = Cursos;
+      }
+    };
+
+    fetchCourses();
+
+    const viewCourse = (curso) => {
+      alert(`Detalles del curso: ${curso.titulo_curso}`);
+    };
+
+    const toggleSidebar = () => {
+      isSidebarOpen.value = !isSidebarOpen.value;
+    };
+
+    window.addEventListener('resize', () => {
+      isMobile.value = window.innerWidth <= 768;
+    });
+
     return {
-      cursos: []
+      cursos,
+      viewCourse,
+      isMobile,
+      isSidebarOpen,
+      toggleSidebar,
     };
   },
-  async mounted() {
-    // Obtener la lista de cursos desde Supabase
-    let { data: cursos, error } = await supabase
-      .from('Cursos')
-      .select('*');
-
-    if (error) {
-      console.error("Error al obtener cursos:", error);
-    } else {
-      this.cursos = cursos;
-    }
-  },
-  methods: {
-    async crearCurso() {
-      // Redirige a la vista Create.vue cuando se presiona el botón
-      this.$router.push('/create-course');
-    },
-    async leerCurso(id) {
-      // Lógica para leer un curso por ID
-      console.log('Leer curso con ID:', id);
-    },
-    async actualizarCurso(id) {
-      // Lógica para actualizar un curso por ID
-      console.log('Actualizar curso con ID:', id);
-    },
-    async eliminarCurso(id) {
-      // Lógica para eliminar un curso por ID
-      console.log('Eliminar curso con ID:', id);
-    },
-    async logout() {
-      await supabase.auth.signOut();
-      this.$router.push('/login');
-    }
-  }
 };
 </script>
 
 <style scoped>
-/* Layout similar al Sidebar anterior */
-.dashboard-layout {
+/* Estilo para el contenedor principal del dashboard */
+.dashboard-container {
   display: flex;
-  height: 100vh;
-  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
 }
 
+.hamburger {
+  display: none;
+}
+
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  background-color: #fff;
+}
+
+/* Sidebar */
 .sidebar {
   width: 250px;
-  height: 100vh;
-  background-color: #333;
-  color: #fff;
+  background-color: #2e2e2e;
+  color: white;
+  padding: 20px;
+  min-height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 20px;
-  transition: all 0.3s;
+  z-index: 10;
+  transition: transform 0.3s ease;
 }
 
-.logo {
-  margin-bottom: 40px;
+.collapsed {
+  transform: translateX(-250px);
 }
 
-.logo h2 {
-  color: #fff;
-  font-size: 24px;
+.sidebar-header {
+  margin-bottom: 20px;
 }
 
-nav ul {
+.sidebar ul {
   list-style: none;
   padding: 0;
-  width: 100%;
 }
 
-nav ul li {
-  width: 100%;
+.sidebar ul li {
+  margin: 10px 0;
 }
 
-.nav-link {
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar ul li a:hover {
+  text-decoration: underline;
+}
+
+.logo-img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 15px 20px;
-  color: #fff;
-  text-decoration: none;
-  font-size: 16px;
-  transition: background-color 0.3s;
 }
 
-.nav-link i {
+.sidebar ul li a i {
   margin-right: 10px;
+  font-size: 18px;
 }
 
-.nav-link:hover {
+.sidebar ul li a:hover {
   background-color: #444;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Contenido principal */
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+}
+
+.collapsed ~ .content {
+  margin-left: 0;
+}
+
+.courses-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.courses-table th,
+.courses-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.courses-table th {
+  background-color: #f4f4f4;
 }
 
 .logout-btn {
-  background: none;
+  background-color: #3498db;
   border: none;
-  color: inherit;
+  color: white;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
   text-align: left;
-  width: 100%;
-  padding: 15px 20px;
-  font-size: 16px;
-  transition: background-color 0.3s;
+}
+
+.logout-btn i {
+  margin-right: 10px;
 }
 
 .logout-btn:hover {
-  background-color: #444;
-}
-
-/* Main content */
-.main-content {
-  margin-left: 250px;
-  width: calc(100% - 250px);
-  padding: 20px;
-}
-
-.page-title {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-/* Botón crear curso */
-.btn-crear {
   background-color: #3498db;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 20px;
 }
 
-.btn-crear:hover {
-  background-color: #2980b9;
-}
-
-/* Tabla de cursos */
-.table-responsive {
-  overflow-x: auto;
-}
-
-.cursos-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.cursos-table th, .cursos-table td {
-  padding: 1rem;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-}
-
-.cursos-table th {
-  background-color: #f2f2f2;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
-}
-
-.cursos-table td {
-  font-size: 1rem;
-}
-
-/* Botones CRUD */
-.btn-crud {
-  background-color: #2ecc71;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 0 5px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-crud:hover {
-  background-color: #27ae60;
-}
-
-.btn-danger {
-  background-color: #e74c3c;
-}
-
-.btn-danger:hover {
-  background-color: #c0392b;
-}
-
-/* Responsividad */
+/* Estilos responsivos */
 @media (max-width: 768px) {
   .sidebar {
-    width: 200px;
-  }
-  
-  .main-content {
-    margin-left: 200px;
-    width: calc(100% - 200px);
-  }
-}
-
-@media (max-width: 576px) {
-  .sidebar {
-    position: absolute;
-    width: 100%;
-    height: auto;
-    top: 0;
-    left: -100%;
-    transition: left 0.3s ease;
+    transform: translateX(-250px);
   }
 
-  .dashboard-layout.active .sidebar {
-    left: 0;
+  .hamburger {
+    display: block;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
   }
 
-  .main-content {
+  .sidebar.collapsed {
+    transform: translateX(0);
+  }
+
+  .content {
     margin-left: 0;
-    width: 100%;
-    padding: 10px;
-  }
-
-  .btn-crear {
-    width: 100%;
-  }
-
-  .cursos-table {
-    font-size: 0.9rem;
-  }
-
-  .cursos-table th, .cursos-table td {
-    padding: 0.5rem;
   }
 }
 </style>
-
