@@ -7,7 +7,7 @@ import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import Services from '@/views/Website/Services.vue';
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
-import ReceptionistLayout from '@/views/Layout/Receptionist/ReceptionistLayout.vue';
+import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 import MangementPersonal from '@/views/UseCases/Admin/MangementPersonal/View.vue';
