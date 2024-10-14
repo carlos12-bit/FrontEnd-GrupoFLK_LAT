@@ -5,7 +5,7 @@ import { getSession, buscarRol } from '../auth'; // Importar funciones de autent
 import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
-import Services from '@/views/Website/Services.vue';arcial
+import Services from '@/views/Website/Services.vue';
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
@@ -13,11 +13,13 @@ import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.v
 import MangementPersonal from '@/views/UseCases/Admin/MangementPersonal/view.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
+import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
+
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/Services', component: Services },
+  { path: '/services', component: Services }, // corregido 'Services'
   // Rutas del dashboard de administrador con layout persistente
   {
     path: '/admin-dashboard',
@@ -35,45 +37,41 @@ const routes = [
       {
         path: 'MangementPersonal',
         component: MangementPersonal, // Vista de gestión de personal
-      },      
+      },
       {
-        path: 'ManageRequest',
+        path: 'manage-request',
         component: ManageRequest, // Vista de gestión de solicitudes
       },
       {
         path: 'ManageCourses',
         component: ManageCourses, // Vista de gestión de cursos
-      }
-    ]
+      },
+    ],
   },
 
   // Rutas para otros roles (Recepcionista y Asistente de Operaciones)
-  { 
-    path: '/receptionist-dashboard', 
-    component: ReceptionistLayout, 
+  {
+    path: '/receptionist-dashboard',
+    component: ReceptionistLayout,
     meta: { requiresAuth: true, role: 'Recepcionista' },
     children: [
       {
         path: 'home',
         component: AccessDenied, // Vista de inicio del dashboard
       },
-      {
-        path: 'home',
-        component: AccessDenied, // Vista de inicio del dashboard
-      }
-    ]
+    ],
   },
-  { 
-    path: '/operations-assistant-dashboard', 
-    component: OperationsAssistantLayout, 
+  {
+    path: '/operations-assistant-dashboard',
+    component: OperationsAssistantLayout,
     meta: { requiresAuth: true, role: 'Asistente de Operaciones' },
     children: [
       {
         path: 'home',
         component: AccessDenied, // Vista de inicio del dashboard
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
 
 // Crear el router
