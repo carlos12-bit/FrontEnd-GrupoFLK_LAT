@@ -7,21 +7,12 @@ import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import Services from '@/views/Website/Services.vue';arcial
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
-import ReceptionistLayout from '@/views/Layout/receptionist/ReceptionistLayout.vue';
+import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 import MangementPersonal from '@/views/UseCases/Admin/MangementPersonal/view.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
-
-import AccessDenied from '@/views/Security/AccessDenied.vue';
-import AdminLayout from '../views/Layout/Admin/AdminLayout.vue';
-import ReceptionistLayout from '../views/Layout/Receptionista/ReceptionistLayout.vue';
-import OperationsAssistantLayout from '../views/Layout/Op.Asist/OperationsAssistantLayout.vue';
-import ManagementServices from '../views/UseCases/Admin/ManagementServices/View.vue';
-import MangementPersonal from '../views/UseCases/Admin/MangementPersonal/view.vue';
-import ManageRequest from '../views/UseCases/ManageRequest/ManageRequest.vue';
-// Definir las rutas
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
