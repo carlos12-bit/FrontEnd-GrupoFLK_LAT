@@ -6,7 +6,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
           <h1 class="main-header">Gestión de Tipo de Inspección</h1>
           <el-card shadow="hover" class="gestion-card">
-            <ManagementTypesInspeccion />
+            <ListTypeInspeccion />
           </el-card>
         </el-col>
 
@@ -14,7 +14,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
           <h1 class="main-header">Gestión Tipo de Maquinaria</h1>
           <el-card shadow="hover" class="gestion-card">
-            <ManagementTypeMachinery />
+            <ListMachinery />
           </el-card>
         </el-col>
       </el-row>
@@ -23,13 +23,12 @@
 </template>
 
 <script>
-import ManagementTypesInspeccion from './ManagementTypesInspeccion/View.vue';
-import ManagementTypeMachinery from './ManagementTypeMachinery/View.vue';
-
+import ListTypeInspeccion from '../../../../components/ManagementTypesInspeccion/ListInspection.vue';
+import ListMachinery from '../../../../components/ManageTypeMachinery/ListMachinery.vue';
 export default {
   components: {
-    ManagementTypesInspeccion,
-    ManagementTypeMachinery,
+    ListTypeInspeccion,
+    ListMachinery,
   },
 };
 </script>

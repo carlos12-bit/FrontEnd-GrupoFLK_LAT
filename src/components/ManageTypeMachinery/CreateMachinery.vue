@@ -1,9 +1,9 @@
 <template>
-  <el-form :model="form" label-width="120px">
+  <el-form :model="form" label-width="120px" class="machinery-form">
     <el-form-item label="Descripción">
       <el-input v-model="form.descripcion" placeholder="Descripción"></el-input>
     </el-form-item>
-    <el-form-item>
+    <el-form-item class="form-actions">
       <el-button type="primary" class="neon-button" @click="handleSubmit">Guardar</el-button>
     </el-form-item>
   </el-form>
@@ -12,13 +12,13 @@
 <script>
 import { ref } from 'vue'
 import { supabase } from '@/supabase'
-import { GetUser } from '../../auth';
+import { GetUser } from '@/auth'
 
 export default {
   setup(props, { emit }) {
     const form = ref({
       descripcion: '',
-      userId: GetUser() // Asume que GetUser solo devuelve el ID
+      userId: GetUser() // Obtiene el ID del usuario actual para asignarlo a 'autor' y 'ultimo_autor'
     })
 
     const handleSubmit = async () => {
@@ -47,3 +47,30 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.machinery-form {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .machinery-form {
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .form-actions {
+    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  .neon-button {
+    width: 100%;
+  }
+}
+</style>

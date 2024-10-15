@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="delete-container">
     <p>¿Está seguro de que desea eliminar este tipo de maquinaria?</p>
-    <el-button type="danger" @click="handleDelete">Eliminar</el-button>
-    <el-button @click="$emit('close')">Cancelar</el-button>
+    <div class="delete-actions">
+      <el-button type="danger" @click="handleDelete">Eliminar</el-button>
+      <el-button @click="$emit('close')">Cancelar</el-button>
+    </div>
   </div>
 </template>
 
@@ -28,3 +30,25 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.delete-container {
+  text-align: center;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .delete-actions {
+    flex-direction: column;
+  }
+
+  .el-button {
+    width: 100%;
+  }
+}
+</style>
