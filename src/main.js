@@ -4,7 +4,6 @@ import router from './router'; // Importamos el router
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Bootstrap JS
 import './styles/custom.css'; // Estilos personalizados
-import 'datatables.net-dt/css/dataTables.dataTables.min.css'; // DataTables CSS
 
 // Importamos jQuery y DataTables
 import $ from 'jquery';

@@ -10,7 +10,7 @@ import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
-import MangementPersonal from '@/views/UseCases/Admin/MangementPersonal/view.vue';
+import MangementPersonal from '../views/UseCases/Admin/GestionarPersonal/View.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
