@@ -1,4 +1,3 @@
-<!-- src/components/DataTable.vue -->
 <template>
   <div class="data-table-container">
     <h2 class="text-center mb-4">Ejemplo de DataTable</h2>
@@ -7,18 +6,13 @@
       placeholder="Buscar por nombre o email"
       v-model="searchQuery"
       class="mb-3 search-input"
-
-
-      
     />
-
     <el-select v-model="itemsPerPage" class="mb-3 page-size-select" placeholder="Items por página">
       <el-option label="5" :value="5" />
       <el-option label="10" :value="10" />
       <el-option label="15" :value="15" />
       <el-option label="20" :value="20" />
     </el-select>
-
     <el-table :data="paginatedUsers" style="width: 100%" border>
       <el-table-column prop="id" label="ID" width="60" />
       <el-table-column
@@ -34,7 +28,6 @@
         :sort-method="(a, b) => a.email.localeCompare(b.email)"
       />
     </el-table>
-
     <el-pagination
       @current-change="currentPage = $event"
       :current-page="currentPage"
@@ -47,21 +40,12 @@
 </template>
 
 <script>
+import supabase from '@/supabase'
+
 export default {
   data() {
     return {
-      users: [
-        { id: 1, name: 'Juan Pérez', email: 'juan.perez@example.com' },
-        { id: 2, name: 'Ana Gómez', email: 'ana.gomez@example.com' },
-        { id: 3, name: 'Luis Martínez', email: 'luis.martinez@example.com' },
-        { id: 4, name: 'Laura Torres', email: 'laura.torres@example.com' },
-        { id: 5, name: 'Pedro Fernández', email: 'pedro.fernandez@example.com' },
-        { id: 6, name: 'Sara López', email: 'sara.lopez@example.com' },
-        { id: 7, name: 'Miguel Silva', email: 'miguel.silva@example.com' },
-        { id: 8, name: 'Clara Ruiz', email: 'clara.ruiz@example.com' },
-        { id: 9, name: 'Javier Castillo', email: 'javier.castillo@example.com' },
-        { id: 10, name: 'Teresa Mendoza', email: 'teresa.mendoza@example.com' },
-      ],
+      Inspectores: [],
       searchQuery: '',
       currentPage: 1,
       itemsPerPage: 5,
@@ -69,7 +53,7 @@ export default {
   },
   computed: {
     filteredUsers() {
-      return this.users.filter((user) => {
+      return this.Inspectores.filter((user) => {
         return (
           user.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
           user.email.toLowerCase().includes(this.searchQuery.toLowerCase())
@@ -81,6 +65,16 @@ export default {
       return this.filteredUsers.slice(start, start + this.itemsPerPage);
     },
   },
+  async created() {
+    let { data: inspector, error } = await supabase
+      .from('inspector')
+      .select('*')
+    if (error) {
+      console.error(error);
+    } else {
+      this.Inspectores = inspector;
+    }
+  }
 };
 </script>
 
