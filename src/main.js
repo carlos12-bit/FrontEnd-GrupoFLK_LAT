@@ -4,10 +4,10 @@ import router from './router'; // Importamos el router
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Bootstrap JS
 import './styles/custom.css'; // Estilos personalizados
-
 // Importamos jQuery y DataTables
 import $ from 'jquery';
 import 'datatables.net'; // DataTables JS
+import 'animate.css'; // Animaciones de Animate.css
 
 // AOS para animaciones de desplazamiento
 import AOS from 'aos';
