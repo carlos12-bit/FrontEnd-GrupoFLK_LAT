@@ -32,6 +32,27 @@
       </el-table-column>
     </el-table>
 
+    <!-- Contenedor de paginación -->
+    <div class="pagination-container">
+      <el-pagination
+        @current-change="handlePageChange"
+        :current-page="currentPage"
+        :page-size="itemsPerPage"
+        :total="filteredServicios.length"
+        layout="total, prev, pager, next"
+      />
+      <div class="select-with-message mt-1">
+        <span class="page-size-message">Mostrar</span>
+        <el-select v-model="itemsPerPage" @change="handleItemsPerPageChange" class="page-size-select" placeholder="Items por página">
+          <el-option label="5" :value="5" />
+          <el-option label="10" :value="10" />
+          <el-option label="15" :value="15" />
+          <el-option label="20" :value="20" />
+        </el-select>
+        <span class="page-size-message">registros</span>
+      </div>
+    </div>
+
     <!-- Modal para Registrar Servicio -->
     <el-dialog
       v-model="dialogVisible"
@@ -86,7 +107,7 @@ export default {
     const servicios = ref([]);
     const searchQuery = ref('');
     const currentPage = ref(1);
-    const itemsPerPage = ref(5);
+    const itemsPerPage = ref(5); // Default items per page
     const selectedService = ref(null);
 
     const openRegisterModal = () => {
@@ -94,7 +115,6 @@ export default {
     };
 
     const editService = async (serviceId) => {
-      // Obtener los datos actuales del servicio desde la base de datos por su ID
       const { data, error } = await supabase
         .from('tipo_de_inspeccion')
         .select('*')
@@ -107,7 +127,6 @@ export default {
         return;
       }
 
-      // Establecer el servicio seleccionado con los datos actuales
       selectedService.value = data;
       isEditModalVisible.value = true;
     };
@@ -156,6 +175,11 @@ export default {
       currentPage.value = page;
     };
 
+    const handleItemsPerPageChange = (value) => {
+      itemsPerPage.value = value;
+      currentPage.value = 1; // Reset to first page whenever items per page changes
+    };
+
     const exportToExcel = () => {
       const ws = XLSX.utils.json_to_sheet(servicios.value);
       const wb = XLSX.utils.book_new();
@@ -198,6 +222,7 @@ export default {
       filteredServicios,
       paginatedServicios,
       handlePageChange,
+      handleItemsPerPageChange,
       exportToExcel,
       confirmDeleteService,
     };

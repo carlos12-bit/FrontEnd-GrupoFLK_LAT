@@ -94,7 +94,7 @@
           layout="total, prev, pager, next"
           class="pagination"
         />
-        <div class="select-with-message mt-1" mt-1>
+        <div class="select-with-message mt-1">
           <span class="page-size-message">Mostrar</span>
           <el-select v-model="itemsPerPage" class="page-size-select" placeholder="Items por página">
             <el-option label="5" :value="5" />
