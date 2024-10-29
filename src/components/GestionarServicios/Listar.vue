@@ -6,91 +6,125 @@
       <button class="btn btn-success mx-3" @click="exportToExcel">Exportar a Excel</button>
     </div>
 
-    <!-- Barra de búsqueda -->
     <el-input
       placeholder="Buscar por servicio o maquinaria"
       v-model="searchQuery"
       class="mb-3 search-input"
     />
 
-    <!-- Tabla de datos -->
     <el-table :data="paginatedServicios" style="width: 100%" border>
       <el-table-column prop="id" label="ID" width="60" />
       <el-table-column
         prop="servicio"
         label="Servicio"
         sortable
-        :sort-method="(a, b) => a.servicio.localeCompare(b.servicio)"
       />
       <el-table-column
         prop="maquinaria"
         label="Maquinaria"
         sortable
-        :sort-method="(a, b) => a.maquinaria.localeCompare(b.maquinaria)"
       />
-
-      <!-- Columna de acciones -->
       <el-table-column label="Acciones" width="150">
         <template #default="scope">
-          <el-button size="mini" type="primary" @click="editService(scope.row)">Editar</el-button>
+          <el-button size="mini" type="primary" @click="editService(scope.row.id)">Editar</el-button>
           <el-button size="mini" type="danger" @click="deleteService(scope.row)">Eliminar</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- Contenedor de paginación -->
-    <div class="pagination-container">
-      <div class="empty-column"></div>
-      <el-pagination
-        @current-change="handlePageChange"
-        :current-page="currentPage"
-        :page-size="itemsPerPage"
-        :total="filteredServicios.length"
-        layout="total, prev, pager, next"
-        class="pagination"
-      />
-      <div class="select-with-message mt-1">
-        <span class="page-size-message">Mostrar</span>
-        <el-select v-model="itemsPerPage" class="page-size-select" placeholder="Items por página">
-          <el-option label="5" :value="5" />
-          <el-option label="10" :value="10" />
-          <el-option label="15" :value="15" />
-          <el-option label="20" :value="20" />
-        </el-select>
-        <span class="page-size-message">registros</span>
-      </div>
-    </div>
-  </div>
-      <!-- Modal para Registrar Servicio -->
-      <el-dialog
+    <!-- Modal para Registrar Servicio -->
+    <el-dialog
       v-model="dialogVisible"
       title="Registrar Nuevo Servicio"
       width="500px"
       :before-close="handleClose"
-      >
-      <!-- Componente de formulario de registro -->
+    >
       <Registrar @closeModal="dialogVisible = false" @refreshTable="fetchServicios" />
-      </el-dialog>
+    </el-dialog>
+
+    <!-- Modal para Editar Servicio -->
+    <el-dialog
+      v-model="isEditModalVisible"
+      title="Editar Servicio"
+      width="500px"
+      @close="closeEditModal"
+    >
+      <EditService :service="selectedService" @serviceUpdated="fetchServicios" @closeModal="closeEditModal" />
+    </el-dialog>
+
+    <!-- Modal para Confirmar Eliminación -->
+    <el-dialog
+      v-model="isDeleteModalVisible"
+      title="Eliminar Servicio"
+      width="400px"
+      @close="closeDeleteModal"
+    >
+      <p>¿Estás seguro de que deseas eliminar este servicio?</p>
+      <el-button type="danger" @click="confirmDeleteService">Eliminar</el-button>
+      <el-button @click="closeDeleteModal">Cancelar</el-button>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue';
 import supabase from '@/supabase';
+import * as XLSX from 'xlsx';
+import { GetUser } from '@/auth';
 import Registrar from './Registrar.vue';
+import EditService from './EditService.vue';
 
 export default {
   components: {
     Registrar,
+    EditService,
   },
   setup() {
     const dialogVisible = ref(false);
+    const isEditModalVisible = ref(false);
+    const isDeleteModalVisible = ref(false);
     const servicios = ref([]);
     const searchQuery = ref('');
     const currentPage = ref(1);
     const itemsPerPage = ref(5);
+    const selectedService = ref(null);
 
     const openRegisterModal = () => {
       dialogVisible.value = true;
+    };
+
+    const editService = async (serviceId) => {
+      // Obtener los datos actuales del servicio desde la base de datos por su ID
+      const { data, error } = await supabase
+        .from('tipo_de_inspeccion')
+        .select('*')
+        .eq('id', serviceId)
+        .single();
+
+      if (error) {
+        console.error('Error al obtener el servicio:', error.message);
+        alert('Error al cargar el servicio para edición');
+        return;
+      }
+
+      // Establecer el servicio seleccionado con los datos actuales
+      selectedService.value = data;
+      isEditModalVisible.value = true;
+    };
+
+    const closeEditModal = () => {
+      isEditModalVisible.value = false;
+      selectedService.value = null;
+    };
+
+    const deleteService = (service) => {
+      selectedService.value = service;
+      isDeleteModalVisible.value = true;
+    };
+
+    const closeDeleteModal = () => {
+      isDeleteModalVisible.value = false;
+      selectedService.value = null;
     };
 
     const handleClose = (done) => {
@@ -122,24 +156,56 @@ export default {
       currentPage.value = page;
     };
 
+    const exportToExcel = () => {
+      const ws = XLSX.utils.json_to_sheet(servicios.value);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Servicios');
+      XLSX.writeFile(wb, 'Servicios_de_Inspeccion.xlsx');
+    };
+
+    const confirmDeleteService = async () => {
+      const { error } = await supabase
+        .from('tipo_de_inspeccion')
+        .delete()
+        .eq('id', selectedService.value.id);
+      if (error) {
+        console.error('Error al eliminar servicio:', error.message);
+      } else {
+        alert('Servicio eliminado con éxito');
+        fetchServicios();
+        closeDeleteModal();
+      }
+    };
+
     onMounted(fetchServicios);
 
     return {
       dialogVisible,
+      isEditModalVisible,
+      isDeleteModalVisible,
       servicios,
       searchQuery,
       currentPage,
       itemsPerPage,
+      selectedService,
       openRegisterModal,
+      editService,
+      closeEditModal,
+      deleteService,
+      closeDeleteModal,
       handleClose,
       fetchServicios,
       filteredServicios,
       paginatedServicios,
       handlePageChange,
+      exportToExcel,
+      confirmDeleteService,
     };
   },
 };
 </script>
+
+
   
   <style scoped>
   .data-table-container {

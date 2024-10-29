@@ -1,12 +1,11 @@
 <template>
   <div>
-    <h3>Formulario de Registro de Servicio</h3>
-    <el-form ref="serviceForm" label-width="80px" class="service-form">
-      <el-form-item label="Nombre del Servicio">
+    <el-form ref="serviceForm" label-width="100px" class="service-form">
+      <el-form-item label="Nombre">
         <el-input v-model="service.nombre" placeholder="Ingrese nombre del servicio" />
       </el-form-item>
       
-      <el-form-item label="Tipo de Maquinaria">
+      <el-form-item label="Tipo_Maquinaria">
         <el-select v-model="service.tipo_de_maquinaria_id" placeholder="Seleccione un tipo de maquinaria">
           <el-option v-for="item in maquinariaOptions" :key="item.id" :label="item.descripcion" :value="item.id" />
         </el-select>
