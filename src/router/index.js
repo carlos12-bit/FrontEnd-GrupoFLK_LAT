@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { getSession, buscarRol } from '../auth';
+import { getSession, buscarRol } from '@/auth';
 
 import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
@@ -9,7 +9,7 @@ import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import GestionarServicios from '@/views/UseCases/Admin/GestionarServicios/view.vue';
-import GestionarPersonal from '../views/UseCases/Admin/GestionarPersonal/view.vue';
+import GestionarPersonal from '@/views/UseCases/Admin/GestionarPersonal/view.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue';
