@@ -54,6 +54,11 @@
           Gestionar Cursos
         </router-link>
       </el-menu-item>
+      <el-menu-item index="2-4">
+        <router-link class="nav-link" to="/admin-dashboard/ManageCredentials">
+          Gestionar Credenciales
+        </router-link>
+      </el-menu-item>
     </el-sub-menu>
 
     <!-- Botón de Cerrar Sesión -->

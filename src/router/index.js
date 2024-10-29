@@ -14,7 +14,8 @@ import MangementPersonal from '../views/UseCases/Admin/GestionarPersonal/View.vu
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
-
+import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/Details.vue'; // Importar Details.vue
+import ManageCredentials from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue'; // Importar Details.vue
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
@@ -39,12 +40,24 @@ const routes = [
         component: MangementPersonal, // Vista de gestión de personal
       },
       {
-        path: 'manage-request',
+        path: 'ManageRequest',
         component: ManageRequest, // Vista de gestión de solicitudes
       },
       {
         path: 'ManageCourses',
         component: ManageCourses, // Vista de gestión de cursos
+      },
+      {
+        path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud
+        name: 'Details',  // Nombre de la ruta que estás usando
+        component: Details,
+         
+      }, 
+      {
+        path: 'ManageCredentials',  // Ruta para mostrar los detalles de una solicitud
+          // Nombre de la ruta que estás usando
+        component: ManageCredentials,
+         
       },
     ],
   },
