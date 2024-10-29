@@ -21,12 +21,12 @@
      
         <!-- Subgrupo de Gestión Operativa con opciones -->
         <el-menu-item index="1-1">
-          <router-link class="nav-link" to="/admin-dashboard/ManagementServices">
+          <router-link class="nav-link" to="/admin-dashboard/GestionarServicios">
             Gestionar Servicios
           </router-link>
         </el-menu-item>
         <el-menu-item index="1-2">
-          <router-link class="nav-link" to="/admin-dashboard/MangementPersonal">
+          <router-link class="nav-link" to="/admin-dashboard/GestionarPersonal">
             Gestionar Personal
           </router-link>
         </el-menu-item>
@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
 <style scoped>
 /* Drawer negro con diseño corporativo */
 .el-menu-vertical-demo {
-  background-color: #6c6c70a9; /* Negro elegante */
+  background-color: #2e8332a9; /* Negro elegante */
   color: #000000; /* Naranja corporativo */
   border-right: none;
   transition: all 0.3s ease-in-out;

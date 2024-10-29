@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { getSession, buscarRol } from '../auth'; // Importar funciones de autenticación
+import { getSession, buscarRol } from '../auth';
 
-// Importar componentes y layouts
 import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
@@ -9,34 +8,34 @@ import Services from '@/views/Website/Services.vue';
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
-import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
-import MangementPersonal from '../views/UseCases/Admin/GestionarPersonal/View.vue';
+import GestionarServicios from '@/views/UseCases/Admin/GestionarServicios/view.vue';
+import GestionarPersonal from '../views/UseCases/Admin/GestionarPersonal/view.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
-import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
+import AccessDenied from '@/views/Security/AccessDenied.vue';
 
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/services', component: Services }, // corregido 'Services'
-  // Rutas del dashboard de administrador con layout persistente
+  { path: '/services', component: Services }, 
+
   {
     path: '/admin-dashboard',
-    component: AdminLayout, // El layout principal del administrador que siempre se muestra
+    component: AdminLayout,
     meta: { requiresAuth: true, role: 'Administrador' },
     children: [
       {
         path: 'home',
-        component: AccessDenied, // Vista de inicio del dashboard
+        component: AccessDenied,
       },
       {
-        path: 'ManagementServices',
-        component: ManagementServices, // Vista de gestión de servicios
+        path: 'GestionarServicios',
+        component: GestionarServicios,
       },
       {
-        path: 'MangementPersonal',
-        component: MangementPersonal, // Vista de gestión de personal
+        path: 'GestionarPersonal',
+        component: GestionarPersonal, // Vista de gestión de personal
       },
       {
         path: 'manage-request',

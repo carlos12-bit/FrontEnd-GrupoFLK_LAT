@@ -1,6 +1,6 @@
 <template>
     <div class="data-table-container">
-      <h2 class="text-center mb-4">Historial de inspectores Registrados</h2>
+      <h2 class="text-center mb-4">Historial de Certificadores Registrados</h2>
       <button class="btn btn-primary" @click="exportToExcel">Exportar a Excel</button>
   
       <!-- Barra de búsqueda -->
