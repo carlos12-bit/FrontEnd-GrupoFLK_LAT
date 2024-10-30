@@ -4,12 +4,29 @@
     <div v-if="solicitud" class="detalle-solicitud">
       <p><strong>Nombre Completo:</strong> {{ solicitud.nombre_completo }}</p>
       <p><strong>DNI:</strong> {{ solicitud.dni }}</p>
-      <p><strong>Fecha de Solicitud:</strong> {{ new Date(solicitud.fecha_solicitud).toLocaleDateString() }}</p>
-      <p><strong>Curso Solicitado:</strong> {{ solicitud.curso_solicitado }}</p>
-      <p><strong>Número Telefónico:</strong> {{ solicitud.nro_telefonico }}</p>
+      <p><strong>Fecha de Nacimiento:</strong> {{ new Date(solicitud.fecha_nacimiento).toLocaleDateString() }}</p>
       <p><strong>Dirección:</strong> {{ solicitud.direccion }}</p>
+      <p><strong>Número Telefónico:</strong> {{ solicitud.nro_telefonico }}</p>
+      <p><strong>Teléfono de Contacto:</strong> {{ solicitud.telefono_contacto }}</p>
       <p><strong>Correo Electrónico:</strong> {{ solicitud.correo_electronico }}</p>
       <p><strong>Nacionalidad:</strong> {{ solicitud.nacionalidad }}</p>
+      <p><strong>Ocupación Actual:</strong> {{ solicitud.ocupacion_actual }}</p>
+      <p><strong>Nombre de Empresa:</strong> {{ solicitud.nombre_empresa }}</p>
+      <p><strong>Cargo Actual:</strong> {{ solicitud.cargo_actual }}</p>
+      <p><strong>Experiencia con Maquinaria:</strong> {{ solicitud.experiencia_maquinaria }}</p>
+      <p><strong>Nombre del Contacto de Emergencia:</strong> {{ solicitud.nombre_contacto_emergencia }}</p>
+      <p><strong>Relación con Contacto de Emergencia:</strong> {{ solicitud.relacion_contacto_emergencia }}</p>
+      <p><strong>Teléfono de Contacto de Emergencia:</strong> {{ solicitud.telefono_contacto_emergencia }}</p>
+      <p><strong>Curso Solicitado:</strong> {{ solicitud.Cursos.titulo_curso }}</p>
+      <p><strong>Fecha de Inicio Preferida:</strong> {{ new Date(solicitud.fecha_inicio_preferida).toLocaleDateString() }}</p>
+      <p><strong>Turno Preferido:</strong> {{ solicitud.turno_preferido }}</p>
+      <p><strong>Alergias o Condiciones:</strong> {{ solicitud.alergias_condiciones }}</p>
+      <p><strong>Necesidades Especiales:</strong> {{ solicitud.necesidades_especiales }}</p>
+      <p><strong>Consentimiento de Participación:</strong> {{ solicitud.consentimiento_participacion ? 'Sí' : 'No' }}</p>
+      <p><strong>Autorización de Imagen:</strong> {{ solicitud.autorizacion_imagen ? 'Sí' : 'No' }}</p>
+      <p><strong>Fecha de Solicitud:</strong> {{ new Date(solicitud.fecha_solicitud).toLocaleDateString() }}</p>
+      <p><strong>Consentimiento para Tratamiento de Datos:</strong> {{ solicitud.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
+      <p><strong>Firma:</strong> {{ solicitud.firma }}</p>
       
       <!-- Mostrar imágenes adjuntas si existen -->
       <div v-if="solicitud.dni_adjunto">
@@ -62,7 +79,10 @@ export default {
     // Obtenemos los detalles de la solicitud seleccionada usando el id pasado por params
     let { data: solicitud, error } = await supabase
       .from('Solicitud_Capacitacion')
-      .select('*')
+      .select(`
+        *,
+        Cursos (titulo_curso)
+      `)
       .eq('id_solicitud', this.$route.params.id)
       .single();
 
@@ -205,4 +225,3 @@ export default {
   justify-content: space-between;
 }
 </style>
-
