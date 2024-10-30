@@ -1,6 +1,16 @@
 <template>
   <div class="container">
     <h1 class="page-title">Gestión de Solicitudes de Capacitación</h1>
+
+    <!-- Control de número de registros por página -->
+    <div class="pagination-controls">
+      <label for="registrosPorPagina">Mostrar</label>
+      <select v-model="registrosPorPagina" id="registrosPorPagina">
+        <option v-for="num in [5, 10, 20]" :key="num" :value="num">{{ num }}</option>
+      </select>
+      <span>registros</span>
+    </div>
+
     <div class="table-container">
       <table class="solicitudes-table">
         <thead>
@@ -12,7 +22,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="solicitud in solicitudes" :key="solicitud.id_solicitud">
+          <tr v-for="solicitud in solicitudesPaginadas" :key="solicitud.id_solicitud">
             <td>{{ obtenerTituloCurso(solicitud.Fk_Curso) || 'Sin curso' }}</td>
             <td>{{ solicitud.fecha_solicitud ? new Date(solicitud.fecha_solicitud).toLocaleDateString() : 'Sin fecha' }}</td>
             <td>
@@ -26,6 +36,15 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Controles de paginación -->
+    <div class="pagination">
+      <span>Mostrando {{ paginaActual * registrosPorPagina - registrosPorPagina + 1 }} a {{ Math.min(paginaActual * registrosPorPagina, solicitudes.length) }} de {{ solicitudes.length }} registros</span>
+      <button @click="paginaActual = 1" :disabled="paginaActual === 1">Primero</button>
+      <button @click="paginaActual--" :disabled="paginaActual === 1">Anterior</button>
+      <button @click="paginaActual++" :disabled="paginaActual >= totalPaginas">Siguiente</button>
+      <button @click="paginaActual = totalPaginas" :disabled="paginaActual >= totalPaginas">Último</button>
     </div>
 
     <!-- Sección de Dashboard de Solicitudes Aceptadas -->
@@ -56,6 +75,29 @@
         <p><strong>Curso:</strong> {{ obtenerTituloCurso(detalleSolicitud?.Fk_Curso) || 'Sin curso' }}</p>
         <p><strong>Fecha de Solicitud:</strong> {{ detalleSolicitud?.fecha_solicitud ? new Date(detalleSolicitud.fecha_solicitud).toLocaleDateString() : 'Sin fecha' }}</p>
         <p><strong>Solicitante:</strong> {{ detalleSolicitud?.nombre_completo }}</p>
+        <p><strong>Número Telefónico:</strong> {{ detalleSolicitud?.nro_telefonico }}</p>
+        <p><strong>DNI:</strong> {{ detalleSolicitud?.dni }}</p>
+        <p><strong>Fecha de Nacimiento:</strong> {{ detalleSolicitud?.fecha_nacimiento ? new Date(detalleSolicitud.fecha_nacimiento).toLocaleDateString() : 'Sin fecha' }}</p>
+        <p><strong>Dirección:</strong> {{ detalleSolicitud?.direccion }}</p>
+        <p><strong>Teléfono de Contacto:</strong> {{ detalleSolicitud?.telefono_contacto }}</p>
+        <p><strong>Correo Electrónico:</strong> {{ detalleSolicitud?.correo_electronico }}</p>
+        <p><strong>Nacionalidad:</strong> {{ detalleSolicitud?.nacionalidad }}</p>
+        <p><strong>Ocupación Actual:</strong> {{ detalleSolicitud?.ocupacion_actual }}</p>
+        <p><strong>Nombre de Empresa:</strong> {{ detalleSolicitud?.nombre_empresa }}</p>
+        <p><strong>Cargo Actual:</strong> {{ detalleSolicitud?.cargo_actual }}</p>
+        <p><strong>Experiencia con Maquinaria:</strong> {{ detalleSolicitud?.experiencia_maquinaria }}</p>
+        <p><strong>Contacto de Emergencia:</strong> {{ detalleSolicitud?.nombre_contacto_emergencia }}</p>
+        <p><strong>Relación de Contacto:</strong> {{ detalleSolicitud?.relacion_contacto_emergencia }}</p>
+        <p><strong>Teléfono de Emergencia:</strong> {{ detalleSolicitud?.telefono_contacto_emergencia }}</p>
+        <p><strong>Fecha de Inicio Preferida:</strong> {{ detalleSolicitud?.fecha_inicio_preferida ? new Date(detalleSolicitud.fecha_inicio_preferida).toLocaleDateString() : 'Sin fecha' }}</p>
+        <p><strong>Turno Preferido:</strong> {{ detalleSolicitud?.turno_preferido }}</p>
+        <p><strong>Alergias o Condiciones:</strong> {{ detalleSolicitud?.alergias_condiciones }}</p>
+        <p><strong>Necesidades Especiales:</strong> {{ detalleSolicitud?.necesidades_especiales }}</p>
+        <p><strong>Consentimiento de Participación:</strong> {{ detalleSolicitud?.consentimiento_participacion ? 'Sí' : 'No' }}</p>
+        <p><strong>Autorización de Imagen:</strong> {{ detalleSolicitud?.autorizacion_imagen ? 'Sí' : 'No' }}</p>
+        <p><strong>Consentimiento para Tratamiento de Datos:</strong> {{ detalleSolicitud?.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
+        <p><strong>Firma:</strong> {{ detalleSolicitud?.firma }}</p>
+
         <button @click="cerrarModal" class="btn-cerrar-modal">Cerrar</button>
       </div>
     </div>
@@ -74,8 +116,20 @@ export default {
       solicitudesAceptadas: [],
       modalVisible: false,
       detalleSolicitud: null,
+      paginaActual: 1,
+      registrosPorPagina: 5,
       cardIndex: 0 // Índice para el desplazamiento de una tarjeta a la vez
     };
+  },
+  computed: {
+    totalPaginas() {
+      return Math.ceil(this.solicitudes.length / this.registrosPorPagina);
+    },
+    solicitudesPaginadas() {
+      const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
+      const fin = inicio + this.registrosPorPagina;
+      return this.solicitudes.slice(inicio, fin);
+    }
   },
   async mounted() {
     let { data: solicitudes, error: errorSolicitudes } = await supabase
@@ -166,6 +220,17 @@ export default {
   font-weight: bold;
 }
 
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pagination-controls label,
+.pagination-controls span {
+  margin-right: 0.5rem;
+}
+
 .table-container {
   overflow-x: auto;
 }
@@ -206,6 +271,35 @@ export default {
 
 .btn-ver:hover {
   background-color: #27ae60;
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.pagination button:hover:enabled {
+  background-color: #2980b9;
 }
 
 /* Dashboard de Solicitudes Aceptadas */
@@ -269,16 +363,21 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .modal-content {
   background: #fff;
   padding: 2rem;
   border-radius: 10px;
-  max-width: 500px;
+  max-width: 700px; /* Mayor ancho */
   width: 90%;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  max-height: 90vh;
+  padding: 2rem 3rem; /* Espaciado adicional */
+  animation: slideDown 0.3s ease-in-out;
 }
 
 .modal-content h3 {
@@ -305,5 +404,24 @@ export default {
 
 .btn-cerrar-modal:hover {
   background-color: #c0392b;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 </style>

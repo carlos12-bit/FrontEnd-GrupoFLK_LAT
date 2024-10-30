@@ -12,10 +12,11 @@ import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssista
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 import MangementPersonal from '../views/UseCases/Admin/GestionarPersonal/View.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
-import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
+import ManageCourses from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCourses/View.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
 import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/Details.vue'; // Importar Details.vue
 import ManageCredentials from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue'; // Importar Details.vue
+import ScheduleTraining from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/ScheduleTraining.vue';
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
@@ -57,6 +58,12 @@ const routes = [
         path: 'ManageCredentials',  // Ruta para mostrar los detalles de una solicitud
           // Nombre de la ruta que estás usando
         component: ManageCredentials,
+         
+      },
+      {
+        path: 'ScheduleTraining',  // Ruta para mostrar los detalles de una solicitud
+          // Nombre de la ruta que estás usando
+        component: ScheduleTraining,
          
       },
     ],
