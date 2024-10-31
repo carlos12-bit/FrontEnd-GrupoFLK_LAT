@@ -13,7 +13,7 @@ import GestionarPersonal from '@/views/UseCases/Admin/GestionarPersonal/view.vue
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue';
-
+import InspeccionesProgramadas from '@/views/UseCases/Recepcionist/InspeccionesProgramadas/view.vue';
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
@@ -57,6 +57,10 @@ const routes = [
       {
         path: 'home',
         component: AccessDenied, // Vista de inicio del dashboard
+      },      
+      {
+        path: 'InspeccionesProgramadas',
+        component: InspeccionesProgramadas, // Vista de inicio del dashboard
       },
     ],
   },
