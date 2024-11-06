@@ -1,6 +1,8 @@
 <template>
   <div class="container">
     <h1 class="page-title">Gestión de Cursos</h1>
+    <!-- Botón para redirigir al formulario de creación de cursos -->
+    <button @click="goToCreateCourse" class="btn-create">Crear Curso</button>
     <table class="courses-table">
       <thead>
         <tr>
@@ -37,9 +39,11 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/supabase.js';
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
+    const router = useRouter(); // Inicializar el router para navegación
     const cursos = ref([]);
     const formadores = ref([]);
     const instructores = ref([]);
@@ -89,6 +93,10 @@ export default {
       alert(`Detalles del curso: ${curso.titulo_curso}`);
     };
 
+    const goToCreateCourse = () => {
+      router.push('ManageCourses/Create'); // Redirigir al formulario de creación de curso
+    };
+
     onMounted(() => {
       fetchCourses();
       fetchFormadores();
@@ -102,7 +110,8 @@ export default {
       getNombreInstructor,
       getNombreUbicacion,
       getNombreUbicacionPractica,
-      viewCourse
+      viewCourse,
+      goToCreateCourse
     };
   }
 };
@@ -123,6 +132,21 @@ export default {
   color: #333;
   text-align: center;
   margin-bottom: 1rem;
+}
+
+/* Estilo del botón "Crear Curso" */
+.btn-create {
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.btn-create:hover {
+  background-color: #2980b9;
 }
 
 .courses-table {
@@ -154,3 +178,4 @@ export default {
   background-color: #2980b9;
 }
 </style>
+
