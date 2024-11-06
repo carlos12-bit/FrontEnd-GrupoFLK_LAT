@@ -14,7 +14,7 @@
     <el-sub-menu index="1">
       <template #title>
         <el-icon><location /></el-icon>
-        <span>Navigator One</span>
+        <span>Gestionar Usuario</span>
       </template>
       <el-menu-item-group>
         <template #title><span>Group One</span></template>
@@ -64,9 +64,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { supabase } from '@/supabase'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { supabase } from '@/supabase';
+import { useRouter } from 'vue-router';
 
 // Importar íconos de Element Plus
 import {
@@ -74,7 +74,7 @@ import {
   Menu as IconMenu,
   Location,
   Setting,
-} from '@element-plus/icons-vue'
+} from '@element-plus/icons-vue';
 
 // Estado para controlar si el menú está colapsado o no
 const isCollapse = ref(false)

@@ -7,6 +7,7 @@
     <CarouselSection />
     <FAQSection />
     <FooterSection />
+    <RequestTraining/>
 </template>
 
 <script>
@@ -18,6 +19,7 @@ import WhyChooseUs from '@/components/Website/Home/WhyChooseUs.vue';
 import FAQSection from '@/components/Website/Home/FAQSection.vue';
 import FooterSection from '@/components/Website/Home/FooterSection.vue';
 import Services from '@/components/Website/Home/Services.vue';
+//import RequestTraining from '@/components/Website/Home/RequestTraining.vue';
 export default {
   name: 'Home',
   components: {
@@ -28,7 +30,8 @@ export default {
     WhyChooseUs,
     FAQSection,
     FooterSection,
-    Services
+    Services,
+    //RequestTraining
   }
 };
 </script>

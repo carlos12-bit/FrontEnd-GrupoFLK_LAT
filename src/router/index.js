@@ -6,13 +6,16 @@ import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import Services from '@/views/Website/Services.vue';
+import RequestTraining from '@/views/Website/RequestTraining.vue'
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
-import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
+import ReceptionistLayout from '@/views/Layout/Receptionist/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
+import OperatorLayout from '@/views/Layout/Operator/OperatorLayout.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
 import MangementPersonal from '../views/UseCases/Admin/GestionarPersonal/View.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
+import CourseMaterials from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Operator/CourseMaterials/view.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
 
 const routes = [
@@ -20,6 +23,9 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/register', component: Register },
   { path: '/services', component: Services }, // corregido 'Services'
+  { path: '/RequestTraining', component: RequestTraining },
+ 
+ 
   // Rutas del dashboard de administrador con layout persistente
   {
     path: '/admin-dashboard',
@@ -61,6 +67,7 @@ const routes = [
       },
     ],
   },
+
   {
     path: '/operations-assistant-dashboard',
     component: OperationsAssistantLayout,
@@ -70,6 +77,23 @@ const routes = [
         path: 'home',
         component: AccessDenied, // Vista de inicio del dashboard
       },
+    ],
+  },
+
+  {
+    path: '/operator-dashboard',
+    component: OperatorLayout,
+    meta: { requiresAuth: true, role: 'Operador' },
+    children: [
+      {
+        path: 'home',
+        component: AccessDenied, // Vista de inicio del dashboard
+      },
+      {
+        path: 'CourseMaterials',
+        component: CourseMaterials, // Vista de inicio del dashboard
+      },
+   
     ],
   },
 ];

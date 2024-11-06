@@ -77,12 +77,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { supabase } from '@/supabase'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { supabase } from '@/supabase';
+import { useRouter } from 'vue-router';
 
 // Importar íconos de Element Plus
-import { Document, Menu as IconMenu, Location, Setting, User } from '@element-plus/icons-vue'
+import { Document, Menu as IconMenu, Location, Setting, User } from '@element-plus/icons-vue';
 
 // Estado para controlar si el menú está colapsado o no
 const isCollapse = ref(false)
