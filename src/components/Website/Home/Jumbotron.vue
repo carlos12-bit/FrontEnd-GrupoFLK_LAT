@@ -1,19 +1,13 @@
 <template>
-   <div class="jumbotron text-center">
+  <div class="jumbotron text-center">
     <div class="overlay"></div>
     <h1 class="display-4">Servicios de calidad</h1>
     <p class="lead">Ofrecemos servicios de inspección, capacitación y certificación.</p>
     <hr class="my-4" style="border-color: #BF5630;">
-    
-    <div class="button-group">
-      <router-link to="/services" class="btn btn-yellow btn-lg">Nuestros Servicios</router-link>
-      <a href="https://wa.me/51966401791?text=Hola%2C%20Quisiera%20solicitar%20Informes" target="_blank" class="btn btn-whatsapp">
-        <i class="fab fa-whatsapp"></i> Contáctanos por WhatsApp
-      </a>
-      <router-link to="/RequestTraining" class="btn btn-read btn-lg">Solicitar Capacitación</router-link>
-    </div>
-    
-    <hr class="my-4" style="border-color: #FF8C42;">
+    <router-link to="/services" class="btn btn-yellow btn-lg">Nuestros Servicios</router-link>
+    <a href="https://wa.me/51966401791?text=Hola%2C%20Quisiera%20solicitar%20Informes" target="_blank" class="btn btn-whatsapp">
+      <i class="fab fa-whatsapp"></i> Contáctanos por WhatsApp
+    </a>
   </div>
 </template>
 
@@ -24,16 +18,6 @@ export default {
 </script>
 
 <style scoped>
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 10px; /* Ajusta el valor para acercar o separar los botones */
-  flex-wrap: wrap; /* Permite que los botones se ajusten en pantallas pequeñas */
-}
-
-.btn-read, .btn-yellow, .btn-whatsapp {
-  margin-top: 0; /* Elimina el margen superior para que los botones estén alineados */
-}
 .jumbotron {
   position: relative;
   background-image: url('/src/assets/Portada.png'); /* Reemplaza con la ruta correcta de tu imagen */
@@ -61,23 +45,7 @@ export default {
   z-index: 2;
   margin-bottom: 1rem;
 }
-/* Botón rojo para "Solicitar Capacitacion" */
 
-.btn-read {
-  background-color: #FF8C42;
-  color: white;
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
-  display: inline-block;
-  gap: 30px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-read:hover {
-  background-color: #e67e34;
-  color: white;
-}
 /* Botón amarillo para "Nuestros Servicios" */
 .btn-yellow {
   background-color: #FFC107;
