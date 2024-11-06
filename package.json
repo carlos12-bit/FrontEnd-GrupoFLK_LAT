@@ -28,7 +28,8 @@
     "tabulator-tables": "^6.3.0",
     "uuid": "^10.0.0",
     "vue": "^3.4.21",
-    "vue-router": "^4.4.3"
+    "vue-router": "^4.4.3",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

@@ -10,13 +10,16 @@ import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
 import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
-import MangementPersonal from '../views/UseCases/Admin/GestionarPersonal/View.vue';
+import MangementPersonal from '@/views/UseCases/Admin/GestionarPersonal/View.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
-import ManageCourses from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCourses/View.vue';
+import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
-import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/Details.vue'; // Importar Details.vue
-import ManageCredentials from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue'; // Importar Details.vue
-import ScheduleTraining from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/ScheduleTraining.vue';
+import Details from '@/components/ManageRequest/Details.vue'; // Importar Details.vue
+import ManageCredentials from '@/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue'; // Importar Details.vue
+import ScheduleTraining from '@/components/ManageRequest/ScheduleTraining.vue';
+import RegisterInstructor from '@/views/UseCases/Recepcionist/ManageUsers/RegisterInstructor/View.vue'; // Recepcionista
+import RegisterOperator from '@/views/UseCases/Recepcionist/ManageUsers/RegisterOperator/View.vue'; // Recepcionista
+import RegisterTrainer from '@/views/UseCases/Recepcionist/ManageUsers/RegisterTrainer/View.vue'; // Recepcionista
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
@@ -79,6 +82,18 @@ const routes = [
         path: 'home',
         component: AccessDenied, // Vista de inicio del dashboard
       },
+      {
+        path: 'RegisterInstructor',
+        component: RegisterInstructor, // Vista de Registrar Instructor
+      },
+      {
+        path: 'RegisterOperator',
+        component: RegisterOperator, // Vista de Registrar Operador
+      },
+      {
+        path: 'RegisterTrainer',
+        component: RegisterTrainer, // Vista de Registrar Formador
+      }
     ],
   },
   {
