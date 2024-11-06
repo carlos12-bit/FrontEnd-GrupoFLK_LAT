@@ -142,7 +142,6 @@ export default {
     const fecha_hora_fin_teoria = ref(null);
     const fecha_hora_inicio_practica = ref(null);
     const fecha_hora_fin_practica = ref(null);
-
     const docentesTeoria = ref([]);
     const docentesPractica = ref([]);
     const ubicaciones = ref([]); // Ubicaciones obtenidas de la base de datos
