@@ -12,8 +12,6 @@
           <th>Docente Práctica</th>
           <th>Ubicación Teoría</th>
           <th>Ubicación Práctica</th>
-          <th>Fecha Inicio Teoría</th>
-          <th>Fecha Fin Teoría</th>
           <th>Opciones</th>
         </tr>
       </thead>
@@ -25,10 +23,10 @@
           <td>{{ getNombreInstructor(curso.Fk_docentepractico) }}</td>
           <td>{{ getNombreUbicacion(curso.Fk_ubicacion_teoria) }}</td>
           <td>{{ getNombreUbicacionPractica(curso.Fk_ubicacion_practica) }}</td>
-          <td>{{ new Date(curso.fecha_hora_inicio_teoria).toLocaleDateString() }}</td>
-          <td>{{ new Date(curso.fecha_hora_fin_teoria).toLocaleDateString() }}</td>
           <td>
             <button @click="viewCourse(curso)" class="view-btn">Ver</button>
+            <button @click="goToEditCourse(curso.Pk_Curso)" class="edit-btn">Editar</button>
+            <button @click="deleteCourse(curso.Pk_Curso)" class="delete-btn">Eliminar</button>
           </td>
         </tr>
       </tbody>
@@ -43,7 +41,7 @@ import { useRouter } from 'vue-router';
 
 export default {
   setup() {
-    const router = useRouter(); // Inicializar el router para navegación
+    const router = useRouter();
     const cursos = ref([]);
     const formadores = ref([]);
     const instructores = ref([]);
@@ -86,7 +84,7 @@ export default {
 
     const getNombreUbicacionPractica = (fk_ubicacion_practica) => {
       const ubicacion = ubicaciones.value.find(u => u.Pk_Ubicacion === fk_ubicacion_practica);
-      return ubicacion && ubicacion.tipo_ubicacion === 'presencial' ? ubicacion.nombre_ubicacion : 'Sin asignar';
+      return ubicacion && ubicacion.tipo_ubicacion === 'Practica' ? ubicacion.nombre_ubicacion : 'Sin asignar';
     };
 
     const viewCourse = (curso) => {
@@ -95,6 +93,20 @@ export default {
 
     const goToCreateCourse = () => {
       router.push('ManageCourses/Create'); // Redirigir al formulario de creación de curso
+    };
+
+    const goToEditCourse = (id) => {
+      router.push({ path: 'ManageCourses/Edit', query: { id } }); // Asegúrate de que 'id' se pase correctamente en la query
+    };
+
+    const deleteCourse = async (id) => {
+      const { error } = await supabase.from('Cursos').delete().eq('Pk_Curso', id);
+      if (!error) {
+        cursos.value = cursos.value.filter(curso => curso.Pk_Curso !== id);
+        alert('Curso eliminado con éxito');
+      } else {
+        alert('Error al eliminar el curso');
+      }
     };
 
     onMounted(() => {
@@ -111,7 +123,9 @@ export default {
       getNombreUbicacion,
       getNombreUbicacionPractica,
       viewCourse,
-      goToCreateCourse
+      goToCreateCourse,
+      goToEditCourse,
+      deleteCourse
     };
   }
 };
@@ -165,17 +179,17 @@ export default {
   font-weight: bold;
 }
 
-.view-btn {
+.view-btn, .edit-btn, .delete-btn {
   background-color: #3498db;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
+  margin-right: 5px;
 }
 
-.view-btn:hover {
+.view-btn:hover, .edit-btn:hover, .delete-btn:hover {
   background-color: #2980b9;
 }
 </style>
-

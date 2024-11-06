@@ -18,6 +18,7 @@ import Details from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequ
 import ManageCredentials from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue'; // Importar Details.vue
 import ScheduleTraining from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageRequest/ScheduleTraining.vue';
 import Create  from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageCourses/Create.vue'
+import Edit  from '/workspaces/FrontEnd-GrupoFLK_LAT/src/components/ManageCourses/Edit.vue'
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
@@ -53,6 +54,11 @@ const routes = [
         path: 'ManageCourses/Create',
         name:'Create',
         component: Create, // Vista de gestión de cursos
+      },
+      {
+        path: 'ManageCourses/Edit',
+        name:'Edit',
+        component: Edit, // Vista de gestión de cursos
       },
       {
         path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud

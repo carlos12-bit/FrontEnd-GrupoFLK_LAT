@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="form-container">
     <h3>Crear Curso</h3>
     <form @submit.prevent="createCourse">
@@ -6,16 +6,6 @@
       <div class="form-group">
         <label for="titulo_curso">Título del Curso:</label>
         <input v-model="titulo_curso" type="text" id="titulo_curso" required />
-      </div>
-
-      <!-- Modo de Curso -->
-      <div class="form-group">
-        <label for="modo_curso">Modo del Curso:</label>
-        <select v-model="Fk_modo_curso" id="modo_curso" required>
-          <option v-for="modo in modosCurso" :key="modo.Pk_modocurso" :value="modo.Pk_modocurso">
-            {{ modo.nombre_modo }}
-          </option>
-        </select>
       </div>
 
       <!-- Docente Teoría -->
@@ -82,16 +72,6 @@
         <input v-model="fecha_hora_fin_practica" type="datetime-local" id="fecha_hora_fin_practica" required />
       </div>
 
-      <!-- Asignatura -->
-      <div class="form-group">
-        <label for="asignatura">Asignatura:</label>
-        <select v-model="Fk_asignatura" id="asignatura" required>
-          <option v-for="asignatura in asignaturas" :key="asignatura.Pk_Asignatura" :value="asignatura.Pk_Asignatura">
-            {{ asignatura.Nombre }}
-          </option>
-        </select>
-      </div>
-
       <!-- Botón para crear curso -->
       <button type="submit" class="btn-create">Crear Curso</button>
     </form>
@@ -107,7 +87,6 @@ export default {
   setup() {
     const router = useRouter();
     const titulo_curso = ref('');
-    const Fk_modo_curso = ref(null);
     const Fk_docenteteoria = ref(null);
     const Fk_docentepractico = ref(null);
     const Fk_ubicacion_teoria = ref('');
@@ -116,19 +95,11 @@ export default {
     const fecha_hora_fin_teoria = ref(null);
     const fecha_hora_inicio_practica = ref(null);
     const fecha_hora_fin_practica = ref(null);
-    const Fk_asignatura = ref(null);
 
-    const modosCurso = ref([]);
     const docentesTeoria = ref([]);
     const docentesPractica = ref([]);
     const ubicacionesTeoria = ref([]);
     const ubicacionesPractica = ref([]);
-    const asignaturas = ref([]);
-
-    const fetchModosCurso = async () => {
-      let { data: modos, error } = await supabase.from('Modo_Curso').select('*');
-      if (!error) modosCurso.value = modos;
-    };
 
     const fetchDocentesTeoria = async () => {
       let { data: docentes, error } = await supabase
@@ -151,24 +122,15 @@ export default {
     const fetchUbicaciones = async () => {
       let { data: ubicaciones, error } = await supabase.from('Ubicaciones').select('*');
       if (!error) {
-        ubicacionesTeoria.value = ubicaciones.filter(u => u.tipo_ubicacion === 'teorica');
-        ubicacionesPractica.value = ubicaciones.filter(u => u.tipo_ubicacion === 'practica');
-      }
-    };
-
-    const fetchAsignaturas = async () => {
-      let { data: asignaturasData, error } = await supabase.from('Asignatura').select('*');
-      if (!error) {
-        asignaturas.value = asignaturasData;
+        ubicacionesTeoria.value = ubicaciones.filter(u => u.tipo_ubicacion === 'Teoría');
+        ubicacionesPractica.value = ubicaciones.filter(u => u.tipo_ubicacion === 'Practica');
       }
     };
 
     onMounted(() => {
-      fetchModosCurso();
       fetchDocentesTeoria();
       fetchDocentesPractica();
       fetchUbicaciones();
-      fetchAsignaturas();
     });
 
     const createCourse = async () => {
@@ -176,7 +138,6 @@ export default {
         .from('Cursos')
         .insert({
           titulo_curso: titulo_curso.value,
-          Fk_modo_curso: Fk_modo_curso.value,
           Fk_docenteteoria: Fk_docenteteoria.value,
           Fk_docentepractico: Fk_docentepractico.value,
           Fk_ubicacion_teoria: Fk_ubicacion_teoria.value,
@@ -184,8 +145,7 @@ export default {
           fecha_hora_inicio_teoria: fecha_hora_inicio_teoria.value,
           fecha_hora_fin_teoria: fecha_hora_fin_teoria.value,
           fecha_hora_inicio_practica: fecha_hora_inicio_practica.value,
-          fecha_hora_fin_practica: fecha_hora_fin_practica.value,
-          Fk_asignatura: Fk_asignatura.value
+          fecha_hora_fin_practica: fecha_hora_fin_practica.value
         });
 
       if (error) {
@@ -198,7 +158,6 @@ export default {
 
     return {
       titulo_curso,
-      Fk_modo_curso,
       Fk_docenteteoria,
       Fk_docentepractico,
       Fk_ubicacion_teoria,
@@ -207,13 +166,10 @@ export default {
       fecha_hora_fin_teoria,
       fecha_hora_inicio_practica,
       fecha_hora_fin_practica,
-      Fk_asignatura,
-      modosCurso,
       docentesTeoria,
       docentesPractica,
       ubicacionesTeoria,
       ubicacionesPractica,
-      asignaturas,
       createCourse
     };
   }
@@ -277,5 +233,4 @@ select:focus {
   background-color: #2980b9;
 }
 </style>
-
 
