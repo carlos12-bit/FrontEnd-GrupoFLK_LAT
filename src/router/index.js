@@ -5,6 +5,7 @@ import Home from '@/views/Website/Home.vue';
 import Login from '@/views/Security/Login.vue';
 import Register from '@/views/Security/Register.vue';
 import Services from '@/views/Website/Services.vue';
+import ResetPassword from '@/views/Security/ResetPassword.vue';
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
@@ -18,7 +19,8 @@ const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/services', component: Services }, 
+  { path: '/services', component: Services },
+  { path: '/resetpassword', component: ResetPassword}, 
 
   {
     path: '/admin-dashboard',
