@@ -18,16 +18,18 @@
         <el-icon><icon-menu /></el-icon>
         <span>Gestión Operativa</span>
       </template>
-      <el-menu-item index="1-1">
-        <router-link class="nav-link" to="/admin-dashboard/ManagementServices">
-          Gestionar Servicios
-        </router-link>
-      </el-menu-item>
-      <el-menu-item index="1-2">
-        <router-link class="nav-link" to="/admin-dashboard/MangementPersonal">
-          Gestionar Personal
-        </router-link>
-      </el-menu-item>
+    
+        <!-- Subgrupo de Gestión Operativa con opciones -->
+        <el-menu-item index="1-1">
+          <router-link class="nav-link" to="/admin-dashboard/GestionarServicios">
+            Gestionar Servicios
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="1-2">
+          <router-link class="nav-link" to="/admin-dashboard/GestionarPersonal">
+            Gestionar Personal
+          </router-link>
+        </el-menu-item>
     </el-sub-menu>
 
     <!-- Submenú Gestión -->
@@ -136,8 +138,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .el-menu-vertical-demo {
-  background-color: #6c6c70a9;
-  color: #000000;
+  background-color: #2e8332a9; /* Negro elegante */
+  color: #000000; /* Naranja corporativo */
   border-right: none;
   width: 200px;
   font-size: 18px;

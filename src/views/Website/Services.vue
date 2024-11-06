@@ -9,8 +9,7 @@
     <div v-for="inspeccion in inspecciones" :key="inspeccion.id" class="card">
       <img
         class="card-img-top"
-        :src="inspeccion.Foto_Referencial || 'default-image-url.jpg'"
-        :alt="inspeccion.nombre || 'Nombre no disponible'"
+        :src="inspeccion.URL_IMG || 'default-image-url.jpg'"
       />
       <div class="card-body">
         <h5 class="card-title">{{ inspeccion.nombre || 'Nombre no disponible' }}</h5>

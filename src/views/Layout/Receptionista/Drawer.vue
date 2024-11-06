@@ -11,7 +11,6 @@
     <div class="logo">
       <img src="@/assets/SELLO_FLK.png" alt="Logo" />
     </div>
-
     <!-- Submenú Gestión Operativa -->
     <el-sub-menu index="1">
       <template #title>
@@ -58,7 +57,6 @@
           </router-link>
         </el-menu-item>
       </el-sub-menu>
-
       <el-menu-item index="2-3">
         <router-link class="nav-link" to="/admin-dashboard/ManageCourses">
           Gestionar Cursos
@@ -99,6 +97,7 @@ import { useRouter } from 'vue-router'
 // Importar íconos de Element Plus
 import { Document, Menu as IconMenu, Location, Setting, User } from '@element-plus/icons-vue'
 
+// Estado para controlar si el menú está colapsado o no
 const isCollapse = ref(false)
 const isMobile = ref(false)
 const router = useRouter()
@@ -141,11 +140,14 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .el-menu-vertical-demo {
-  background-color: #6c6c70a9;
-  color: #000000;
+  background-color: #2e8332a9; /* Negro elegante */
+  color: #000000; /* Naranja corporativo */
   border-right: none;
-  width: 200px;
-  font-size: 18px;
+  transition: all 0.3s ease-in-out;
+  width: 220px;
+  font-size: 18px; /* Aumento general del tamaño de la letra */
+  max-width: 100%; /* Ajusta este valor según tu diseño */
+  overflow-y: auto; /* Agrega scroll vertical si el contenido es demasiado largo */
 }
 
 .el-menu-vertical-demo.el-menu--collapse {
@@ -156,9 +158,10 @@ onBeforeUnmount(() => {
 .el-menu-item {
   color: #000000;
   transition: color 0.3s ease;
-  font-size: relative;
-  height: auto !important;
-  overflow: visible;
+  font-size: relative; /* Ajuste del tamaño de fuente */
+  font-weight: relative; /* Peso equilibrado */
+  height: auto !important; /* Asegura que los ítems del menú ajusten su altura */
+  overflow: visible; /* Permite que el contenido no se corte */
 }
 
 .el-menu-item.is-active {
@@ -196,6 +199,20 @@ onBeforeUnmount(() => {
   display: block;
 }
 
+.menu-item-word
+{
+  display: block;
+  line-height: 1.2; /* Ajusta la altura de línea para un espacio pequeño */
+}
+/* Estilo para los textos largos en el menú */
+.menu-item-long-text {
+  white-space: nowrap;
+  overflow: flex;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Estilos del botón de hamburguesa */
 .hamburger-menu {
   position: relative;
   top: 20px;
@@ -235,6 +252,13 @@ onBeforeUnmount(() => {
 }
 
 .hamburger-menu:hover .bar {
-  background-color: #e69500;
+  background-color: #e69500; /* Un cambio suave al pasar el mouse */
+}
+.logo img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 20px auto; /* Centra el logo horizontalmente */
+  display: block; /* Asegura que la imagen se trate como un bloque */
 }
 </style>
