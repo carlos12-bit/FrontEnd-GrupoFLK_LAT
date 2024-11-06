@@ -11,48 +11,60 @@
     <div class="logo">
       <img src="@/assets/SELLO_FLK.png" alt="Logo" />
     </div>
-
-    <!-- Submenú Gestión General -->
+    <!-- Submenú Gestión Operativa -->
     <el-sub-menu index="1">
       <template #title>
         <el-icon><icon-menu /></el-icon>
-        <span>Gestión Operativa</span>
+        <span>Gestionar Usuarios</span>
       </template>
-     
-        <!-- Subgrupo de Gestión Operativa con opciones -->
-        <el-menu-item index="1-1" class="menu-item-long-text">
-  <router-link class="nav-link mt-2" to="/receptionist-dashboard/InspeccionesProgramadas">
-    <span class="menu-item-word">Inspecciones</span>
-    <span class="menu-item-word">Programadas</span>
-  </router-link>
-</el-menu-item>
-        <el-menu-item index="1-2">
-          <router-link class="nav-link" to="/receptionist-dashboard/CursosProgramados">
-            Cursos Programados
-          </router-link>
-        </el-menu-item>
-  
+      <el-menu-item index="1-1">
+        <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperator">
+          Gestionar Operador
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="1-2">
+        <router-link class="nav-link" to="/receptionist-dashboard/RegisterFormador">
+          Gestionar Formador
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="1-3">
+        <router-link class="nav-link" to="/receptionist-dashboard/RegisterInstructor">
+          Gestionar Instructor
+        </router-link>
+      </el-menu-item>
     </el-sub-menu>
 
-    <!-- Submenú Gestión de Alumnos y Solicitudes -->
+    <!-- Submenú Gestión -->
     <el-sub-menu index="2">
       <template #title>
         <el-icon><icon-menu /></el-icon>
-        <span>Gestión </span>
+        <span>Gestión</span>
       </template>
-      <el-menu-item index="2-1">
-        <router-link class="nav-link" to="/receptionist-dashboard/InspeccionesProgramadas">
-          Gestionar Alumnos
-        </router-link>
-      </el-menu-item>
-      <el-menu-item index="2-2">
-        <router-link class="nav-link" to="/admin-dashboard/C">
+      
+      <!-- Submenú para "Gestionar Solicitudes" -->
+      <el-sub-menu index="2-2">
+        <template #title>
           Gestionar Solicitudes
-        </router-link>
-      </el-menu-item>
+        </template>
+        <el-menu-item index="2-2-1">
+          <router-link class="nav-link" to="/admin-dashboard/ManageRequest">
+            Solicitudes
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="2-2-2">
+          <router-link class="nav-link" to="/admin-dashboard/ScheduleTraining">
+            Agendar Capacitación
+          </router-link>
+        </el-menu-item>
+      </el-sub-menu>
       <el-menu-item index="2-3">
         <router-link class="nav-link" to="/admin-dashboard/ManageCourses">
           Gestionar Cursos
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="2-4">
+        <router-link class="nav-link" to="/admin-dashboard/ManageCredentials">
+          Gestionar Credenciales
         </router-link>
       </el-menu-item>
     </el-sub-menu>
@@ -87,57 +99,46 @@ import { Document, Menu as IconMenu, Location, Setting, User } from '@element-pl
 
 // Estado para controlar si el menú está colapsado o no
 const isCollapse = ref(false)
-// Estado para detectar si es móvil o no
 const isMobile = ref(false)
-
-// Obtener la funcionalidad del enrutador para redirigir al usuario
 const router = useRouter()
 
-// Función para cerrar sesión
 const handleLogout = async () => {
   try {
     await supabase.auth.signOut()
-    localStorage.removeItem('user') // Eliminar el usuario del almacenamiento local
-    router.push('/login') // Redirigir al login después de cerrar sesión
+    localStorage.removeItem('user')
+    router.push('/login')
   } catch (error) {
     console.error('Error al cerrar sesión:', error)
   }
 }
 
-// Función para alternar el estado del menú
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value
 }
 
-// Función para manejar la apertura del menú
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 
-// Función para manejar el cierre del menú
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 
-// Función para detectar si es móvil según el tamaño de la ventana
 const checkMobile = () => {
   isMobile.value = window.innerWidth <= 768
 }
 
-// Ejecutar la verificación al montar el componente y actualizar en cambios de tamaño de pantalla
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
 })
 
-// Limpiar el evento cuando el componente se desmonta
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkMobile)
 })
 </script>
 
 <style scoped>
-/* Drawer negro con diseño corporativo */
 .el-menu-vertical-demo {
   background-color: #2e8332a9; /* Negro elegante */
   color: #000000; /* Naranja corporativo */
@@ -154,7 +155,6 @@ onBeforeUnmount(() => {
   transition: all 0.3s ease-in-out;
 }
 
-/* Estilo de los ítems del menú */
 .el-menu-item {
   color: #000000;
   transition: color 0.3s ease;
@@ -165,33 +165,38 @@ onBeforeUnmount(() => {
 }
 
 .el-menu-item.is-active {
-  background-color: rgba(255, 165, 0, 0.1); /* Fondo suave cuando está activo */
+  background-color: rgba(255, 165, 0, 0.1);
   color: #000000;
 }
 
 .el-menu-item:hover {
-  color: #000000; /* Un tono más oscuro de naranja en hover */
+  color: #000000;
 }
 
-/* Submenús y títulos */
 .el-sub-menu .el-menu-item-group__title, .el-sub-menu .el-sub-menu__title {
   color: #000000;
-  transition: color 0.3s ease;
-  font-size: 19px; /* Aumento de tamaño en los títulos */
-  font-weight: 600; /* Títulos más destacados */
+  font-size: 19px;
+  font-weight: 600;
 }
 
 .el-sub-menu__title:hover {
   color: #000000;
 }
 
-/* Iconos dentro del menú (naranja corporativo) */
 .el-menu-item .el-icon, .el-sub-menu .el-icon {
   color: #000000;
 }
 
 .el-menu-item.is-active .el-icon, .el-menu-item:hover .el-icon {
-  color: #000000; /* Mismo cambio de color en hover para los iconos */
+  color: #000000;
+}
+
+.logo img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 20px auto;
+  display: block;
 }
 
 .menu-item-word
@@ -224,7 +229,6 @@ onBeforeUnmount(() => {
   transition: all 0.3s ease-in-out;
 }
 
-/* Barras del botón */
 .hamburger-menu .bar {
   width: 100%;
   height: 4px;
@@ -233,7 +237,6 @@ onBeforeUnmount(() => {
   transition: all 0.3s ease-in-out;
 }
 
-/* Cambios en el botón cuando el menú está activo */
 .hamburger-menu.active .bar:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
   background-color: #000000;
@@ -248,7 +251,6 @@ onBeforeUnmount(() => {
   background-color: #000000;
 }
 
-/* Efecto hover para el botón */
 .hamburger-menu:hover .bar {
   background-color: #e69500; /* Un cambio suave al pasar el mouse */
 }

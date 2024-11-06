@@ -1,154 +1,128 @@
 <template>
-  
+  <div class="container">
+    <h1 class="page-title">Gestión de Cursos</h1>
+    <table class="courses-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Docente Teoría</th>
+          <th>Docente Práctica</th>
+          <th>Ubicación Teoría</th>
+          <th>Ubicación Práctica</th>
+          <th>Fecha Inicio Teoría</th>
+          <th>Fecha Fin Teoría</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="curso in cursos" :key="curso.Pk_Curso">
+          <td>{{ curso.Pk_Curso }}</td>
+          <td>{{ curso.titulo_curso }}</td>
+          <td>{{ getNombreFormador(curso.Fk_docenteteoria) }}</td>
+          <td>{{ getNombreInstructor(curso.Fk_docentepractico) }}</td>
+          <td>{{ getNombreUbicacion(curso.Fk_ubicacion_teoria) }}</td>
+          <td>{{ getNombreUbicacionPractica(curso.Fk_ubicacion_practica) }}</td>
+          <td>{{ new Date(curso.fecha_hora_inicio_teoria).toLocaleDateString() }}</td>
+          <td>{{ new Date(curso.fecha_hora_fin_teoria).toLocaleDateString() }}</td>
+          <td>
+            <button @click="viewCourse(curso)" class="view-btn">Ver</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { supabase } from '@/supabase.js';
-import Drawer from '@/views/Layout/Admin/Drawer.vue'; // Importamos el Drawer
 
 export default {
-  components: {
-    Drawer, // Registramos el componente Drawer
-  },
   setup() {
     const cursos = ref([]);
-    const isMobile = ref(window.innerWidth <= 768);
-    const isSidebarOpen = ref(false);
+    const formadores = ref([]);
+    const instructores = ref([]);
+    const ubicaciones = ref([]);
 
     const fetchCourses = async () => {
       let { data: Cursos, error } = await supabase.from('Cursos').select('*');
-      if (!error) {
-        cursos.value = Cursos;
-      }
+      if (!error) cursos.value = Cursos;
     };
 
-    fetchCourses();
+    const fetchFormadores = async () => {
+      let { data: Formador, error } = await supabase.from('Formador').select('*');
+      if (!error) formadores.value = Formador;
+    };
+
+    const fetchInstructores = async () => {
+      let { data: Instructor, error } = await supabase.from('Instructor').select('*');
+      if (!error) instructores.value = Instructor;
+    };
+
+    const fetchUbicaciones = async () => {
+      let { data: Ubicaciones, error } = await supabase.from('Ubicaciones').select('*');
+      if (!error) ubicaciones.value = Ubicaciones;
+    };
+
+    const getNombreFormador = (fk_docenteteoria) => {
+      const formador = formadores.value.find(f => f.Pk_docenteteoria === fk_docenteteoria);
+      return formador ? formador.nombre : 'Sin asignar';
+    };
+
+    const getNombreInstructor = (fk_docentepractico) => {
+      const instructor = instructores.value.find(i => i.Pk_docentepractico === fk_docentepractico);
+      return instructor ? instructor.nombre : 'Sin asignar';
+    };
+
+    const getNombreUbicacion = (fk_ubicacion_teoria) => {
+      const ubicacion = ubicaciones.value.find(u => u.Pk_Ubicacion === fk_ubicacion_teoria);
+      return ubicacion ? ubicacion.nombre_ubicacion : 'Sin asignar';
+    };
+
+    const getNombreUbicacionPractica = (fk_ubicacion_practica) => {
+      const ubicacion = ubicaciones.value.find(u => u.Pk_Ubicacion === fk_ubicacion_practica);
+      return ubicacion && ubicacion.tipo_ubicacion === 'presencial' ? ubicacion.nombre_ubicacion : 'Sin asignar';
+    };
 
     const viewCourse = (curso) => {
       alert(`Detalles del curso: ${curso.titulo_curso}`);
     };
 
-    const toggleSidebar = () => {
-      isSidebarOpen.value = !isSidebarOpen.value;
-    };
-
-    window.addEventListener('resize', () => {
-      isMobile.value = window.innerWidth <= 768;
+    onMounted(() => {
+      fetchCourses();
+      fetchFormadores();
+      fetchInstructores();
+      fetchUbicaciones();
     });
 
     return {
       cursos,
-      viewCourse,
-      isMobile,
-      isSidebarOpen,
-      toggleSidebar,
+      getNombreFormador,
+      getNombreInstructor,
+      getNombreUbicacion,
+      getNombreUbicacionPractica,
+      viewCourse
     };
-  },
+  }
 };
 </script>
 
 <style scoped>
-/* Estilo para el contenedor principal del dashboard */
-.dashboard-container {
-  display: flex;
-  min-height: 100vh;
-  position: relative;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f4f4f9;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.hamburger {
-  display: none;
-}
-
-.hamburger span {
-  display: block;
-  width: 25px;
-  height: 3px;
-  margin: 5px auto;
-  background-color: #fff;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 250px;
-  background-color: #2e2e2e;
-  color: white;
-  padding: 20px;
-  min-height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  transition: transform 0.3s ease;
-}
-
-.collapsed {
-  transform: translateX(-250px);
-}
-
-.sidebar-header {
-  margin-bottom: 20px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin: 10px 0;
-}
-
-.sidebar ul li a {
-  color: white;
-  text-decoration: none;
-}
-
-.sidebar ul li a:hover {
-  text-decoration: underline;
-}
-
-.logo-img {
-  max-width: 90%;
-  height: auto;
-  display: block;
-  margin: 10px auto;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-}
-
-.sidebar ul li a {
-  color: white;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-}
-
-.sidebar ul li a i {
-  margin-right: 10px;
-  font-size: 18px;
-}
-
-.sidebar ul li a:hover {
-  background-color: #444;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-/* Contenido principal */
-.content {
-  flex-grow: 1;
-  padding: 20px;
-  margin-left: 250px;
-  transition: margin-left 0.3s ease;
-}
-
-.collapsed ~ .content {
-  margin-left: 0;
+.page-title {
+  font-size: 2rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 .courses-table {
@@ -156,57 +130,27 @@ export default {
   border-collapse: collapse;
 }
 
-.courses-table th,
-.courses-table td {
+.courses-table th, .courses-table td {
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 0.75rem;
   text-align: left;
 }
 
 .courses-table th {
   background-color: #f4f4f4;
+  font-weight: bold;
 }
 
-.logout-btn {
+.view-btn {
   background-color: #3498db;
-  border: none;
   color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 10px;
+  border: none;
+  padding: 0.5rem 1rem;
   border-radius: 5px;
-  text-align: left;
+  cursor: pointer;
 }
 
-.logout-btn i {
-  margin-right: 10px;
-}
-
-.logout-btn:hover {
-  background-color: #3498db;
-}
-
-/* Estilos responsivos */
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-250px);
-  }
-
-  .hamburger {
-    display: block;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 20;
-  }
-
-  .sidebar.collapsed {
-    transform: translateX(0);
-  }
-
-  .content {
-    margin-left: 0;
-  }
+.view-btn:hover {
+  background-color: #2980b9;
 }
 </style>

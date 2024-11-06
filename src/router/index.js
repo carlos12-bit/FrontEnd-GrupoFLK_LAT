@@ -9,6 +9,17 @@ import ResetPassword from '@/views/Security/ResetPassword.vue';
 import AdminLayout from '@/views/Layout/Admin/AdminLayout.vue';
 import ReceptionistLayout from '@/views/Layout/Receptionista/ReceptionistLayout.vue';
 import OperationsAssistantLayout from '@/views/Layout/Op.Asist/OperationsAssistantLayout.vue';
+import ManagementServices from '@/views/UseCases/Admin/ManagementServices/View.vue';
+import MangementPersonal from '@/views/UseCases/Admin/GestionarPersonal/View.vue';
+import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
+import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
+import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
+import Details from '@/components/ManageRequest/Details.vue'; // Importar Details.vue
+import ManageCredentials from '@/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue'; // Importar Details.vue
+import ScheduleTraining from '@/components/ManageRequest/ScheduleTraining.vue';
+import RegisterInstructor from '@/views/UseCases/Recepcionist/ManageUsers/RegisterInstructor/View.vue'; // Recepcionista
+import RegisterOperator from '@/views/UseCases/Recepcionist/ManageUsers/RegisterOperator/View.vue'; // Recepcionista
+import RegisterTrainer from '@/views/UseCases/Recepcionist/ManageUsers/RegisterTrainer/View.vue'; // Recepcionista
 import GestionarServicios from '@/views/UseCases/Admin/GestionarServicios/view.vue';
 import GestionarPersonal from '@/views/UseCases/Admin/GestionarPersonal/view.vue';
 import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vue';
@@ -40,12 +51,30 @@ const routes = [
         component: GestionarPersonal, // Vista de gestión de personal
       },
       {
-        path: 'manage-request',
+        path: 'ManageRequest',
         component: ManageRequest, // Vista de gestión de solicitudes
       },
       {
         path: 'ManageCourses',
         component: ManageCourses, // Vista de gestión de cursos
+      },
+      {
+        path: '/details/:id',  // Ruta para mostrar los detalles de una solicitud
+        name: 'Details',  // Nombre de la ruta que estás usando
+        component: Details,
+         
+      }, 
+      {
+        path: 'ManageCredentials',  // Ruta para mostrar los detalles de una solicitud
+          // Nombre de la ruta que estás usando
+        component: ManageCredentials,
+         
+      },
+      {
+        path: 'ScheduleTraining',  // Ruta para mostrar los detalles de una solicitud
+          // Nombre de la ruta que estás usando
+        component: ScheduleTraining,
+         
       },
     ],
   },
@@ -64,6 +93,18 @@ const routes = [
         path: 'InspeccionesProgramadas',
         component: InspeccionesProgramadas, // Vista de inicio del dashboard
       },
+      {
+        path: 'RegisterInstructor',
+        component: RegisterInstructor, // Vista de Registrar Instructor
+      },
+      {
+        path: 'RegisterOperator',
+        component: RegisterOperator, // Vista de Registrar Operador
+      },
+      {
+        path: 'RegisterTrainer',
+        component: RegisterTrainer, // Vista de Registrar Formador
+      }
     ],
   },
   {
