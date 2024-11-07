@@ -37,6 +37,13 @@ const routes = [
       { path: 'RegisterInstructor', component: () => import('@/views/UseCases/Recepcionist/ManageUsers/RegisterInstructor/View.vue') },
       { path: 'RegisterOperator', component: () => import('@/views/UseCases/Recepcionist/ManageUsers/RegisterOperator/View.vue') },
       { path: 'RegisterTrainer', component: () => import('@/views/UseCases/Recepcionist/ManageUsers/RegisterTrainer/View.vue') },
+      { path: 'ManageRequest', component: () => import('../views/UseCases/Recepcionist/ManageTraining/ManageRequest/ManageRequest.vue') },
+      { path: 'ScheduleTraining', component: () => import('../components/ManageRequest/ScheduleTraining.vue') },
+      { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
+      { path: 'RegisterOperador1', component: () => import('../components/UserList/RegistrarOperador1.vue') },
+      { path: 'RegisterFormador1', component: () => import('../components/UserList/RegistrarFormador1.vue') },
+      { path: 'RegisterInstructor1', component: () => import('../components/UserList/RegistrarInstructor.vue') },
+
     ],
   },
 
