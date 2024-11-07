@@ -17,26 +17,51 @@
         <el-icon><icon-menu /></el-icon>
         <span>Gestionar Usuarios</span>
       </template>
-      <el-menu-item index="1-1">
-        <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperator">
-          Gestionar Operador
-        </router-link>
-      </el-menu-item>
-      <el-menu-item index="1-2">
-        <router-link class="nav-link" to="/receptionist-dashboard/RegisterTrainer">
-          Gestionar Formador
-        </router-link>
-      </el-menu-item>
-      <el-menu-item index="1-3">
-        <router-link class="nav-link" to="/receptionist-dashboard/RegisterInstructor">
+      <el-sub-menu index="1-1">
+        <template #title>
+          Gestionar Operadores
+        </template>
+        <el-menu-item index="1-1-1">
+          <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperator">
+            Lista de Usuarios
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="1-1-2">
+          <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperador1">
+            Registrar Operador
+          </router-link>
+        </el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="1-2">
+        <template #title>
+          Gestionar Formadores
+        </template>
+        <el-menu-item index="1-2-1">
+          <router-link class="nav-link" to="/receptionist-dashboard/RegisterTrainer">
+            Lista de Usuarios
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="1-2-2">
+          <router-link class="nav-link" to="/receptionist-dashboard/RegisterFormador1">
+            Registrar Formador
+          </router-link>
+        </el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="1-3">
+        <template #title>
           Gestionar Instructor
-        </router-link>
-      </el-menu-item>
-      <el-menu-item index="1-4">
-        <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperador1">
-          registrar operador
-        </router-link>
-      </el-menu-item>
+        </template>
+        <el-menu-item index="1-3-1">
+          <router-link class="nav-link" to="/receptionist-dashboard/RegisterInstructor">
+            Lista de Usuarios
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="1-3-2">
+          <router-link class="nav-link" to="/receptionist-dashboard/RegisterInstructor1">
+            Registrar Instructor
+          </router-link>
+        </el-menu-item>
+      </el-sub-menu>
     </el-sub-menu>
 
     <!-- Submenú Gestión -->

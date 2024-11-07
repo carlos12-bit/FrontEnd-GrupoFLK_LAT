@@ -38,6 +38,9 @@ const routes = [
       { path: 'ScheduleTraining', component: () => import('../components/ManageRequest/ScheduleTraining.vue') },
       { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
       { path: 'RegisterOperador1', component: () => import('../components/UserList/RegistrarOperador1.vue') },
+      { path: 'RegisterFormador1', component: () => import('../components/UserList/RegistrarFormador1.vue') },
+      { path: 'RegisterInstructor1', component: () => import('../components/UserList/RegistrarInstructor.vue') },
+
     ],
   },
 

@@ -2,9 +2,7 @@
   <div class="data-table-container">
     <h2 class="text-center mb-4">Lista de Operadores</h2>
     
-    <div class="button-group mb-3">
-      <button class="btn btn-success" @click="openRegisterDialog">Registrar Operador</button>
-    </div>
+    
 
     <div class="button-group mb-3">
       <button class="btn btn-success" @click="exportToExcel">Exportar a Excel</button>
