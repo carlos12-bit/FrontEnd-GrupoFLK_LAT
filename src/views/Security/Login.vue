@@ -29,7 +29,7 @@
               <button data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-lg btn-block" type="submit" :disabled="isLoading" >ingresar</button>
             </div>
 
-            <p class="small mb-5 pb-lg-2"><a class="text-muted" href="#!">Forgot password?</a></p>
+            <p class="small mb-5 pb-lg-2"><a class="text-muted" href="/ResetPassword">Forgot password?</a></p>
             <p>Don't have an account? <a href="/register" class="link-info">Register here</a></p>
 
           </form>
