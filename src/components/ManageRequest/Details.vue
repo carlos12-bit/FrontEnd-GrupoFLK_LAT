@@ -27,8 +27,7 @@
       <p><strong>Fecha de Solicitud:</strong> {{ new Date(solicitud.fecha_solicitud).toLocaleDateString() }}</p>
       <p><strong>Consentimiento para Tratamiento de Datos:</strong> {{ solicitud.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
       <p><strong>Firma:</strong> {{ solicitud.firma }}</p>
-      
-      <!-- Mostrar imágenes adjuntas si existen -->
+
       <div v-if="solicitud.dni_adjunto">
         <p><strong>DNI Adjunto:</strong></p>
         <img :src="solicitud.dni_adjunto" alt="DNI Adjunto" class="imagen-adjunta" />
@@ -43,19 +42,17 @@
         <p><strong>Licencia de Conducir Adjunto:</strong></p>
         <img :src="solicitud.licencia_conducir_adjunto" alt="Licencia de Conducir Adjunto" class="imagen-adjunta" />
       </div>
-
-      <!-- Botones de Aceptar y Rechazar -->
-      <button @click="gestionarSolicitud('aceptar')" class="card-btn">Aceptar</button>
+           <!-- Botones de Aceptar y Rechazar -->
+      <button @click="gestionarSolicitud('aceptado')" class="card-btn">Aceptar</button>
       <button @click="abrirModalRechazo" class="card-btn card-btn-rechazar">Rechazar</button>
     </div>
 
-    <!-- Modal para Motivo de Rechazo -->
     <div v-if="mostrarModalRechazo" class="modal">
       <div class="modal-content">
         <h3>Motivo de Rechazo</h3>
         <textarea v-model="motivoRechazo" placeholder="Ingrese el motivo del rechazo"></textarea>
         <div class="modal-buttons">
-          <button @click="gestionarSolicitud('rechazar')" class="card-btn">Confirmar Rechazo</button>
+          <button @click="gestionarSolicitud('rechazado')" class="card-btn">Confirmar Rechazo</button>
           <button @click="cerrarModalRechazo" class="card-btn card-btn-rechazar">Cancelar</button>
         </div>
       </div>
@@ -72,17 +69,13 @@ export default {
     return {
       solicitud: null,
       mostrarModalRechazo: false,
-      motivoRechazo: "" // Para almacenar el motivo del rechazo
+      motivoRechazo: "" // Motivo para el rechazo
     };
   },
   async mounted() {
-    // Obtenemos los detalles de la solicitud seleccionada usando el id pasado por params
     let { data: solicitud, error } = await supabase
       .from('Solicitud_Capacitacion')
-      .select(`
-        *,
-        Cursos (titulo_curso)
-      `)
+      .select(`*, Cursos (titulo_curso)`)
       .eq('id_solicitud', this.$route.params.id)
       .single();
 
@@ -99,20 +92,15 @@ export default {
     cerrarModalRechazo() {
       this.mostrarModalRechazo = false;
     },
-    async gestionarSolicitud(accion) {
-      let nuevoEstado = accion === 'aceptar' ? 'Aceptada' : 'Rechazada';
-      
-      if (accion === 'rechazar' && !this.motivoRechazo) {
-        alert("Por favor, ingrese el motivo del rechazo.");
-        return;
-      }
+    async gestionarSolicitud(estado) {
+      let nuevoEstado = estado === 'aceptado' ? 'Aceptada' : 'Rechazada';
 
       try {
         const { error } = await supabase
           .from('Solicitud_Capacitacion')
           .update({ 
-            estado: nuevoEstado,
-            motivo_rechazo: this.motivoRechazo // Guardar el motivo de rechazo en la base de datos
+            estado: nuevoEstado, 
+            motivo_rechazo: estado === 'rechazado' ? this.motivoRechazo : null 
           })
           .eq('id_solicitud', this.$route.params.id);
 
@@ -120,69 +108,114 @@ export default {
           throw error;
         }
 
+        // Enviar correo de aceptación o rechazo usando la configuración SMTP de Supabase
+        await this.enviarCorreoEstado(estado);
+
         alert(`La solicitud ha sido ${nuevoEstado}`);
-        
-        // Redirigir al componente ManageRequest después de la acción
         this.$router.push({ path: '/admin-dashboard/ManageRequest' });
 
       } catch (error) {
-        console.error(`Error al ${accion} la solicitud: `, error);
-        alert(`Ocurrió un error al ${accion} la solicitud`);
+        console.error(`Error al ${estado} la solicitud: `, error);
+        alert(`Ocurrió un error al ${estado} la solicitud`);
       } finally {
         this.cerrarModalRechazo();
       }
     },
-    async logout() {
-      await supabase.auth.signOut();
-      this.$router.push('/login');
+    async enviarCorreoEstado(estado) {
+      const subject = estado === 'aceptado' 
+        ? "Solicitud Aceptada"
+        : "Solicitud Rechazada";
+        
+      const mensaje = estado === 'aceptado'
+        ? `Estimado ${this.solicitud.nombre_completo}, su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido aceptada.`
+        : `Estimado ${this.solicitud.nombre_completo}, lamentamos informarle que su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido rechazada. Motivo: ${this.motivoRechazo}`;
+
+      // Llamada al procedimiento almacenado de Supabase para enviar el correo
+      const { error } = await supabase.rpc('enviar_correo', {
+        destinatario: this.solicitud.correo_electronico,
+        asunto: subject,
+        mensaje: mensaje
+      });
+
+      if (error) {
+        console.error("Error al enviar el correo:", error);
+      } else {
+        console.log("Correo de estado enviado correctamente.");
+      }
     }
   }
 };
 </script>
-
 <style scoped>
 .container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 2rem auto;
   padding: 2rem;
-  background-color: #f4f4f9;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.detalle-solicitud {
-  font-size: 1.2rem;
-  line-height: 2;
-  color: black;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .page-title {
-  color: black;
+  font-size: 2rem;
+  color: #34495e;
   text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+.detalle-solicitud {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.detalle-solicitud p {
+  margin: 0;
+  background-color: #f7f9fc;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detalle-solicitud p strong {
+  color: #2980b9;
 }
 
 .imagen-adjunta {
-  max-width: 300px;
-  margin-bottom: 20px;
+  max-width: 100%;
+  margin-top: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-btn, .card-btn-rechazar {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
 }
 
 .card-btn {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
   background-color: #1A5276;
   color: white;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
 }
 
 .card-btn:hover {
-  background-color: #2980B9;
+  background-color: #2980b9;
 }
 
 .card-btn-rechazar {
   background-color: #C0392B;
+  color: white;
 }
 
 .card-btn-rechazar:hover {
@@ -196,32 +229,40 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal-content {
-  background-color: white;
+  background-color: #ffffff;
   padding: 2rem;
-  border-radius: 10px;
+  border-radius: 12px;
   max-width: 500px;
   width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
+}
+
+.modal-content h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #34495e;
 }
 
 .modal-content textarea {
   width: 100%;
-  height: 100px;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border-radius: 5px;
+  padding: 1rem;
+  border-radius: 8px;
   border: 1px solid #ddd;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 .modal-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 </style>

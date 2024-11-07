@@ -1,6 +1,8 @@
 <template>
   <div class="container">
     <h1 class="page-title">Gestión de Cursos</h1>
+    <!-- Botón para redirigir al formulario de creación de cursos -->
+    <button @click="goToCreateCourse" class="btn-create">Crear Curso</button>
     <table class="courses-table">
       <thead>
         <tr>
@@ -10,8 +12,6 @@
           <th>Docente Práctica</th>
           <th>Ubicación Teoría</th>
           <th>Ubicación Práctica</th>
-          <th>Fecha Inicio Teoría</th>
-          <th>Fecha Fin Teoría</th>
           <th>Opciones</th>
         </tr>
       </thead>
@@ -23,10 +23,10 @@
           <td>{{ getNombreInstructor(curso.Fk_docentepractico) }}</td>
           <td>{{ getNombreUbicacion(curso.Fk_ubicacion_teoria) }}</td>
           <td>{{ getNombreUbicacionPractica(curso.Fk_ubicacion_practica) }}</td>
-          <td>{{ new Date(curso.fecha_hora_inicio_teoria).toLocaleDateString() }}</td>
-          <td>{{ new Date(curso.fecha_hora_fin_teoria).toLocaleDateString() }}</td>
           <td>
-            <button @click="viewCourse(curso)" class="view-btn">Ver</button>
+            <button @click="viewCourse(curso.Pk_Curso)" class="view-btn">Ver</button>
+            <button @click="goToEditCourse(curso.Pk_Curso)" class="edit-btn">Editar</button>
+            <button @click="deleteCourse(curso.Pk_Curso)" class="delete-btn">Eliminar</button>
           </td>
         </tr>
       </tbody>
@@ -37,9 +37,11 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/supabase.js';
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
+    const router = useRouter();
     const cursos = ref([]);
     const formadores = ref([]);
     const instructores = ref([]);
@@ -82,11 +84,29 @@ export default {
 
     const getNombreUbicacionPractica = (fk_ubicacion_practica) => {
       const ubicacion = ubicaciones.value.find(u => u.Pk_Ubicacion === fk_ubicacion_practica);
-      return ubicacion && ubicacion.tipo_ubicacion === 'presencial' ? ubicacion.nombre_ubicacion : 'Sin asignar';
+      return ubicacion && ubicacion.tipo_ubicacion === 'Practica' ? ubicacion.nombre_ubicacion : 'Sin asignar';
     };
 
-    const viewCourse = (curso) => {
-      alert(`Detalles del curso: ${curso.titulo_curso}`);
+    const viewCourse = (id) => {
+      router.push({ path: 'ManageCourses/Details', query: { id } });
+    };
+
+    const goToCreateCourse = () => {
+      router.push('ManageCourses/Create');
+    };
+
+    const goToEditCourse = (id) => {
+      router.push({ path: 'ManageCourses/Edit', query: { id } });
+    };
+
+    const deleteCourse = async (id) => {
+      const { error } = await supabase.from('Cursos').delete().eq('Pk_Curso', id);
+      if (!error) {
+        cursos.value = cursos.value.filter(curso => curso.Pk_Curso !== id);
+        alert('Curso eliminado con éxito');
+      } else {
+        alert('Error al eliminar el curso');
+      }
     };
 
     onMounted(() => {
@@ -102,7 +122,10 @@ export default {
       getNombreInstructor,
       getNombreUbicacion,
       getNombreUbicacionPractica,
-      viewCourse
+      viewCourse,
+      goToCreateCourse,
+      goToEditCourse,
+      deleteCourse
     };
   }
 };
@@ -125,6 +148,20 @@ export default {
   margin-bottom: 1rem;
 }
 
+.btn-create {
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.btn-create:hover {
+  background-color: #2980b9;
+}
+
 .courses-table {
   width: 100%;
   border-collapse: collapse;
@@ -141,16 +178,18 @@ export default {
   font-weight: bold;
 }
 
-.view-btn {
+.view-btn, .edit-btn, .delete-btn {
   background-color: #3498db;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
+  margin-right: 5px;
 }
 
-.view-btn:hover {
+.view-btn:hover, .edit-btn:hover, .delete-btn:hover {
   background-color: #2980b9;
 }
 </style>
+
