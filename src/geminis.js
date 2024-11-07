@@ -1,4 +1,3 @@
-// geminis.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const config = {
@@ -12,17 +11,26 @@ const config = {
 };
 
 const API_KEY = config.GoogleGenerativeAI.API_KEY;
-
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-const model = genAI.getGenerativeModel({
-  model: config.GoogleGenerativeAI.Model.Name,
-});
+// Función asíncrona para ejecutar el prompt
+async function generateContent() {
+  const model = genAI.getGenerativeModel({
+    model: config.GoogleGenerativeAI.Model.Name,
+  });
 
-// Ejemplo de prompt para usar con el modelo "gemini"
-const prompt = "Conéctame con el modelo gemini y genera contenido";
+  // Prompt para el modelo "gemini"
+  const prompt = "Conéctame con el modelo gemini y genera contenido";
 
-const result = await model.generateContent(prompt);
-console.log(result.response.text());
+  try {
+    const result = await model.generateContent(prompt);
+    console.log(result.response.text());
+  } catch (error) {
+    console.error("Error al generar contenido:", error);
+  }
+}
+
+// Llama a la función asíncrona
+generateContent();
 
 export default config;
