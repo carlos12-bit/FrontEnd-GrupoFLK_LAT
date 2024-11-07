@@ -23,13 +23,18 @@
         </router-link>
       </el-menu-item>
       <el-menu-item index="1-2">
-        <router-link class="nav-link" to="/receptionist-dashboard/RegisterFormador">
+        <router-link class="nav-link" to="/receptionist-dashboard/RegisterTrainer">
           Gestionar Formador
         </router-link>
       </el-menu-item>
       <el-menu-item index="1-3">
         <router-link class="nav-link" to="/receptionist-dashboard/RegisterInstructor">
           Gestionar Instructor
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="1-4">
+        <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperador1">
+          registrar operador
         </router-link>
       </el-menu-item>
     </el-sub-menu>
@@ -47,26 +52,16 @@
           Gestionar Solicitudes
         </template>
         <el-menu-item index="2-2-1">
-          <router-link class="nav-link" to="/admin-dashboard/ManageRequest">
+          <router-link class="nav-link" to="/receptionist-dashboard/ManageRequest">
             Solicitudes
           </router-link>
         </el-menu-item>
         <el-menu-item index="2-2-2">
-          <router-link class="nav-link" to="/admin-dashboard/ScheduleTraining">
+          <router-link class="nav-link" to="/receptionist-dashboard/ScheduleTraining">
             Agendar Capacitación
           </router-link>
         </el-menu-item>
-      </el-sub-menu>
-      <el-menu-item index="2-3">
-        <router-link class="nav-link" to="/admin-dashboard/ManageCourses">
-          Gestionar Cursos
-        </router-link>
-      </el-menu-item>
-      <el-menu-item index="2-4">
-        <router-link class="nav-link" to="/admin-dashboard/ManageCredentials">
-          Gestionar Credenciales
-        </router-link>
-      </el-menu-item>
+      </el-sub-menu>      
     </el-sub-menu>
 
     <!-- Botón de Cerrar Sesión -->

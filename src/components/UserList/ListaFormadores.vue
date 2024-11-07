@@ -1,6 +1,10 @@
 <template>
     <div class="data-table-container">
-      <h2 class="text-center mb-4">Lista de Instructores</h2>
+      <h2 class="text-center mb-4">Lista de Formadores</h2>
+      
+      <div class="button-group mb-3">
+        <button class="btn btn-success" @click="openRegisterDialog">Registrar Formador</button>
+      </div>
   
       <div class="button-group mb-3">
         <button class="btn btn-success" @click="exportToExcel">Exportar a Excel</button>
@@ -12,7 +16,7 @@
         class="mb-3 search-input"
       />
   
-      <el-table :data="paginatedInstructores" style="width: 100%" border>
+      <el-table :data="paginatedFormadores" style="width: 100%" border>
         <el-table-column prop="id" label="ID" width="60" />
         <el-table-column prop="nombre" label="Nombre" sortable />
         <el-table-column prop="dni" label="DNI" sortable />
@@ -24,10 +28,15 @@
           @current-change="handlePageChange"
           :current-page="currentPage"
           :page-size="itemsPerPage"
-          :total="filteredInstructores"
+          :total="filteredFormadores"
           layout="total, prev, pager, next"
         />
       </div>
+  
+      <!-- Dialog para registrar formador -->
+      <el-dialog v-model="isRegisterDialogVisible" title="Registrar Formador" width="600px">
+        <RegistrarFormador @closeDialog="closeRegisterDialog" @refreshTable="fetchFormadores" />
+      </el-dialog>
     </div>
   </template>
   
@@ -35,35 +44,47 @@
   import { ref, computed, onMounted } from 'vue';
   import { supabase } from '@/supabase';
   import * as XLSX from 'xlsx';
-  
+  import RegistrarFormador from './RegistrarFormador.vue';
   
   export default {
-    name: 'InstructoresTable',
+    name: 'FormadoresTable',
+    components: {
+      RegistrarFormador,
+    },
     setup() {
-      const instructores = ref([]);
+      const formadores = ref([]);
       const searchQuery = ref('');
       const currentPage = ref(1);
       const itemsPerPage = ref(5);
+      const isRegisterDialogVisible = ref(false);
   
-      const fetchInstructores = async () => {
-        const { data, error } = await supabase.rpc('obtenerinstructor');
+      const openRegisterDialog = () => {
+        isRegisterDialogVisible.value = true;
+      };
+  
+      const closeRegisterDialog = () => {
+        isRegisterDialogVisible.value = false;
+      };
+  
+      const fetchFormadores = async () => {
+        const { data, error } = await supabase.rpc('obtenerformadores');
         if (error) {
-          console.error('Error al obtener instructores:', error.message);
+          console.error('Error al obtener formadores:', error.message);
         } else {
-          instructores.value = data;
+          formadores.value = data;
         }
       };
   
-      const filteredInstructores = computed(() =>
-        instructores.value.filter((instructor) =>
-          instructor.nombre.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-          instructor.dni.includes(searchQuery.value)
+      const filteredFormadores = computed(() =>
+        formadores.value.filter((formador) =>
+          formador.nombre.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          formador.dni.includes(searchQuery.value)
         )
       );
   
-      const paginatedInstructores = computed(() => {
+      const paginatedFormadores = computed(() => {
         const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredInstructores.value.slice(start, start + itemsPerPage.value);
+        return filteredFormadores.value.slice(start, start + itemsPerPage.value);
       });
   
       const handlePageChange = (page) => {
@@ -71,22 +92,26 @@
       };
   
       const exportToExcel = () => {
-        const ws = XLSX.utils.json_to_sheet(instructores.value);
+        const ws = XLSX.utils.json_to_sheet(formadores.value);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Instructores');
-        XLSX.writeFile(wb, 'Instructores.xlsx');
+        XLSX.utils.book_append_sheet(wb, ws, 'Formadores');
+        XLSX.writeFile(wb, 'Formadores.xlsx');
       };
   
-      onMounted(fetchInstructores);
+      onMounted(fetchFormadores);
   
       return {
-        instructores,
+        formadores,
         searchQuery,
         currentPage,
         itemsPerPage,
-        paginatedInstructores,
+        paginatedFormadores,
         handlePageChange,
         exportToExcel,
+        isRegisterDialogVisible,
+        openRegisterDialog,
+        closeRegisterDialog,
+        fetchFormadores,
       };
     },
   };
