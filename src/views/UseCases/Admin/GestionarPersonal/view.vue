@@ -1,15 +1,24 @@
-<!-- src/views/UseCases/Admin/GestionarPersonal/View.vue -->
 <template>
   <div class="gestionar-personal-view">
     <h1 class="view-title animate__animated animate__bounceIn">Gestionar Personal</h1>
-    <!-- Aquí invocas el componente GestionarInspectores -->
     <div class="section">
       <GestionarInspectores class="animate__animated animate__bounceIn"/>
     </div>
 
-    <!-- Aquí invocas el componente GestionarCertificadores -->
     <div class="section">
       <GestionarCertificadores class="animate__animated animate__bounceIn"/>
+    </div>
+
+    <div class="section">
+      <GestionarIntructores class="animate__animated animate__bounceIn"/>
+    </div>
+
+    <div class="section">
+      <GestionarOperadores class="animate__animated animate__bounceIn"/>
+    </div>
+
+    <div class="section">
+      <GestionarFormadores class="animate__animated animate__bounceIn"/>
     </div>
   </div>
 </template>
@@ -18,12 +27,17 @@
 // Importas los componentes GestionarInspectores y GestionarCertificadores
 import GestionarInspectores from '@/components/GestionarPersonal/GestionarInspectores/Listar.vue';
 import GestionarCertificadores from '@/components/GestionarPersonal/GestionarCertificadores/Listar.vue';
-
+import GestionarIntructores from '@/components/UserList/ListaIntructores.vue';
+import GestionarOperadores from '@/components/UserList/ListaOperadores.vue';
+import GestionarFormadores from '@/components/UserList/ListaFormadores.vue';
 export default {
   components: {
     // Registras los componentes para usarlos en esta vista
     GestionarInspectores,
-    GestionarCertificadores
+    GestionarCertificadores,
+    GestionarIntructores,
+    GestionarOperadores,
+    GestionarFormadores
   }
 }
 </script>

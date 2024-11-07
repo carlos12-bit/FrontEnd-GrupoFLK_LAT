@@ -16,7 +16,7 @@
     <el-sub-menu index="1">
       <template #title>
         <el-icon><icon-menu /></el-icon>
-        <span>Gestión Operativa</span>
+        <span>Modulo Inspecciones</span>
       </template>
     
         <!-- Subgrupo de Gestión Operativa con opciones -->
@@ -25,9 +25,14 @@
             Gestionar Servicios
           </router-link>
         </el-menu-item>
-        <el-menu-item index="1-2">
-          <router-link class="nav-link" to="/admin-dashboard/GestionarPersonal">
-            Gestionar Personal
+        <el-menu-item index="1-3">
+          <router-link class="nav-link" to="/admin-dashboard/GestionarEmpresas">
+            Gestionar Empresas
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="1-3">
+          <router-link class="nav-link" to="/admin-dashboard/GestionarEmpresas">
+            Gestionar Empresas
           </router-link>
         </el-menu-item>
     </el-sub-menu>
@@ -36,7 +41,7 @@
     <el-sub-menu index="2">
       <template #title>
         <el-icon><icon-menu /></el-icon>
-        <span>Gestión</span>
+        <span>Modulo Curso</span>
       </template>
       
       <!-- Submenú para "Gestionar Solicitudes" -->
@@ -67,9 +72,22 @@
         </router-link>
       </el-menu-item>
     </el-sub-menu>
+    <el-sub-menu index="3">
+      <template #title>
+        <el-icon><icon-menu /></el-icon>
+        <span>General</span>
+      </template>
+      
+      <!-- Submenú para "Gestionar Solicitudes" -->
+      <el-menu-item index="3-1">
+          <router-link class="nav-link" to="/admin-dashboard/GestionarPersonal">
+            Gestionar Usuarios
+          </router-link>
+      </el-menu-item>
+    </el-sub-menu>
 
     <!-- Botón de Cerrar Sesión -->
-    <el-menu-item index="3" @click="handleLogout">
+    <el-menu-item index="4" @click="handleLogout">
       <el-icon><User /></el-icon>
       <template #title>Cerrar Sesión</template>
     </el-menu-item>
