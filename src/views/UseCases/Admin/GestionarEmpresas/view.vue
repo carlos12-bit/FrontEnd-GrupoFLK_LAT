@@ -5,7 +5,7 @@
       
       <!-- Aquí se invoca el componente GestionarEmpresa -->
       <div class="section">
-        <GestionarEmpresa class="animate__animated animate__bounceIn"/>
+        <GestionarEmpresas class="animate__animated animate__bounceIn"/>
       </div>
     </div>
   </template>
@@ -16,7 +16,6 @@
   
   export default {
     components: {
-      // Registra el componente para usarlo en esta vista
       GestionarEmpresas
     }
   }

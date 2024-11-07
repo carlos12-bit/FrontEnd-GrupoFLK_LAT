@@ -164,7 +164,7 @@ export default {
     };
 
     const fetchEmpresas = async () => {
-      const { data, error } = await supabase.rpc('ObtenerDatosEmpresaPais');
+      const { data, error } = await supabase.rpc('obtenerdatosempresapais');
       if (error) {
         console.error('Error al obtener empresas:', error.message);
       } else {

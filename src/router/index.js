@@ -12,14 +12,14 @@ const routes = [
     meta: { requiresAuth: true, role: 'Administrador' },
     children: [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
-      { path: 'GestionarEmpresas', component: () => import('@/views/UseCases/Admin/GestionarEmpresas/view.vue') },
+      { path: 'GestionarEmpresas', component: () => import('../views/UseCases/Admin/GestionarEmpresas/view.vue') },
       { path: 'GestionarInspecciones', component: () => import('@/views/UseCases/Admin/GestionarInspecciones/view.vue') },
       { path: 'GestionarPersonal', component: () => import('@/views/UseCases/Admin/GestionarPersonal/view.vue') },
       { path: 'GestionarServicios', component: () => import('@/views/UseCases/Admin/GestionarServicios/view.vue') },
       { path: 'ManageCourses', component: () => import('@/views/UseCases/Admin/ManageCourses/View.vue') },
       { path: 'ManageCredentials', component: () => import('@/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue') },
+      { path: 'ManagementServices', component: () => import('@/views/UseCases/Admin/ManagementServices/View.vue') },
       { path: 'ManageRequest', component: () => import('@/views/UseCases/Admin/ManageRequest/ManageRequest.vue') },
-
       { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
       { path: 'ManageCourses/Create', name: 'Create', component: () => import('@/components/ManageCourses/Create.vue') },
       { path: 'ManageCourses/Edit', name: 'Edit', component: () => import('@/components/ManageCourses/Edit.vue') },
