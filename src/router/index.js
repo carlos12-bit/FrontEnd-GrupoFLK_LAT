@@ -17,6 +17,8 @@ import ManageRequest from '@/views/UseCases/Admin/ManageRequest/ManageRequest.vu
 import ManageCourses from '@/views/UseCases/Admin/ManageCourses/View.vue';
 import CourseMaterials from '/workspaces/FrontEnd-GrupoFLK_LAT/src/views/UseCases/Operator/CourseMaterials/view.vue';
 import AccessDenied from '@/views/Security/AccessDenied.vue'; // Asegúrate de tener este componente importado
+import ActivitiesCalendar from '@/views/UseCases/Operator/ActivitiesCalendar/View.vue'
+
 
 const routes = [
   { path: '/', component: Home },
@@ -91,7 +93,11 @@ const routes = [
       },
       {
         path: 'CourseMaterials',
-        component: CourseMaterials, // Vista de inicio del dashboard
+        component: CourseMaterials, // Vista de materiales del curso
+      },
+        {
+        path: 'ActivitiesCalendar',
+        component: ActivitiesCalendar, // Vista de calendario de actividades
       },
    
     ],

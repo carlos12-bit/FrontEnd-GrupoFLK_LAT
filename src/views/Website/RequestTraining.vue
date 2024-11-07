@@ -158,9 +158,10 @@
             </label>
           </div>
 
+          <!-- Campo de archivo para Firma -->
           <div class="form-group">
             <label for="firma">Firma</label>
-            <input type="text" id="firma" v-model="form.firma" />
+            <input type="file" id="firma" @change="handleFileUpload('firma', $event)" />
           </div>
 
           <button type="submit">Enviar Solicitud</button>
@@ -238,26 +239,50 @@ export default {
         return;
       }
 
-       // Crear un nuevo objeto sin `id_solicitud`
-  const { id_solicitud, ...dataToSend } = form.value; // Excluir id_solicitud
+      const uploadFile = async (fieldName, file) => {
+        if (file) {
+          const { data, error } = await supabase.storage
+            .from('your-storage-bucket') // Reemplaza con el nombre de tu bucket
+            .upload(`${fieldName}/${file.name}`, file);
+          if (error) {
+            console.error(`Error al subir ${fieldName}:`, error.message);
+            return null;
+          }
+          return data.path;
+        }
+        return null;
+      };
 
-// Insertar datos sin `id_solicitud`
-const { error } = await supabase.from('Solicitud_Capacitacion').insert([dataToSend]);
+      // Subir archivos si existen
+      const fileFields = ['dni_adjunto', 'certificado_medico_adjunto', 'licencia_conducir_adjunto', 'firma'];
+      for (const field of fileFields) {
+        if (form.value[field]) {
+          const filePath = await uploadFile(field, form.value[field]);
+          if (filePath) {
+            form.value[field] = filePath;
+          }
+        }
+      }
 
-if (error) {
-  console.error('Error al enviar la solicitud:', error.message);
-  alert('Error al enviar la solicitud.');
-} else {
-  alert('Solicitud enviada con éxito.');
-  Object.keys(form.value).forEach((key) => (form.value[key] = ''));
-}
-};
+      const { id_solicitud, ...dataToSend } = form.value;
+      const { error } = await supabase.from('Solicitud_Capacitacion').insert([dataToSend]);
+
+      if (error) {
+        console.error('Error al enviar la solicitud:', error.message);
+        alert('Error al enviar la solicitud.');
+      } else {
+        alert('Solicitud enviada con éxito.');
+        Object.keys(form.value).forEach((key) => (form.value[key] = ''));
+      }
+    };
+
     return { form, paises, cursos, handleFileUpload, submitForm };
   },
 };
 </script>
+
 <style scoped>
-/* Fondo estático de la imagen */
+/* Estilos existentes */
 .background-container {
   background-image: url('/workspaces/FrontEnd-GrupoFLK_LAT/src/assets/imagen-Solicitud.jpg');
   background-size: cover;
@@ -272,7 +297,6 @@ if (error) {
   background-attachment: fixed;
 }
 
-/* Contenedor principal para centrar el formulario */
 .main-container {
   display: flex;
   justify-content: center;
@@ -283,7 +307,6 @@ if (error) {
   z-index: 1;
 }
 
-/* Contenedor del formulario */
 .solicitud-capacitacion {
   max-width: 600px;
   width: 100%;
@@ -302,7 +325,6 @@ h2 {
   color: #000;
 }
 
-/* Estructura del formulario */
 form {
   display: flex;
   flex-direction: column;

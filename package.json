@@ -9,9 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/vue3": "^6.1.15",
     "@supabase/supabase-js": "^2.45.4",
     "animate.css": "^4.1.1",
     "aos": "^2.3.4",
+    "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "datatables.net": "^2.1.8",
     "datatables.net-bs5": "^2.1.7",
@@ -25,6 +29,7 @@
     "tabulator-tables": "^6.3.0",
     "uuid": "^10.0.0",
     "vue": "^3.4.21",
+    "vue-cal": "^4.10.0",
     "vue-router": "^4.4.3"
   },
   "devDependencies": {
