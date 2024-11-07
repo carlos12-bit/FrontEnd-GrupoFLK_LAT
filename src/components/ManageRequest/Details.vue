@@ -27,8 +27,7 @@
       <p><strong>Fecha de Solicitud:</strong> {{ new Date(solicitud.fecha_solicitud).toLocaleDateString() }}</p>
       <p><strong>Consentimiento para Tratamiento de Datos:</strong> {{ solicitud.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
       <p><strong>Firma:</strong> {{ solicitud.firma }}</p>
-      
-      <!-- Mostrar imágenes adjuntas si existen -->
+
       <div v-if="solicitud.dni_adjunto">
         <p><strong>DNI Adjunto:</strong></p>
         <img :src="solicitud.dni_adjunto" alt="DNI Adjunto" class="imagen-adjunta" />
@@ -49,7 +48,6 @@
       <button @click="abrirModalRechazo" class="card-btn card-btn-rechazar">Rechazar</button>
     </div>
 
-    <!-- Modal para Motivo de Rechazo -->
     <div v-if="mostrarModalRechazo" class="modal">
       <div class="modal-content">
         <h3>Motivo de Rechazo</h3>
@@ -72,17 +70,13 @@ export default {
     return {
       solicitud: null,
       mostrarModalRechazo: false,
-      motivoRechazo: "" // Para almacenar el motivo del rechazo
+      motivoRechazo: "" // Motivo para el rechazo
     };
   },
   async mounted() {
-    // Obtenemos los detalles de la solicitud seleccionada usando el id pasado por params
     let { data: solicitud, error } = await supabase
       .from('Solicitud_Capacitacion')
-      .select(`
-        *,
-        Cursos (titulo_curso)
-      `)
+      .select(`*, Cursos (titulo_curso)`)
       .eq('id_solicitud', this.$route.params.id)
       .single();
 
@@ -112,7 +106,7 @@ export default {
           .from('Solicitud_Capacitacion')
           .update({ 
             estado: nuevoEstado,
-            motivo_rechazo: this.motivoRechazo // Guardar el motivo de rechazo en la base de datos
+            motivo_rechazo: this.motivoRechazo
           })
           .eq('id_solicitud', this.$route.params.id);
 
@@ -120,9 +114,11 @@ export default {
           throw error;
         }
 
+        // Llamar a la función para enviar correo
+        await this.enviarCorreo(accion);
+
         alert(`La solicitud ha sido ${nuevoEstado}`);
         
-        // Redirigir al componente ManageRequest después de la acción
         this.$router.push({ path: '/admin-dashboard/ManageRequest' });
 
       } catch (error) {
@@ -132,6 +128,28 @@ export default {
         this.cerrarModalRechazo();
       }
     },
+    async enviarCorreo(accion) {
+      const subject = accion === 'aceptar' 
+        ? "Solicitud Aceptada"
+        : "Solicitud Rechazada";
+        
+      const mensaje = accion === 'aceptar'
+        ? `Estimado ${this.solicitud.nombre_completo}, su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido aceptada.`
+        : `Estimado ${this.solicitud.nombre_completo}, lamentamos informarle que su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido rechazada. Motivo: ${this.motivoRechazo}`;
+
+      // Enviar correo usando Supabase SMTP
+      const { error } = await supabase.rpc('enviar_correo_smtp', {
+        destinatario: this.solicitud.correo_electronico,
+        asunto: subject,
+        mensaje: mensaje
+      });
+
+      if (error) {
+        console.error("Error al enviar el correo:", error);
+      } else {
+        console.log("Correo enviado correctamente.");
+      }
+    },
     async logout() {
       await supabase.auth.signOut();
       this.$router.push('/login');
@@ -139,6 +157,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 .container {

@@ -1,6 +1,6 @@
 <template>
     <div class="agendar-capacitacion-container">
-      <h1>Agendar Capacitación</h1>
+      <h1>Reasignar Capacitación</h1>
       <el-form :model="form" ref="form" label-width="120px" :rules="rules">
         <!-- Selección de Curso -->
         <el-form-item label="Curso" prop="Fk_curso">
