@@ -161,47 +161,74 @@ export default {
 
 <style scoped>
 .container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 2rem auto;
   padding: 2rem;
-  background-color: #f4f4f9;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.detalle-solicitud {
-  font-size: 1.2rem;
-  line-height: 2;
-  color: black;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .page-title {
-  color: black;
+  font-size: 2rem;
+  color: #34495e;
   text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+.detalle-solicitud {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.detalle-solicitud p {
+  margin: 0;
+  background-color: #f7f9fc;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detalle-solicitud p strong {
+  color: #2980b9;
 }
 
 .imagen-adjunta {
-  max-width: 300px;
-  margin-bottom: 20px;
+  max-width: 100%;
+  margin-top: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-btn, .card-btn-rechazar {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
 }
 
 .card-btn {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
   background-color: #1A5276;
   color: white;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
 }
 
 .card-btn:hover {
-  background-color: #2980B9;
+  background-color: #2980b9;
 }
 
 .card-btn-rechazar {
   background-color: #C0392B;
+  color: white;
 }
 
 .card-btn-rechazar:hover {
@@ -215,32 +242,40 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal-content {
-  background-color: white;
+  background-color: #ffffff;
   padding: 2rem;
-  border-radius: 10px;
+  border-radius: 12px;
   max-width: 500px;
   width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
+}
+
+.modal-content h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #34495e;
 }
 
 .modal-content textarea {
   width: 100%;
-  height: 100px;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border-radius: 5px;
+  padding: 1rem;
+  border-radius: 8px;
   border: 1px solid #ddd;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 .modal-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 </style>
