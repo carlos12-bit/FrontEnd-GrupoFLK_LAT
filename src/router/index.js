@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { getSession, buscarRol } from '@/auth';
-
 const routes = [
   { path: '/', component: () => import('@/views/Website/Home.vue') },
   { path: '/login', component: () => import('@/views/Security/Login.vue') },

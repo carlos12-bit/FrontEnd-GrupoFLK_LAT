@@ -21,7 +21,7 @@
      
         <!-- Subgrupo de Gestión Operativa con opciones -->
         <el-menu-item index="1-1">
-          <router-link class="nav-link" to="">
+          <router-link class="nav-link" to="/operator-dashboard/ActivitiesCalendar">
             Calendario de Actividades
           </router-link>
         </el-menu-item>
