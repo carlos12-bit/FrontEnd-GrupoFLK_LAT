@@ -42,9 +42,8 @@
         <p><strong>Licencia de Conducir Adjunto:</strong></p>
         <img :src="solicitud.licencia_conducir_adjunto" alt="Licencia de Conducir Adjunto" class="imagen-adjunta" />
       </div>
-
-      <!-- Botones de Aceptar y Rechazar -->
-      <button @click="gestionarSolicitud('aceptar')" class="card-btn">Aceptar</button>
+           <!-- Botones de Aceptar y Rechazar -->
+      <button @click="gestionarSolicitud('aceptado')" class="card-btn">Aceptar</button>
       <button @click="abrirModalRechazo" class="card-btn card-btn-rechazar">Rechazar</button>
     </div>
 
@@ -53,7 +52,7 @@
         <h3>Motivo de Rechazo</h3>
         <textarea v-model="motivoRechazo" placeholder="Ingrese el motivo del rechazo"></textarea>
         <div class="modal-buttons">
-          <button @click="gestionarSolicitud('rechazar')" class="card-btn">Confirmar Rechazo</button>
+          <button @click="gestionarSolicitud('rechazado')" class="card-btn">Confirmar Rechazo</button>
           <button @click="cerrarModalRechazo" class="card-btn card-btn-rechazar">Cancelar</button>
         </div>
       </div>
@@ -93,20 +92,15 @@ export default {
     cerrarModalRechazo() {
       this.mostrarModalRechazo = false;
     },
-    async gestionarSolicitud(accion) {
-      let nuevoEstado = accion === 'aceptar' ? 'Aceptada' : 'Rechazada';
-      
-      if (accion === 'rechazar' && !this.motivoRechazo) {
-        alert("Por favor, ingrese el motivo del rechazo.");
-        return;
-      }
+    async gestionarSolicitud(estado) {
+      let nuevoEstado = estado === 'aceptado' ? 'Aceptada' : 'Rechazada';
 
       try {
         const { error } = await supabase
           .from('Solicitud_Capacitacion')
           .update({ 
-            estado: nuevoEstado,
-            motivo_rechazo: this.motivoRechazo
+            estado: nuevoEstado, 
+            motivo_rechazo: estado === 'rechazado' ? this.motivoRechazo : null 
           })
           .eq('id_solicitud', this.$route.params.id);
 
@@ -114,31 +108,30 @@ export default {
           throw error;
         }
 
-        // Llamar a la función para enviar correo
-        await this.enviarCorreo(accion);
+        // Enviar correo de aceptación o rechazo usando la configuración SMTP de Supabase
+        await this.enviarCorreoEstado(estado);
 
         alert(`La solicitud ha sido ${nuevoEstado}`);
-        
         this.$router.push({ path: '/admin-dashboard/ManageRequest' });
 
       } catch (error) {
-        console.error(`Error al ${accion} la solicitud: `, error);
-        alert(`Ocurrió un error al ${accion} la solicitud`);
+        console.error(`Error al ${estado} la solicitud: `, error);
+        alert(`Ocurrió un error al ${estado} la solicitud`);
       } finally {
         this.cerrarModalRechazo();
       }
     },
-    async enviarCorreo(accion) {
-      const subject = accion === 'aceptar' 
+    async enviarCorreoEstado(estado) {
+      const subject = estado === 'aceptado' 
         ? "Solicitud Aceptada"
         : "Solicitud Rechazada";
         
-      const mensaje = accion === 'aceptar'
+      const mensaje = estado === 'aceptado'
         ? `Estimado ${this.solicitud.nombre_completo}, su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido aceptada.`
         : `Estimado ${this.solicitud.nombre_completo}, lamentamos informarle que su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido rechazada. Motivo: ${this.motivoRechazo}`;
 
-      // Enviar correo usando Supabase SMTP
-      const { error } = await supabase.rpc('enviar_correo_smtp', {
+      // Llamada al procedimiento almacenado de Supabase para enviar el correo
+      const { error } = await supabase.rpc('enviar_correo', {
         destinatario: this.solicitud.correo_electronico,
         asunto: subject,
         mensaje: mensaje
@@ -147,18 +140,12 @@ export default {
       if (error) {
         console.error("Error al enviar el correo:", error);
       } else {
-        console.log("Correo enviado correctamente.");
+        console.log("Correo de estado enviado correctamente.");
       }
-    },
-    async logout() {
-      await supabase.auth.signOut();
-      this.$router.push('/login');
     }
   }
 };
 </script>
-
-
 <style scoped>
 .container {
   max-width: 900px;
