@@ -284,7 +284,7 @@ export default {
 <style scoped>
 /* Estilos existentes */
 .background-container {
-  background-image: url('/workspaces/FrontEnd-GrupoFLK_LAT/src/assets/imagen-Solicitud.jpg');
+  background-image: url('@/assets/imagen-Solicitud.jpg');
   background-size: cover;
   background-position: center;
   position: fixed;
