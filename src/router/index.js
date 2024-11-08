@@ -6,6 +6,7 @@ const routes = [
   { path: '/register', component: () => import('@/views/Security/Register.vue') },
   { path: '/services', component: () => import('@/views/Website/Services.vue') },
   { path: '/resetpassword', component: () => import('@/views/Security/ResetPassword.vue') },
+  { path: '/RequestTraining', component: () => import('../views/Website/RequestTraining.vue') },
   {
     path: '/admin-dashboard',
     component: () => import('@/views/Layout/Admin/AdminLayout.vue'),

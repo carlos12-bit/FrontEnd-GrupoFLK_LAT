@@ -8,6 +8,7 @@
     <a href="https://wa.me/51966401791?text=Hola%2C%20Quisiera%20solicitar%20Informes" target="_blank" class="btn btn-whatsapp">
       <i class="fab fa-whatsapp"></i> Contáctanos por WhatsApp
     </a>
+    <router-link to="/RequestTraining" class="btn btn-red btn-lg">Solicitar capacitacion</router-link>
   </div>
 </template>
 
@@ -49,6 +50,16 @@ export default {
 /* Botón amarillo para "Nuestros Servicios" */
 .btn-yellow {
   background-color: #FFC107;
+  color: white;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+/* Botón amarillo para "Nuestros Servicios" */
+.btn-red {
+  background-color: #ff2c07;
   color: white;
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
