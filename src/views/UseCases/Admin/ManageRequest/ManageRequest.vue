@@ -2,65 +2,73 @@
   <div class="container">
     <h1 class="page-title">Gestión de Solicitudes de Capacitación</h1>
 
-    <!-- Control de número de registros por página -->
-    <div class="pagination-controls">
-      <label for="registrosPorPagina">Mostrar</label>
-      <select v-model="registrosPorPagina" id="registrosPorPagina">
-        <option v-for="num in [5, 10, 20]" :key="num" :value="num">{{ num }}</option>
-      </select>
-      <span>registros</span>
+    <!-- Contenedor de controles de búsqueda y selección de registros -->
+    <div class="controls-container">
+      <!-- Control de número de registros por página -->
+      <div class="pagination-controls">
+        <label for="registrosPorPagina">Mostrar</label>
+        <select v-model="registrosPorPagina" id="registrosPorPagina">
+          <option v-for="num in [5, 10, 20]" :key="num" :value="num">{{ num }}</option>
+        </select>
+        <span>registros</span>
+      </div>
+
+      <!-- Campo de búsqueda -->
+      <div class="search-container">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Buscar solicitud por nombre del curso o solicitante"
+          class="search-input"
+        />
+      </div>
     </div>
 
-    <div class="table-container">
-      <table class="solicitudes-table">
-        <thead>
-          <tr>
-            <th>Curso</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-            <th>Opciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="solicitud in solicitudesPaginadas" :key="solicitud.id_solicitud">
-            <td>{{ obtenerTituloCurso(solicitud.Fk_Curso) || 'Sin curso' }}</td>
-            <td>{{ solicitud.fecha_solicitud ? new Date(solicitud.fecha_solicitud).toLocaleDateString() : 'Sin fecha' }}</td>
-            <td>
-              <span :class="getEstadoClase(solicitud.estado)">
-                {{ solicitud.estado || 'Sin estado' }}
-              </span>
-            </td>
-            <td>
-              <button @click="verDetalles(solicitud.id_solicitud)" class="btn-ver">Ver</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- Tabla de solicitudes -->
+    <table class="solicitudes-table">
+      <thead>
+        <tr>
+          <th>Nombre del Curso</th>
+          <th>Fecha de Solicitud</th>
+          <th>Estado</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="solicitud in solicitudesPaginadas" :key="solicitud.id_solicitud">
+          <td>{{ getNombreCurso(solicitud.Fk_Curso) }}</td>
+          <td>{{ formatFecha(solicitud.fecha_solicitud) }}</td>
+          <td>{{ solicitud.estado || 'Sin asignar' }}</td>
+          <td>
+            <button @click="viewSolicitud(solicitud)" class="view-btn">Ver</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <!-- Controles de paginación -->
     <div class="pagination">
-      <span>Mostrando {{ paginaActual * registrosPorPagina - registrosPorPagina + 1 }} a {{ Math.min(paginaActual * registrosPorPagina, solicitudes.length) }} de {{ solicitudes.length }} registros</span>
+      <span>Mostrando {{ inicioPagina }} a {{ finPagina }} de {{ solicitudesFiltradas.length }} registros</span>
       <button @click="paginaActual = 1" :disabled="paginaActual === 1">Primero</button>
       <button @click="paginaActual--" :disabled="paginaActual === 1">Anterior</button>
       <button @click="paginaActual++" :disabled="paginaActual >= totalPaginas">Siguiente</button>
       <button @click="paginaActual = totalPaginas" :disabled="paginaActual >= totalPaginas">Último</button>
     </div>
 
-    <!-- Sección de Dashboard de Solicitudes Aceptadas -->
+    <!-- Carrusel de Solicitudes Aceptadas -->
     <div class="dashboard-aceptadas">
-      <h2 class="dashboard-title">Solicitudes Aceptadas</h2>
+      <h2 class="dashboard-title">Gestión de Solicitudes Aceptadas</h2>
       <div class="carousel">
         <button @click="prevCard" class="carousel-button left">‹</button>
         <div class="aceptadas-grid" ref="aceptadasGrid">
           <div
-            v-for="solicitud in solicitudesAceptadas"
+            v-for="solicitud in solicitudesAceptadasOrdenadas"
             :key="solicitud.id_solicitud"
             class="aceptada-card"
             @click="abrirModal(solicitud)"
           >
-            <h3>{{ obtenerTituloCurso(solicitud.Fk_Curso) || 'Sin curso' }}</h3>
-            <p><strong>Fecha de Solicitud:</strong> {{ new Date(solicitud.fecha_solicitud).toLocaleDateString() }}</p>
+            <h3>{{ getNombreCurso(solicitud.Fk_Curso) || 'Sin curso' }}</h3>
+            <p><strong>Fecha de Solicitud:</strong> {{ formatFecha(solicitud.fecha_solicitud) }}</p>
             <p><strong>Solicitante:</strong> {{ solicitud.nombre_completo }}</p>
           </div>
         </div>
@@ -68,36 +76,42 @@
       </div>
     </div>
 
-    <!-- Modal de Detalles -->
+    <!-- Modal de Detalles de la Solicitud -->
     <div v-if="modalVisible" class="modal-overlay" @click.self="cerrarModal">
       <div class="modal-content">
         <h3>Detalles de la Solicitud</h3>
-        <p><strong>Curso:</strong> {{ obtenerTituloCurso(detalleSolicitud?.Fk_Curso) || 'Sin curso' }}</p>
-        <p><strong>Fecha de Solicitud:</strong> {{ detalleSolicitud?.fecha_solicitud ? new Date(detalleSolicitud.fecha_solicitud).toLocaleDateString() : 'Sin fecha' }}</p>
-        <p><strong>Solicitante:</strong> {{ detalleSolicitud?.nombre_completo }}</p>
-        <p><strong>Número Telefónico:</strong> {{ detalleSolicitud?.nro_telefonico }}</p>
-        <p><strong>DNI:</strong> {{ detalleSolicitud?.dni }}</p>
-        <p><strong>Fecha de Nacimiento:</strong> {{ detalleSolicitud?.fecha_nacimiento ? new Date(detalleSolicitud.fecha_nacimiento).toLocaleDateString() : 'Sin fecha' }}</p>
-        <p><strong>Dirección:</strong> {{ detalleSolicitud?.direccion }}</p>
-        <p><strong>Teléfono de Contacto:</strong> {{ detalleSolicitud?.telefono_contacto }}</p>
-        <p><strong>Correo Electrónico:</strong> {{ detalleSolicitud?.correo_electronico }}</p>
-        <p><strong>Nacionalidad:</strong> {{ detalleSolicitud?.nacionalidad }}</p>
-        <p><strong>Ocupación Actual:</strong> {{ detalleSolicitud?.ocupacion_actual }}</p>
-        <p><strong>Nombre de Empresa:</strong> {{ detalleSolicitud?.nombre_empresa }}</p>
-        <p><strong>Cargo Actual:</strong> {{ detalleSolicitud?.cargo_actual }}</p>
-        <p><strong>Experiencia con Maquinaria:</strong> {{ detalleSolicitud?.experiencia_maquinaria }}</p>
-        <p><strong>Contacto de Emergencia:</strong> {{ detalleSolicitud?.nombre_contacto_emergencia }}</p>
-        <p><strong>Relación de Contacto:</strong> {{ detalleSolicitud?.relacion_contacto_emergencia }}</p>
-        <p><strong>Teléfono de Emergencia:</strong> {{ detalleSolicitud?.telefono_contacto_emergencia }}</p>
-        <p><strong>Fecha de Inicio Preferida:</strong> {{ detalleSolicitud?.fecha_inicio_preferida ? new Date(detalleSolicitud.fecha_inicio_preferida).toLocaleDateString() : 'Sin fecha' }}</p>
-        <p><strong>Turno Preferido:</strong> {{ detalleSolicitud?.turno_preferido }}</p>
-        <p><strong>Alergias o Condiciones:</strong> {{ detalleSolicitud?.alergias_condiciones }}</p>
-        <p><strong>Necesidades Especiales:</strong> {{ detalleSolicitud?.necesidades_especiales }}</p>
-        <p><strong>Consentimiento de Participación:</strong> {{ detalleSolicitud?.consentimiento_participacion ? 'Sí' : 'No' }}</p>
-        <p><strong>Autorización de Imagen:</strong> {{ detalleSolicitud?.autorizacion_imagen ? 'Sí' : 'No' }}</p>
-        <p><strong>Consentimiento para Tratamiento de Datos:</strong> {{ detalleSolicitud?.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
-        <p><strong>Firma:</strong> {{ detalleSolicitud?.firma }}</p>
-
+       
+        <p><strong>ID Solicitud:</strong> {{ detalleSolicitud.id_solicitud }}</p>
+        <p><strong>Nombre Completo:</strong> {{ detalleSolicitud.nombre_completo }}</p>
+        <p><strong>Teléfono:</strong> {{ detalleSolicitud.nro_telefonico }}</p>
+        <p><strong>DNI:</strong> {{ detalleSolicitud.dni }}</p>
+        <p><strong>Fecha de Nacimiento:</strong> {{ formatFecha(detalleSolicitud.fecha_nacimiento) }}</p>
+        <p><strong>Dirección:</strong> {{ detalleSolicitud.direccion }}</p>
+        <p><strong>Teléfono de Contacto:</strong> {{ detalleSolicitud.telefono_contacto }}</p>
+        <p><strong>Correo Electrónico:</strong> {{ detalleSolicitud.correo_electronico }}</p>
+        <p><strong>Nacionalidad:</strong> {{ detalleSolicitud.nacionalidad }}</p>
+        <p><strong>Ocupación Actual:</strong> {{ detalleSolicitud.ocupacion_actual }}</p>
+        <p><strong>Nombre de Empresa:</strong> {{ detalleSolicitud.nombre_empresa }}</p>
+        <p><strong>Cargo Actual:</strong> {{ detalleSolicitud.cargo_actual }}</p>
+        <p><strong>Experiencia en Maquinaria:</strong> {{ detalleSolicitud.experiencia_maquinaria }}</p>
+        <p><strong>Contacto de Emergencia:</strong> {{ detalleSolicitud.nombre_contacto_emergencia }}</p>
+        <p><strong>Relación con Contacto de Emergencia:</strong> {{ detalleSolicitud.relacion_contacto_emergencia }}</p>
+        <p><strong>Teléfono de Contacto de Emergencia:</strong> {{ detalleSolicitud.telefono_contacto_emergencia }}</p>
+        <p><strong>Curso Seleccionado:</strong> {{ getNombreCurso(detalleSolicitud.Fk_Curso) }}</p>
+        <p><strong>Fecha Inicio Preferida:</strong> {{ formatFecha(detalleSolicitud.fecha_inicio_preferida) }}</p>
+        <p><strong>Turno Preferido:</strong> {{ detalleSolicitud.turno_preferido }}</p>
+        <p><strong>Adjunto DNI:</strong> {{ detalleSolicitud.dni_adjunto }}</p>
+        <p><strong>Certificado Médico Adjunto:</strong> {{ detalleSolicitud.certificado_medico_adjunto }}</p>
+        <p><strong>Licencia de Conducir Adjunto:</strong> {{ detalleSolicitud.licencia_conducir_adjunto }}</p>
+        <p><strong>Alergias o Condiciones:</strong> {{ detalleSolicitud.alergias_condiciones }}</p>
+        <p><strong>Necesidades Especiales:</strong> {{ detalleSolicitud.necesidades_especiales }}</p>
+        <p><strong>Consentimiento de Participación:</strong> {{ detalleSolicitud.consentimiento_participacion ? 'Sí' : 'No' }}</p>
+        <p><strong>Autorización de Imagen:</strong> {{ detalleSolicitud.autorizacion_imagen ? 'Sí' : 'No' }}</p>
+        <p><strong>Fecha de Solicitud:</strong> {{ formatFecha(detalleSolicitud.fecha_solicitud) }}</p>
+        <p><strong>Consentimiento de Tratamiento de Datos:</strong> {{ detalleSolicitud.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
+        <p><strong>Firma:</strong> {{ detalleSolicitud.firma }}</p>
+        <p><strong>Estado:</strong> {{ detalleSolicitud.estado }}</p>
+        
         <button @click="cerrarModal" class="btn-cerrar-modal">Cerrar</button>
       </div>
     </div>
@@ -105,104 +119,160 @@
 </template>
 
 <script>
+import { ref, onMounted, computed } from 'vue';
 import { supabase } from '@/supabase.js';
+import { useRouter } from 'vue-router';
 
 export default {
-  name: "GestionarSolicitudes",
-  data() {
-    return {
-      solicitudes: [],
-      cursos: [],
-      solicitudesAceptadas: [],
-      modalVisible: false,
-      detalleSolicitud: null,
-      paginaActual: 1,
-      registrosPorPagina: 5,
-      cardIndex: 0 // Índice para el desplazamiento de una tarjeta a la vez
+  setup() {
+    const router = useRouter();
+    const solicitudes = ref([]);
+    const cursos = ref([]);
+    const searchQuery = ref("");
+    const modalVisible = ref(false);
+    const detalleSolicitud = ref(null);
+    const paginaActual = ref(1);
+    const registrosPorPagina = ref(5);
+
+    const fetchSolicitudes = async () => {
+      let { data: Solicitud_Capacitacion, error } = await supabase.from('Solicitud_Capacitacion').select('*');
+      if (!error) {
+        solicitudes.value = Solicitud_Capacitacion.sort((a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud));
+      }
     };
-  },
-  computed: {
-    totalPaginas() {
-      return Math.ceil(this.solicitudes.length / this.registrosPorPagina);
-    },
-    solicitudesPaginadas() {
-      const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
-      const fin = inicio + this.registrosPorPagina;
-      return this.solicitudes.slice(inicio, fin);
-    }
-  },
-  async mounted() {
-    let { data: solicitudes, error: errorSolicitudes } = await supabase
-      .from('Solicitud_Capacitacion')
-      .select('*');
 
-    if (errorSolicitudes) {
-      console.error("Error fetching solicitudes: ", errorSolicitudes);
-    } else {
-      this.solicitudes = solicitudes;
-      this.solicitudesAceptadas = solicitudes.filter(solicitud => solicitud.estado === 'Aceptada');
-    }
+    const fetchCursos = async () => {
+      let { data: Cursos, error } = await supabase.from('Cursos').select('*');
+      if (!error) cursos.value = Cursos;
+    };
 
-    let { data: cursos, error: errorCursos } = await supabase
-      .from('Cursos')
-      .select('Pk_Curso, titulo_curso');
+    const getNombreCurso = (fk_curso) => {
+      const curso = cursos.value.find(c => c.Pk_Curso === fk_curso);
+      return curso ? curso.titulo_curso : 'Curso no encontrado';
+    };
 
-    if (errorCursos) {
-      console.error("Error fetching cursos: ", errorCursos);
-    } else {
-      this.cursos = cursos;
-    }
-  },
-  methods: {
-    obtenerTituloCurso(fkCurso) {
-      const curso = this.cursos.find(curso => curso.Pk_Curso === fkCurso);
-      return curso ? curso.titulo_curso : null;
-    },
-    verDetalles(idSolicitud) {
-      this.$router.push({ name: 'Details', params: { id: idSolicitud } });
-    },
-    getEstadoClase(estado) {
-      if (estado === 'Aceptada') {
-        return 'estado-aceptada';
-      } else if (estado === 'Rechazada') {
-        return 'estado-rechazada';
-      } else {
-        return 'estado-pendiente';
+    const formatFecha = (fecha) => {
+      if (!fecha) return 'Sin fecha';
+      const date = new Date(fecha);
+      return date.toLocaleDateString();
+    };
+
+    const viewSolicitud = (solicitud) => {
+      router.push({ path: 'ManageRequest/Details', query: { id: solicitud.id_solicitud } });
+    };
+
+    const abrirModal = (solicitud) => {
+      detalleSolicitud.value = solicitud;
+      modalVisible.value = true;
+    };
+
+    const cerrarModal = () => {
+      modalVisible.value = false;
+      detalleSolicitud.value = null;
+    };
+
+    const solicitudesFiltradas = computed(() => {
+      let filtered = solicitudes.value;
+
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        filtered = filtered.filter(solicitud =>
+          (getNombreCurso(solicitud.Fk_Curso) || '').toLowerCase().includes(query) ||
+          (solicitud.nombre_completo || '').toLowerCase().includes(query)
+        );
       }
-    },
-    prevCard() {
-      if (this.cardIndex > 0) {
-        this.cardIndex--;
-        this.scrollToCurrentCard();
-      }
-    },
-    nextCard() {
-      if (this.cardIndex < this.solicitudesAceptadas.length - 4) {
-        this.cardIndex++;
-        this.scrollToCurrentCard();
-      }
-    },
-    scrollToCurrentCard() {
-      const grid = this.$refs.aceptadasGrid;
-      const cardWidth = grid.querySelector(".aceptada-card").offsetWidth;
-      grid.scrollTo({
-        left: this.cardIndex * (cardWidth + 10), // Ajuste para margen
-        behavior: "smooth"
-      });
-    },
-    abrirModal(solicitud) {
-      this.detalleSolicitud = solicitud;
-      this.modalVisible = true;
-    },
-    cerrarModal() {
-      this.modalVisible = false;
-      this.detalleSolicitud = null;
-    }
+
+      return filtered;
+    });
+
+    const totalPaginas = computed(() => {
+      return Math.ceil(solicitudesFiltradas.value.length / registrosPorPagina.value);
+    });
+
+    const solicitudesPaginadas = computed(() => {
+      const inicio = (paginaActual.value - 1) * registrosPorPagina.value;
+      const fin = inicio + registrosPorPagina.value;
+      return solicitudesFiltradas.value.slice(inicio, fin);
+    });
+
+    const solicitudesAceptadasOrdenadas = computed(() => {
+      return solicitudes.value
+        .filter(solicitud => solicitud.estado === 'Aceptada')
+        .sort((a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud));
+    });
+
+    const inicioPagina = computed(() => {
+      return (paginaActual.value - 1) * registrosPorPagina.value + 1;
+    });
+
+    const finPagina = computed(() => {
+      return Math.min(inicioPagina.value + registrosPorPagina.value - 1, solicitudesFiltradas.value.length);
+    });
+
+    onMounted(() => {
+      fetchSolicitudes();
+      fetchCursos();
+    });
+
+    return {
+      solicitudes,
+      solicitudesFiltradas,
+      solicitudesPaginadas,
+      solicitudesAceptadasOrdenadas,
+      searchQuery,
+      modalVisible,
+      detalleSolicitud,
+      registrosPorPagina,
+      paginaActual,
+      totalPaginas,
+      inicioPagina,
+      finPagina,
+      getNombreCurso,
+      formatFecha,
+      viewSolicitud,
+      abrirModal,
+      cerrarModal
+    };
   }
 };
 </script>
 
 <style scoped>
+/* Contenedor de controles de búsqueda y selección de registros */
+.controls-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Estilos del contenedor de búsqueda */
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 300px;
+  font-size: 1rem;
+}
+
+/* Estilos del selector de número de registros */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-controls label,
+.pagination-controls span {
+  margin-right: 0.5rem;
+}
+
+/* Contenedor principal */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -212,46 +282,32 @@ export default {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+/* Título de la página */
 .page-title {
-  text-align: center;
   font-size: 2rem;
-  color: #1A5276;
-  margin-bottom: 2rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
   font-weight: bold;
 }
 
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.pagination-controls label,
-.pagination-controls span {
-  margin-right: 0.5rem;
-}
-
-.table-container {
-  overflow-x: auto;
-}
-
+/* Tabla */
 .solicitudes-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.solicitudes-table th, .solicitudes-table td {
-  padding: 1rem;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
+.solicitudes-table th,
+.solicitudes-table td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  text-align: left;
 }
 
 .solicitudes-table th {
-  background-color: #f2f2f2;
-  font-size: 1.2rem;
+  background-color: #f4f4f4;
   font-weight: bold;
+  font-size: 1.2rem;
   color: #333;
 }
 
@@ -259,18 +315,19 @@ export default {
   font-size: 1rem;
 }
 
-.btn-ver {
-  background-color: #2ecc71;
+/* Botón Ver */
+.view-btn {
+  background-color: #3498db;
   color: white;
-  padding: 0.5rem 1rem;
   border: none;
+  padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.btn-ver:hover {
-  background-color: #27ae60;
+.view-btn:hover {
+  background-color: #2980b9;
 }
 
 /* Paginación */
@@ -347,12 +404,7 @@ export default {
   background-color: #f0f8ff;
 }
 
-.aceptada-card:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-/* Modal de Detalles */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -370,25 +422,19 @@ export default {
   background: #fff;
   padding: 2rem;
   border-radius: 10px;
-  max-width: 700px; /* Mayor ancho */
+  max-width: 700px;
   width: 90%;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
   max-height: 90vh;
-  padding: 2rem 3rem; /* Espaciado adicional */
+  padding: 2rem 3rem;
   animation: slideDown 0.3s ease-in-out;
 }
 
 .modal-content h3 {
   font-size: 1.5rem;
   color: #333;
-  margin-bottom: 1rem;
-}
-
-.modal-content p {
-  font-size: 1rem;
-  color: #555;
   margin-bottom: 1rem;
 }
 
@@ -406,7 +452,6 @@ export default {
   background-color: #c0392b;
 }
 
-/* Animaciones */
 @keyframes fadeIn {
   from {
     opacity: 0;

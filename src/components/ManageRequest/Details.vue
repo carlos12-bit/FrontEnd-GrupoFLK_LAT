@@ -32,7 +32,7 @@
         <p><strong>DNI Adjunto:</strong></p>
         <img :src="solicitud.dni_adjunto" alt="DNI Adjunto" class="imagen-adjunta" />
       </div>
-      
+
       <div v-if="solicitud.certificado_medico_adjunto">
         <p><strong>Certificado Médico Adjunto:</strong></p>
         <img :src="solicitud.certificado_medico_adjunto" alt="Certificado Médico Adjunto" class="imagen-adjunta" />
@@ -42,7 +42,8 @@
         <p><strong>Licencia de Conducir Adjunto:</strong></p>
         <img :src="solicitud.licencia_conducir_adjunto" alt="Licencia de Conducir Adjunto" class="imagen-adjunta" />
       </div>
-           <!-- Botones de Aceptar y Rechazar -->
+
+      <!-- Botones de Aceptar y Rechazar -->
       <button @click="gestionarSolicitud('aceptado')" class="card-btn">Aceptar</button>
       <button @click="abrirModalRechazo" class="card-btn card-btn-rechazar">Rechazar</button>
     </div>
@@ -73,10 +74,17 @@ export default {
     };
   },
   async mounted() {
+    const solicitudId = this.$route.query.id;
+    console.log("ID de solicitud:", solicitudId); // Verifica que el ID se está recibiendo correctamente
+    if (!solicitudId) {
+      console.error("ID de solicitud no encontrado en la URL.");
+      return;
+    }
+
     let { data: solicitud, error } = await supabase
       .from('Solicitud_Capacitacion')
       .select(`*, Cursos (titulo_curso)`)
-      .eq('id_solicitud', this.$route.params.id)
+      .eq('id_solicitud', solicitudId)
       .single();
 
     if (error) {
@@ -102,14 +110,11 @@ export default {
             estado: nuevoEstado, 
             motivo_rechazo: estado === 'rechazado' ? this.motivoRechazo : null 
           })
-          .eq('id_solicitud', this.$route.params.id);
+          .eq('id_solicitud', this.$route.query.id);
 
         if (error) {
           throw error;
         }
-
-        // Enviar correo de aceptación o rechazo usando la configuración SMTP de Supabase
-        await this.enviarCorreoEstado(estado);
 
         alert(`La solicitud ha sido ${nuevoEstado}`);
         this.$router.push({ path: '/admin-dashboard/ManageRequest' });
@@ -120,32 +125,11 @@ export default {
       } finally {
         this.cerrarModalRechazo();
       }
-    },
-    async enviarCorreoEstado(estado) {
-      const subject = estado === 'aceptado' 
-        ? "Solicitud Aceptada"
-        : "Solicitud Rechazada";
-        
-      const mensaje = estado === 'aceptado'
-        ? `Estimado ${this.solicitud.nombre_completo}, su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido aceptada.`
-        : `Estimado ${this.solicitud.nombre_completo}, lamentamos informarle que su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido rechazada. Motivo: ${this.motivoRechazo}`;
-
-      // Llamada al procedimiento almacenado de Supabase para enviar el correo
-      const { error } = await supabase.rpc('enviar_correo', {
-        destinatario: this.solicitud.correo_electronico,
-        asunto: subject,
-        mensaje: mensaje
-      });
-
-      if (error) {
-        console.error("Error al enviar el correo:", error);
-      } else {
-        console.log("Correo de estado enviado correctamente.");
-      }
     }
   }
 };
 </script>
+
 <style scoped>
 .container {
   max-width: 900px;

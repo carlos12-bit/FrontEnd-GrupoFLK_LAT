@@ -21,7 +21,7 @@ const routes = [
       { path: 'ManageCredentials', component: () => import('@/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue') },
       { path: 'ManagementServices', component: () => import('@/views/UseCases/Admin/ManagementServices/View.vue') },
       { path: 'ManageRequest', component: () => import('@/views/UseCases/Admin/ManageRequest/ManageRequest.vue') },
-      { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
+      { path: 'ManageRequest/Details', name: 'detalles' ,component: () => import('@/components/ManageRequest/Details.vue') },
       { path: 'ManageCourses/Create', name: 'Create', component: () => import('@/components/ManageCourses/Create.vue') },
       { path: 'ManageCourses/Edit', name: 'Edit', component: () => import('@/components/ManageCourses/Edit.vue') },
       { path: 'ManageCourses/Details', name: 'Detail', component: () => import('@/components/ManageCourses/Details.vue') },
@@ -41,7 +41,7 @@ const routes = [
       { path: 'RegisterTrainer', component: () => import('@/views/UseCases/Recepcionist/ManageUsers/RegisterTrainer/View.vue') },
       { path: 'ManageRequest', component: () => import('../views/UseCases/Recepcionist/ManageTraining/ManageRequest/ManageRequest.vue') },
       { path: 'ScheduleTraining', component: () => import('../components/ManageRequest/ScheduleTraining.vue') },
-      { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
+      //{ path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
       { path: 'RegisterOperador1', component: () => import('../components/UserList/RegistrarOperador1.vue') },
       { path: 'RegisterFormador1', component: () => import('../components/UserList/RegistrarFormador1.vue') },
       { path: 'RegisterInstructor1', component: () => import('../components/UserList/RegistrarInstructor.vue') },
@@ -102,3 +102,4 @@ function getNombreRol(rolId) {
 }
 
 export default router;
+
