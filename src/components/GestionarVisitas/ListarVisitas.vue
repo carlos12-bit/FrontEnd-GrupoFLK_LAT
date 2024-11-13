@@ -54,8 +54,8 @@ import { ref, computed } from 'vue';
 import debounce from 'lodash/debounce';
 import * as XLSX from 'xlsx';
 import supabase from '@/supabase';
-import RegistrarInspeccion from './RegistrarInspeccion.vue';
-import EditarInspeccion from './EditarInspeccion.vue';
+import RegistrarInspeccion from './RegistrarVisita.vue';
+import EditarInspeccion from './EditarVisita.vue';
 
 export default {
   components: {
