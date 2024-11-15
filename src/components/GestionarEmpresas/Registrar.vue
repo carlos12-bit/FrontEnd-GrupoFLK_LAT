@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-form ref="companyForm" label-width="120px" class="company-form">
-      <el-form-item label="RUC de la Empresa">
-        <el-input v-model="company.ruc" placeholder="Ingrese RUC de la empresa" />
+      <el-form-item label="Número de Identificación (RUC)">
+        <el-input v-model="company.nro_identificacion" placeholder="Ingrese RUC de la empresa" />
       </el-form-item>
-      
+
       <el-form-item label="Nombre Comercial">
         <el-input v-model="company.nombre_comercial" placeholder="Ingrese nombre comercial" />
       </el-form-item>
@@ -12,21 +12,19 @@
       <el-form-item label="Razón Social">
         <el-input v-model="company.razon_social" placeholder="Ingrese razón social" />
       </el-form-item>
-      
+
+      <el-form-item label="Dirección Central">
+        <el-input v-model="company.direccion_central" placeholder="Ingrese dirección central" />
+      </el-form-item>
+
       <el-form-item label="País">
         <el-select v-model="company.pais_id" placeholder="Seleccione un país">
           <el-option v-for="pais in paisOptions" :key="pais.id" :label="pais.nombre" :value="pais.id" />
         </el-select>
       </el-form-item>
-      
-      <el-form-item label="Región">
-        <el-select v-model="company.region_id" placeholder="Seleccione una región">
-          <el-option v-for="region in regionOptions" :key="region.id" :label="region.nombre" :value="region.id" />
-        </el-select>
-      </el-form-item>
 
-      <el-form-item label="Dirección Central">
-        <el-input v-model="company.direccion_central" placeholder="Ingrese dirección central" />
+      <el-form-item label="Estado">
+        <el-switch v-model="company.estado" active-text="Activo" inactive-text="Inactivo" />
       </el-form-item>
 
       <el-form-item>
@@ -45,41 +43,34 @@ import { GetUser } from '@/auth';
 export default {
   setup(_, { emit }) {
     const company = ref({
-      ruc: '',
+      nro_identificacion: '',
       nombre_comercial: '',
       razon_social: '',
-      pais_id: null,
-      region_id: null,
       direccion_central: '',
+      pais_id: null,
+      fecha_de_creacion: new Date().toISOString(),
+      fecha_de_modificacion: new Date().toISOString(),
       autor: GetUser(),
       ultimo_autor: GetUser(),
+      estado: true, // Activo por defecto
     });
 
     const paisOptions = ref([]);
-    const regionOptions = ref([]);
 
-    // Cargar opciones de país y región desde la base de datos
+    // Cargar opciones de país desde la base de datos
     const fetchPaisOptions = async () => {
       const { data, error } = await supabase.from('pais').select('id, nombre');
       if (error) {
         console.error('Error al obtener países:', error.message);
       } else {
         paisOptions.value = data;
-      }
-    };
-
-    const fetchRegionOptions = async () => {
-      const { data, error } = await supabase.from('region').select('id, nombre');
-      if (error) {
-        console.error('Error al obtener regiones:', error.message);
-      } else {
-        regionOptions.value = data;
+        console.log("Países obtenidos:", paisOptions.value); // Verificar que se obtienen los países
       }
     };
 
     // Función para registrar la empresa en la base de datos
     const registerCompany = async () => {
-      if (!company.value.ruc || !company.value.nombre_comercial || !company.value.razon_social || !company.value.pais_id || !company.value.region_id) {
+      if (!company.value.nro_identificacion || !company.value.nombre_comercial || !company.value.razon_social || !company.value.pais_id) {
         alert('Por favor complete todos los campos');
         return;
       }
@@ -98,13 +89,11 @@ export default {
 
     onMounted(() => {
       fetchPaisOptions();
-      fetchRegionOptions();
     });
 
     return {
       company,
       paisOptions,
-      regionOptions,
       registerCompany,
     };
   },

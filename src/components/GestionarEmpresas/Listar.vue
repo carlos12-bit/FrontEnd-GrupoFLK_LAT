@@ -13,13 +13,13 @@
     />
 
     <el-table :data="paginatedEmpresas" style="width: 100%" border>
-      <el-table-column prop="id" label="ID" width="60" />
+      <el-table-column prop="empresa_id" label="ID" width="60" />
       <el-table-column prop="nombre_empresa" label="Nombre de Empresa" sortable />
       <el-table-column prop="pais" label="País" sortable />
       <el-table-column label="Acciones" width="200">
         <template #default="scope">
-          <el-button size="mini" @click="viewDetails(scope.row.id)">Detalle</el-button>
-          <el-button size="mini" type="primary" @click="editCompany(scope.row.id)">Editar</el-button>
+          <el-button size="mini" @click="viewDetails(scope.row.empresa_id)">Detalle</el-button>
+          <el-button size="mini" type="primary" @click="editCompany(scope.row.empresa_id)">Editar</el-button>
           <el-button size="mini" type="warning" @click="toggleEstado(scope.row)">
             {{ scope.row.estado ? 'Inactivar' : 'Activar' }}
           </el-button>
@@ -86,13 +86,13 @@
 import { ref, computed, onMounted } from 'vue';
 import supabase from '@/supabase';
 import * as XLSX from 'xlsx';
-import Registrar from './Registrar.vue';
-import Editar from './Editar.vue';
+import RegistrarEmpresa from './Registrar.vue';
+import EditarEmpresa from './Editar.vue';
 
 export default {
   components: {
-    Registrar,
-    Editar,
+    RegistrarEmpresa,
+    EditarEmpresa,
   },
   setup() {
     const dialogVisible = ref(false);
@@ -134,7 +134,7 @@ export default {
       const { error } = await supabase
         .from('empresa')
         .update({ estado: nuevoEstado })
-        .eq('id', company.id);
+        .eq('id', company.empresa_id);
 
       if (error) {
         console.error('Error al cambiar el estado de la empresa:', error.message);
@@ -163,14 +163,16 @@ export default {
       done();
     };
 
-    const fetchEmpresas = async () => {
-      const { data, error } = await supabase.rpc('obtenerdatosempresapais');
-      if (error) {
-        console.error('Error al obtener empresas:', error.message);
-      } else {
-        empresas.value = data;
-      }
-    };
+const fetchEmpresas = async () => {
+  const { data, error } = await supabase.rpc('obtenerdatosempresapais');
+
+  if (error) {
+    console.error('Error al obtener empresas:', error.message);
+  } else {
+    console.log('Datos obtenidos:', data);  // Verifica los datos obtenidos
+    empresas.value = data;
+  }
+};
 
     const filteredEmpresas = computed(() =>
       empresas.value.filter((empresa) =>
@@ -204,7 +206,7 @@ export default {
       const { error } = await supabase
         .from('empresa')
         .delete()
-        .eq('id', selectedCompany.value.id);
+        .eq('id', selectedCompany.value.empresa_id);
       if (error) {
         console.error('Error al eliminar empresa:', error.message);
       } else {
