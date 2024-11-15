@@ -56,6 +56,7 @@ const routes = [
     meta: { requiresAuth: true, role: 'Asistente de Operaciones' },
     children: [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
+      { path: 'VisitasAsignadas', component: () => import('../views/UseCases/Asist.Op/GestionarVisita/view.vue') },
       
     ],
   },

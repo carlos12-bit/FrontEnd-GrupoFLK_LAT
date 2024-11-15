@@ -24,7 +24,6 @@
       <el-table-column prop="maquinariaxrepresentante_de_empresa_id" label="ID de Maquinaria" sortable />
       <el-table-column prop="fecha_hora_asignada" label="Fecha y Hora Asignada" sortable />
       <el-table-column prop="ubicacionregistrada" label="Ubicación Registrada" sortable />
-      <el-table-column prop="Estado" label="Estado" sortable />
       <el-table-column prop="tipo_de_inspeccion" label="Tipo de Inspección" sortable />
       <el-table-column label="Acciones" width="150">
         <template #default="scope">
