@@ -1,7 +1,5 @@
 <template>
   <div>
-    <GestionaVisitas />
-    <GestionaRegistroVisita />
   </div>
 
 </template>
