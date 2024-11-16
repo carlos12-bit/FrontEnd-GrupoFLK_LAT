@@ -21,7 +21,7 @@
     
         <!-- Subgrupo de Gestión Operativa con opciones -->
         <el-menu-item index="1-1">
-          <router-link class="nav-link" to="//operations-assistant-dashboard/VisitasAsignadas">
+          <router-link class="nav-link" to="/operations-assistant-dashboard/VisitasAsignadas">
             Visitas Programadas
           </router-link>
         </el-menu-item>

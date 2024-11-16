@@ -24,6 +24,14 @@
             </p>
             <p><strong>Tipo de Inspección:</strong> {{ inspection.tipo_inspeccion_nombre }}</p>
             <p><strong>Tipo de Maquinaria:</strong> {{ inspection.tipo_maquinaria_descripcion }}</p>
+            <el-button
+              type="primary"
+              size="small"
+              @click="goToVerification(inspection.id)"
+              style="margin-top: 10px;"
+            >
+              Verificar Inspección
+            </el-button>
           </el-card>
         </el-col>
       </el-row>
@@ -53,6 +61,14 @@
             </p>
             <p><strong>Tipo de Inspección:</strong> {{ inspection.tipo_inspeccion_nombre }}</p>
             <p><strong>Tipo de Maquinaria:</strong> {{ inspection.tipo_maquinaria_descripcion }}</p>
+            <el-button
+              type="primary"
+              size="small"
+              @click="goToVerification(inspection.id)"
+              style="margin-top: 10px;"
+            >
+              Verificar Inspección
+            </el-button>
           </el-card>
         </el-col>
       </el-row>
@@ -67,12 +83,14 @@
 
 <script>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { GetUser } from "@/auth";
 import { supabase } from "@/supabase";
 
 export default {
   name: "CertifierInspections",
   setup() {
+    const router = useRouter();
     const todayInspections = ref([]);
     const futureInspections = ref([]);
 
@@ -110,6 +128,10 @@ export default {
       }
     };
 
+    const goToVerification = (inspectionId) => {
+      router.push(`/operations-assistant-dashboard/verificarinspeccion/${inspectionId}`);
+    };
+
     onMounted(() => {
       fetchCertifierInspections();
     });
@@ -117,6 +139,7 @@ export default {
     return {
       todayInspections,
       futureInspections,
+      goToVerification,
     };
   },
 };

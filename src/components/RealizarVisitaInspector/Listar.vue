@@ -1,64 +1,46 @@
 <template>
   <el-container>
     <el-header>
-      <h1>Inspecciones como Inspector</h1>
+      <h1>Inspecciones Como Inspector</h1>
     </el-header>
     <el-main>
-      <!-- Inspecciones de Hoy -->
+      <!-- Filtros y Paginación -->
       <el-row>
-        <el-col :span="24">
-          <h2>Inspecciones de Hoy</h2>
+        <el-col :span="12">
+          <el-input v-model="searchQuery" placeholder="Buscar..." @input="handleSearch" />
         </el-col>
-      </el-row>
-      <el-row :gutter="20" v-if="todayInspections.length > 0">
-        <el-col :span="8" v-for="inspection in todayInspections" :key="inspection.id">
-          <el-card shadow="hover">
-            <h3>Inspección #{{ inspection.id }}</h3>
-            <p><strong>Inicio:</strong> {{ inspection.fecha_hora_inicio }}</p>
-            <p><strong>Fin:</strong> {{ inspection.fecha_hora_fin }}</p>
-            <p><strong>Ubicación:</strong> {{ inspection.ubicacionregistrada }}</p>
-            <p><strong>Placa:</strong> {{ inspection.placa }}</p>
-            <p>
-              <strong>Representante:</strong>
-              {{ inspection.representante_nombre }} {{ inspection.representante_apellido_paterno }} {{ inspection.representante_apellido_materno }}
-            </p>
-            <p><strong>Tipo de Inspección:</strong> {{ inspection.tipo_inspeccion_nombre }}</p>
-            <p><strong>Tipo de Maquinaria:</strong> {{ inspection.tipo_maquinaria_descripcion }}</p>
-          </el-card>
-        </el-col>
-      </el-row>
-      <el-row v-else>
-        <el-col :span="24">
-          <p>No hay inspecciones programadas para hoy.</p>
+        <el-col :span="12" style="text-align: right;">
+          <el-pagination
+            @current-change="handlePageChange"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            :total="totalRecords"
+          />
         </el-col>
       </el-row>
 
-      <!-- Inspecciones Futuras -->
+      <!-- Inspecciones -->
       <el-row>
         <el-col :span="24">
-          <h2>Inspecciones Futuras</h2>
+          <h2>Inspecciones</h2>
         </el-col>
       </el-row>
-      <el-row :gutter="20" v-if="futureInspections.length > 0">
-        <el-col :span="8" v-for="inspection in futureInspections" :key="inspection.id">
+      <el-row :gutter="20" v-if="inspections.length > 0">
+        <el-col :span="8" v-for="inspection in inspections" :key="inspection.id">
           <el-card shadow="hover">
             <h3>Inspección #{{ inspection.id }}</h3>
             <p><strong>Inicio:</strong> {{ inspection.fecha_hora_inicio }}</p>
-            <p><strong>Fin:</strong> {{ inspection.fecha_hora_fin }}</p>
             <p><strong>Ubicación:</strong> {{ inspection.ubicacionregistrada }}</p>
-            <p><strong>Placa:</strong> {{ inspection.placa }}</p>
-            <p>
-              <strong>Representante:</strong>
-              {{ inspection.representante_nombre }} {{ inspection.representante_apellido_paterno }} {{ inspection.representante_apellido_materno }}
-            </p>
             <p><strong>Tipo de Inspección:</strong> {{ inspection.tipo_inspeccion_nombre }}</p>
-            <p><strong>Tipo de Maquinaria:</strong> {{ inspection.tipo_maquinaria_descripcion }}</p>
+            <el-button type="primary" @click="goToInspection(inspection.id)">
+              Iniciar Inspección
+            </el-button>
           </el-card>
         </el-col>
       </el-row>
       <el-row v-else>
         <el-col :span="24">
-          <p>No hay inspecciones futuras programadas.</p>
+          <p>No hay inspecciones programadas.</p>
         </el-col>
       </el-row>
     </el-main>
@@ -66,16 +48,20 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { GetUser } from "@/auth";
 import { supabase } from "@/supabase";
 
 export default {
-  name: "AssignedInspections",
+  name: "InspectorInspections",
   setup() {
+    const router = useRouter();
     const inspections = ref([]);
-    const todayInspections = ref([]);
-    const futureInspections = ref([]);
+    const totalRecords = ref(0);
+    const currentPage = ref(1);
+    const pageSize = ref(10);
+    const searchQuery = ref("");
 
     const fetchInspections = async () => {
       const userId = GetUser();
@@ -85,38 +71,46 @@ export default {
       }
 
       try {
-        const { data, error } = await supabase.rpc("obtener_inspecciones_asignadas", {
-          p_uuid: userId,
-        });
+        const { data, error, count } = await supabase
+          .rpc("obtener_inspecciones_asignadas", { p_uuid: userId })
+          .range((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value - 1);
 
         if (error) {
-          console.error("Error al obtener las inspecciones asignadas:", error.message);
+          console.error("Error al obtener inspecciones:", error.message);
         } else {
-          // Filtrar las inspecciones para hoy y futuras
-          const today = new Date().toISOString().split("T")[0];
-
-          todayInspections.value = data.filter(
-            (inspection) => inspection.fecha_hora_inicio.split("T")[0] === today
-          );
-          futureInspections.value = data.filter(
-            (inspection) => inspection.fecha_hora_inicio.split("T")[0] > today
-          );
-
           inspections.value = data;
+          totalRecords.value = count || 0;
         }
       } catch (error) {
         console.error("Error inesperado al obtener inspecciones:", error);
       }
     };
 
-    onMounted(() => {
+    const handlePageChange = (page) => {
+      currentPage.value = page;
       fetchInspections();
-    });
+    };
+
+    const handleSearch = () => {
+      // Espera unos 300 ms antes de ejecutar la búsqueda
+      fetchInspections();
+    };
+
+    watch([currentPage, pageSize], fetchInspections, { immediate: true });
+
+    const goToInspection = (inspectionId) => {
+      router.push(`/operations-assistant-dashboard/realizarinspeccion/${inspectionId}`);
+    };
 
     return {
       inspections,
-      todayInspections,
-      futureInspections,
+      totalRecords,
+      currentPage,
+      pageSize,
+      searchQuery,
+      handlePageChange,
+      handleSearch,
+      goToInspection,
     };
   },
 };
@@ -134,9 +128,5 @@ h2 {
 
 .el-card {
   margin: 10px 0;
-}
-
-p {
-  margin: 5px 0;
 }
 </style>
