@@ -1,139 +1,178 @@
 <template>
-  <div class="data-table-container">
-    <h2 class="text-center mb-4">Historial de Inspecciones</h2>
-
-    <!-- Botones para exportar a Excel y abrir modal de registro -->
-    <div class="button-group mb-3">
-      <el-button type="primary" @click="openRegisterModal">Registrar Inspección</el-button>
-      <el-button type="success" @click="exportToExcel" class="ml-3">Exportar a Excel</el-button>
+  <div class="calendar-container">
+    <!-- Calendario -->
+    <div class="calendar-section">
+      <el-calendar
+        v-model="selectedDate"
+        :date-cell="customDateCell"
+        @input="handleDateClick"
+      />
     </div>
 
-    <!-- Barra de búsqueda -->
-    <el-input
-      placeholder="Buscar por estado o tipo de inspección"
-      v-model="searchQuery"
-      @input="debouncedSearch"
-      class="mb-3 search-input"
-    />
-
-    <!-- Tabla de inspecciones -->
-    <el-table :data="paginatedInspecciones" style="width: 100%" border>
-      <el-table-column prop="id" label="ID" width="60" />
-      <el-table-column prop="inspector_id" label="ID del Inspector" sortable />
-      <el-table-column prop="certificador_id" label="ID del Certificador" sortable />
-      <el-table-column prop="maquinariaxrepresentante_de_empresa_id" label="ID de Maquinaria" sortable />
-      <el-table-column prop="fecha_hora_asignada" label="Fecha y Hora Asignada" sortable />
-      <el-table-column prop="ubicacionregistrada" label="Ubicación Registrada" sortable />
-      <el-table-column prop="tipo_de_inspeccion" label="Tipo de Inspección" sortable />
-      <el-table-column label="Acciones" width="150">
-        <template #default="scope">
-          <el-button size="mini" type="primary" @click="openEditModal(scope.row)">Editar</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- Detalles de los eventos -->
+    <div class="details-section" v-if="selectedEvents.length">
+      <div v-for="(event, index) in selectedEvents" :key="index" class="event-card" :style="{ borderColor: event.color }">
+        <h3 :style="{ color: event.color }">{{ event.title }}</h3>
+        <p><strong>Ubicación:</strong> {{ event.details.location }}</p>
+        <p><strong>Hora:</strong> {{ event.details.time }}</p>
+      </div>
+    </div>
   </div>
-
-  <!-- Modal de Registro -->
-  <el-dialog v-model="dialogVisible" title="Registrar Nueva Inspección" width="500px">
-    <RegistrarInspeccion @closeModal="dialogVisible = false" @refreshTable="fetchInspecciones" />
-  </el-dialog>
-
-  <!-- Modal de Edición -->
-  <el-dialog v-model="editDialogVisible" title="Editar Inspección" width="500px">
-    <EditarInspeccion
-      :inspeccion="selectedInspeccion"
-      @closeModal="editDialogVisible = false"
-      @refreshTable="fetchInspecciones"
-    />
-  </el-dialog>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
-import debounce from 'lodash/debounce';
-import * as XLSX from 'xlsx';
-import supabase from '@/supabase';
-import RegistrarInspeccion from './RegistrarVisita.vue';
-import EditarInspeccion from './EditarVisita.vue';
+import { ref, onMounted } from 'vue';
+import { GetUser } from '@/auth';  // Asegúrate de que esta ruta esté correcta
 
 export default {
-  components: {
-    RegistrarInspeccion,
-    EditarInspeccion,
-  },
-  data() {
-    return {
-      inspecciones: [],
-      searchQuery: '',
-      currentPage: 1,
-      itemsPerPage: 5,
-      dialogVisible: false,
-      editDialogVisible: false,
-      selectedInspeccion: null,
-    };
-  },
-  computed: {
-    paginatedInspecciones() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      return this.filteredInspecciones.slice(start, start + this.itemsPerPage);
-    },
-    filteredInspecciones() {
-      return this.inspecciones.filter((inspeccion) =>
-        inspeccion.Estado.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        inspeccion.tipo_de_inspeccion.toString().includes(this.searchQuery)
-      );
-    },
-  },
-  methods: {
-    openRegisterModal() {
-      this.dialogVisible = true;
-    },
-    openEditModal(inspeccion) {
-      this.selectedInspeccion = inspeccion;
-      this.editDialogVisible = true;
-    },
-    async exportToExcel() {
-      const ws = XLSX.utils.json_to_sheet(this.inspecciones);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Inspecciones');
-      XLSX.writeFile(wb, 'Historial_de_Inspecciones.xlsx');
-    },
-    debouncedSearch: debounce(function () {
-      this.filterInspecciones();
-    }, 300),
-    async fetchInspecciones() {
-      const { data, error } = await supabase.from('inspeccion').select('*');
-      if (error) {
-        console.error('Error al obtener inspecciones:', error.message);
-      } else {
-        this.inspecciones = data;
+  name: 'CalendarView',
+  setup() {
+    const events = ref([]);
+    const selectedDate = ref(new Date());
+    const selectedEvents = ref([]);
+
+    // Obtiene el UUID del usuario registrado
+    const userId = GetUser();
+    
+    // Función para cargar los eventos
+    const loadEvents = async () => {
+      if (userId) {
+        // Asumimos que los procedimientos almacenados están implementados en el backend
+        // A continuación, harías la llamada a la API que ejecuta las funciones en tu base de datos
+        const responseInspector = await fetch(`/api/inspector-events/${userId}`);
+        const inspectorEvents = await responseInspector.json();
+
+        const responseCertificador = await fetch(`/api/certificador-events/${userId}`);
+        const certificadorEvents = await responseCertificador.json();
+
+        // Combina ambos eventos
+        events.value = [...inspectorEvents, ...certificadorEvents];
       }
-    },
-  },
-  created() {
-    this.fetchInspecciones();
+    };
+
+    // Personalización de las celdas del calendario
+    const customDateCell = ({ date }) => {
+      const hasEvent = events.value.some(
+        (event) => event.date === date.toISOString().split('T')[0]
+      );
+      if (hasEvent) {
+        return {
+          class: 'highlight-date',
+          children: `<div class="event-card-summary">Evento</div>`,
+        };
+      }
+      return {};
+    };
+
+    // Manejar clic en una fecha
+    const handleDateClick = (date) => {
+      const formattedDate = date.toISOString().split('T')[0];
+      selectedEvents.value = events.value.filter(
+        (event) => event.date === formattedDate
+      );
+    };
+
+    // Cargar los eventos cuando el componente se monta
+    onMounted(() => {
+      loadEvents();
+    });
+
+    return {
+      selectedDate,
+      customDateCell,
+      handleDateClick,
+      selectedEvents,
+    };
   },
 };
 </script>
 
 <style scoped>
-.data-table-container {
-  max-width: 800px;
-  margin: auto;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-.search-input {
-  width: 100%;
-}
-.button-group {
+/* Contenedor principal */
+.calendar-container {
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 15px;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.ml-3 {
-  margin-left: 10px;
+
+/* Sección del calendario */
+.calendar-section {
+  flex: 2;
+}
+
+/* Sección de detalles */
+.details-section {
+  flex: 1;
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #4caf50;
+  background: #e7f9ed;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tarjeta de cada evento */
+.event-card {
+  padding: 10px;
+  border: 2px solid;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-card h3 {
+  margin: 0 0 5px;
+}
+
+.event-card-summary {
+  font-size: 12px;
+  color: #4caf50;
+  font-weight: bold;
+  text-align: center;
+}
+
+.highlight-date {
+  position: relative;
+  background: #e7f9ed;
+  border: 1px solid #4caf50;
+  border-radius: 5px;
+  padding: 4px;
+}
+
+/* Tarjetas para tareas inspector */
+.event-card-inspector {
+  border-color: #f7c92e;
+  background-color: #fff4b3;
+}
+
+/* Tarjetas para tareas certificador */
+.event-card-certificador {
+  border-color: #32c8f0;
+  background-color: #b3e7ff;
+}
+
+/* Responsivo: Cambiar disposición en pantallas pequeñas */
+@media (max-width: 768px) {
+  .calendar-container {
+    flex-direction: column;
+  }
+
+  .calendar-section {
+    flex: none;
+  }
+
+  .details-section {
+    flex: none;
+    max-height: none;
+  }
 }
 </style>

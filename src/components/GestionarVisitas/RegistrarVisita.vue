@@ -83,7 +83,7 @@ export default {
       fecha_hora_inicio: null,
       fecha_hora_fin: null,
       ubicacionregistrada: '',
-      Estado: 'Registrado', // Estado predeterminado como "Registrado"
+      "Estado": 'registrado', // Estado predeterminado como "Registrado"
       tipo_de_inspeccion: null,
       autor: null,
       ultimo_autor: null,
