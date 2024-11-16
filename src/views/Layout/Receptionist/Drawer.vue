@@ -72,6 +72,21 @@
       </template>
       
       <!-- Submenú para "Gestionar Solicitudes" -->
+      <el-sub-menu index="2-1">
+        <template #title>
+          Gestionar Solicitudes
+        </template>
+        <el-menu-item index="2-2-1">
+          <router-link class="nav-link" to="/receptionist-dashboard/ManageRequest">
+            Solicitudes
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="2-2-2">
+          <router-link class="nav-link" to="/receptionist-dashboard/ScheduleTraining">
+            Agendar Capacitación
+          </router-link>
+        </el-menu-item>
+      </el-sub-menu>
       <el-sub-menu index="2-2">
         <template #title>
           Gestionar Solicitudes
@@ -86,7 +101,7 @@
             Agendar Capacitación
           </router-link>
         </el-menu-item>
-      </el-sub-menu>      
+      </el-sub-menu>       
     </el-sub-menu>
 
     <!-- Botón de Cerrar Sesión -->

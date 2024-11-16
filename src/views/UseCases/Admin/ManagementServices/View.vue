@@ -1,9 +1,9 @@
-<template>
+<template> 
   <el-container class="gestion-container">
     <el-main class="main-content">
-      <el-row :gutter="20" class="gestion-row">
+      <el-row :gutter="20" class="gestion-row" type="flex" justify="space-between" align="top">
         <!-- Gestión Tipos de Inspección -->
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
           <h1 class="main-header">Gestión de Tipo de Inspección</h1>
           <el-card shadow="hover" class="gestion-card">
             <ListTypeInspeccion />
@@ -11,7 +11,7 @@
         </el-col>
 
         <!-- Gestión Tipo de Maquinaria -->
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
           <h1 class="main-header">Gestión Tipo de Maquinaria</h1>
           <el-card shadow="hover" class="gestion-card">
             <ListMachinery />
