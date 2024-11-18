@@ -100,6 +100,5 @@ function getNombreRol(rolId) {
     default: return null;
   }
 }
-
 export default router;
 
