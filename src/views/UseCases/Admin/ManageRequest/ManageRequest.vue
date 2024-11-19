@@ -180,6 +180,8 @@
 import { ref, onMounted, computed } from "vue";
 import { supabase } from "@/supabase.js";
 import { useRouter } from "vue-router";
+ 
+
 
 export default {
   setup() {
@@ -263,25 +265,31 @@ export default {
       if (paginaActual.value > numeroPaginas.value) paginaActual.value = numeroPaginas.value;
     };
 
-    // Funciones para gestionar solicitudes
     const gestionarSolicitud = async (solicitud, estado) => {
-      try {
-        const nuevoEstado = estado === "aceptado" ? "Aceptada" : "Rechazada";
-        const { error } = await supabase
-          .from("solicitud_capacitacion")
-          .update({ estado: nuevoEstado, motivo_rechazo: estado === "rechazado" ? motivoRechazo.value : null })
-          .eq("id_solicitud", solicitud.id_solicitud);
+  try {
+    const nuevoEstado = estado === "aceptado" ? "Aceptada" : "Rechazada";
+    const { error } = await supabase
+      .from("solicitud_capacitacion")
+      .update({ estado: nuevoEstado, motivo_rechazo: estado === "rechazado" ? motivoRechazo.value : null })
+      .eq("id_solicitud", solicitud.id_solicitud);
 
-        if (error) throw error;
+    if (error) throw error;
 
-        alert(`Solicitud ${nuevoEstado}`);
-        fetchSolicitudes();
-      } catch (error) {
-        console.error(`Error al ${estado} la solicitud:`, error);
-      }
-    };
+    // Enviar correo tras actualizar el estado
+    await enviarCorreo(solicitud, estado);
 
-    // Modal de rechazo
+    alert(`Solicitud ${nuevoEstado}`);
+    fetchSolicitudes();
+  } catch (error) {
+    console.error(`Error al ${estado} la solicitud:`, error);
+  }
+};
+
+const confirmarRechazo = async () => {
+  await gestionarSolicitud(solicitudActual.value, "rechazado");
+  cerrarModalRechazo();
+};
+
     const abrirModalRechazo = (solicitud) => {
       solicitudActual.value = solicitud;
       mostrarModalRechazo.value = true;
@@ -292,10 +300,43 @@ export default {
       motivoRechazo.value = "";
     };
 
-    const confirmarRechazo = async () => {
-      await gestionarSolicitud(solicitudActual.value, "rechazado");
-      cerrarModalRechazo();
-    };
+    
+
+    async function enviarCorreo(solicitud, estado) {
+  try {
+    // Configuración del asunto y cuerpo del correo
+    const asunto = `Estado de tu solicitud: ${estado === 'aceptado' ? 'Aceptada' : 'Rechazada'}`;
+    const cuerpo = `
+      <h2>Estado de tu solicitud</h2>
+      <p>Hola,</p>
+      <p>Tu solicitud para el curso <strong>${getNombreCurso(solicitud.fk_curso)}</strong> ha sido
+      <strong>${estado === 'aceptado' ? 'Aceptada' : 'Rechazada'}</strong>.</p>
+      <p>${estado === 'aceptado'
+          ? '¡Felicitaciones! Tu solicitud ha sido aprobada.'
+          : motivoRechazo.value}</p>
+      <p>Para confirmar esta acción, haz clic en el siguiente enlace:</p>
+      <p><a href="https://tu-app.com/confirmacion?solicitud=${solicitud.id_solicitud}">Confirmar acción</a></p>
+      <p>Gracias,</p>
+      <p>Equipo de Gestión de Capacitación</p>
+    `;
+
+    // Llama a la función RPC en Supabase
+    const { error } = await supabase.rpc('enviar_correo', {
+      destinatario: solicitud.correo_electronico, // Correo del destinatario
+      asunto: asunto, // Asunto del correo
+      cuerpo: cuerpo, // Contenido del correo
+    });
+
+    if (error) throw error;
+
+    alert("Correo enviado exitosamente");
+  } catch (error) {
+    console.error("Error al enviar el correo:", error);
+    alert("Hubo un error al enviar el correo.");
+  }
+}
+
+
 
     // Modal de detalles
     const abrirModalDetalles = (solicitud) => {

@@ -51,7 +51,7 @@
         </el-menu-item>
         <el-menu-item index="2-2-2">
           <router-link class="nav-link" to="/admin-dashboard/ScheduleTraining">
-            Agendar Capacitación
+            Reasignar Capacitación
           </router-link>
         </el-menu-item>
       </el-sub-menu>
