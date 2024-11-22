@@ -57,6 +57,19 @@
             <input type="text" id="ocupacion_actual" v-model="form.ocupacion_actual" required />
           </div>
 
+          <!-- Desplegable para Fk_Curso -->
+          <div class="form-group">
+            <label for="Fk_Curso">Curso</label>
+            <select id="Fk_Curso" v-model="form.fk_curso" required>
+              <option value="" disabled>Seleccione un curso</option>
+              <option v-for="curso in cursos" :key="curso.pk_curso" :value="curso.pk_curso">
+                {{ curso.titulo_curso }}
+              </option>
+            </select>
+          </div>
+
+
+
           <div class="form-group">
             <label for="nombre_empresa">Nombre de la Empresa</label>
             <input type="text" id="nombre_empresa" v-model="form.nombre_empresa" />
@@ -87,14 +100,6 @@
             <input type="tel" id="telefono_contacto_emergencia" v-model="form.telefono_contacto_emergencia" />
           </div>
 
-          <!-- Desplegable para Fk_Curso -->
-          <div class="form-group">
-            <label for="Fk_Curso">Curso</label>
-            <select id="Fk_Curso" v-model="form.Fk_Curso" required>
-              <option value="" disabled>Seleccione un curso</option>
-              <option v-for="curso in cursos" :key="curso.Pk_Curso" :value="curso.Pk_Curso">{{ curso.titulo_curso }}</option>
-            </select>
-          </div>
 
           <div class="form-group">
             <label for="fecha_inicio_preferida">Fecha de Inicio Preferida</label>
@@ -118,12 +123,14 @@
 
           <div class="form-group">
             <label for="certificado_medico_adjunto">Certificado Médico Adjunto</label>
-            <input type="file" id="certificado_medico_adjunto" @change="handleFileUpload('certificado_medico_adjunto', $event)" />
+            <input type="file" id="certificado_medico_adjunto"
+              @change="handleFileUpload('certificado_medico_adjunto', $event)" />
           </div>
 
           <div class="form-group">
             <label for="licencia_conducir_adjunto">Licencia de Conducir Adjunto</label>
-            <input type="file" id="licencia_conducir_adjunto" @change="handleFileUpload('licencia_conducir_adjunto', $event)" />
+            <input type="file" id="licencia_conducir_adjunto"
+              @change="handleFileUpload('licencia_conducir_adjunto', $event)" />
           </div>
 
           <div class="form-group">
@@ -170,7 +177,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/supabase';
@@ -194,7 +200,7 @@ export default {
       nombre_contacto_emergencia: '',
       relacion_contacto_emergencia: '',
       telefono_contacto_emergencia: '',
-      Fk_Curso: null,
+      fk_curso: null,
       fecha_inicio_preferida: '',
       turno_preferido: '',
       dni_adjunto: '',
@@ -211,17 +217,22 @@ export default {
     const paises = ref([]);
     const cursos = ref([]);
 
+    // Cargar datos de países y cursos desde la base de datos
     const loadData = async () => {
-      const { data: paisData, error: paisError } = await supabase.from('pais').select('id, nombre');
+      const { data: paisData, error: paisError } = await supabase
+        .from("pais")
+        .select("id, nombre");
       if (paisError) {
-        console.error('Error al obtener los países:', paisError.message);
+        console.error("Error al obtener los países:", paisError.message);
       } else {
         paises.value = paisData;
       }
 
-      const { data: cursoData, error: cursoError } = await supabase.from('Cursos').select('Pk_Curso, titulo_curso');
+      const { data: cursoData, error: cursoError } = await supabase
+        .from("cursos")
+        .select("pk_curso, titulo_curso");
       if (cursoError) {
-        console.error('Error al obtener los cursos:', cursoError.message);
+        console.error("Error al obtener los cursos:", cursoError.message);
       } else {
         cursos.value = cursoData;
       }
@@ -229,50 +240,104 @@ export default {
 
     onMounted(loadData);
 
+    // Manejar la subida de archivos
     const handleFileUpload = (field, event) => {
       form.value[field] = event.target.files[0];
     };
 
+    const sanitizeFileName = (fileName) => {
+      return fileName.replace(/[^a-zA-Z0-9._-]/g, "_"); // Reemplaza caracteres especiales
+    };
+
+    const uploadFile = async (fieldName, file) => {
+      if (file) {
+        const sanitizedFileName = sanitizeFileName(file.name);
+        const uniqueFileName = `${fieldName}_${Date.now()}_${sanitizedFileName}`; // Genera un nombre único
+        const { data, error } = await supabase.storage
+          .from("Solicitudes_Capacitacion") // Bucket público
+          .upload(uniqueFileName, file);
+
+        if (error) {
+          console.error(`Error al subir ${fieldName}:`, error.message);
+          return null;
+        }
+        return data.path; // Devuelve la ruta del archivo subido
+      }
+      return null;
+    };
+
+    const isAdult = (fechaNacimiento) => {
+      const today = new Date();
+      const birthDate = new Date(fechaNacimiento);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDifference = today.getMonth() - birthDate.getMonth();
+      const dayDifference = today.getDate() - birthDate.getDate();
+      if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+        return age - 1 >= 18;
+      }
+      return age >= 18;
+    };
+
     const submitForm = async () => {
-      if (!form.value.consentimiento_tratamiento_datos) {
-        alert('Debes aceptar el consentimiento de tratamiento de datos');
-        return;
-      }
+      try {
 
-      const uploadFile = async (fieldName, file) => {
-        if (file) {
-          const { data, error } = await supabase.storage
-            .from('your-storage-bucket') // Reemplaza con el nombre de tu bucket
-            .upload(`${fieldName}/${file.name}`, file);
-          if (error) {
-            console.error(`Error al subir ${fieldName}:`, error.message);
-            return null;
-          }
-          return data.path;
+        // Depuración del valor de fk_curso
+        console.log("Valor seleccionado de fk_curso:", form.value.fk_curso);
+
+
+        // Validaciones previas
+        if (!isAdult(form.value.fecha_nacimiento)) {
+          alert("Debes tener al menos 18 años para completar este formulario.");
+          return;
         }
-        return null;
-      };
 
-      // Subir archivos si existen
-      const fileFields = ['dni_adjunto', 'certificado_medico_adjunto', 'licencia_conducir_adjunto', 'firma'];
-      for (const field of fileFields) {
-        if (form.value[field]) {
-          const filePath = await uploadFile(field, form.value[field]);
-          if (filePath) {
-            form.value[field] = filePath;
+        if (!form.value.consentimiento_tratamiento_datos) {
+          alert("Debes aceptar el consentimiento de tratamiento de datos.");
+          return;
+        }
+
+        if (!form.value.fk_curso) {
+          alert("Debes seleccionar un curso.");
+          return;
+        }
+
+        // Subir archivos y actualizar el objeto `form` con las rutas
+        const fileFields = [
+          "dni_adjunto",
+          "certificado_medico_adjunto",
+          "licencia_conducir_adjunto",
+          "firma",
+        ];
+
+        for (const field of fileFields) {
+          if (form.value[field]) {
+            const filePath = await uploadFile(field, form.value[field]);
+            if (filePath) {
+              form.value[field] = filePath; // Actualiza el campo en el formulario con la ruta del archivo
+            } else {
+              alert(`Error al subir el archivo: ${field}. Revisa los logs para más detalles.`);
+              return;
+            }
           }
         }
-      }
 
-      const { id_solicitud, ...dataToSend } = form.value;
-      const { error } = await supabase.from('Solicitud_Capacitacion').insert([dataToSend]);
+        // Inserción en la base de datos
+        const { error } = await supabase.from("solicitud_capacitacion").insert([form.value]);
 
-      if (error) {
-        console.error('Error al enviar la solicitud:', error.message);
-        alert('Error al enviar la solicitud.');
-      } else {
-        alert('Solicitud enviada con éxito.');
-        Object.keys(form.value).forEach((key) => (form.value[key] = ''));
+        if (error) {
+          console.error("Error al enviar la solicitud:", error.message);
+          alert("Error al enviar la solicitud. Revisa los datos e intenta nuevamente.");
+        } else {
+          alert("Solicitud enviada con éxito.");
+
+          // Limpia el formulario después de enviar
+          Object.keys(form.value).forEach((key) => {
+            form.value[key] = typeof form.value[key] === "boolean" ? false : "";
+          });
+        }
+      } catch (error) {
+        console.error("Error inesperado:", error);
+        alert("Ocurrió un error inesperado. Revisa los logs para más detalles.");
       }
     };
 
@@ -280,6 +345,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 /* Estilos existentes */
