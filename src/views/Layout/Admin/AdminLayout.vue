@@ -21,9 +21,10 @@ export default {
 
 <style>
 .iso {
-  background-color: #e5e5f7;
-opacity: 0.8;
-background-size: 20px 20px;
-background-image:  repeating-linear-gradient(to right, #7095d2, #7095d2 1px, #e5e5f7 1px, #e5e5f7);
+  background-color: #fcfcfc; /* Mantén el color principal */
+  opacity: 0.8; /* Transparencia ligera */
+  background-size: cover; /* Elimina las líneas repetitivas */
+  background-image: none; /* Quita las líneas verticales */
 }
 </style>
+

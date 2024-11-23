@@ -169,22 +169,93 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f4f4f9;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background-color: transparent; /* Fondo transparente */
+  border-radius: 10px; /* Bordes suaves */
+  box-shadow: none; /* Sin sombras */
 }
 
+/* Título */
 h1 {
   text-align: center;
-  color: #1a5276;
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #4a5c93; /* Color acorde con un diseño armónico */
+  margin-bottom: 1.5rem;
+  font-weight: bold;
 }
 
+/* Estilo de los elementos del formulario */
 .el-form-item {
   margin-bottom: 1rem;
 }
 
+.el-form-item__label {
+  color: #4a5c93; /* Color de las etiquetas */
+}
+
+/* Controles del formulario */
+.el-input,
+.el-select,
+.el-date-picker {
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+  border: 1px solid rgba(112, 149, 210, 0.4);
+  border-radius: 5px;
+  color: #4a5c93;
+}
+
+.el-input::placeholder,
+.el-select__placeholder {
+  color: rgba(74, 92, 147, 0.7); /* Placeholder armonioso */
+}
+
+/* Botones */
 .el-button {
   margin-right: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.el-button--primary {
+  background-color: #4a5c93; /* Azul oscuro */
+  color: white;
+}
+
+.el-button--primary:hover {
+  background-color: #3b4a71; /* Azul más oscuro */
+  transform: scale(1.05);
+}
+
+.el-button--default {
+  background-color: rgba(112, 149, 210, 0.1); /* Fondo claro */
+  color: #4a5c93;
+}
+
+.el-button--default:hover {
+  background-color: rgba(112, 149, 210, 0.2);
+  transform: scale(1.05);
+}
+
+/* Mensaje de Confirmación */
+.el-dialog {
+  background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+  color: #4a5c93;
+  border-radius: 10px;
+}
+
+.dialog-footer .el-button {
+  margin: 0 auto;
+  display: block;
+  background-color: #4a5c93;
+  color: white;
+}
+
+.dialog-footer .el-button:hover {
+  background-color: #3b4a71;
+}
+
+/* Ajuste general del formulario */
+.el-form {
+  color: #4a5c93; /* Texto principal */
+}
+
 </style>

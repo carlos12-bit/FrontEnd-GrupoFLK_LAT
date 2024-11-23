@@ -219,71 +219,86 @@ export default {
 </script>
 
 <style scoped>
+/* Contenedor principal */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f4f4f9;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background-color: transparent; /* Fondo transparente */
+  border-radius: 10px; /* Bordes suaves */
+  box-shadow: none; /* Eliminar sombras */
 }
 
+/* Título */
 .page-title {
   font-size: 2rem;
-  color: #333;
+  color: #4a5c93; /* Color armonizado con el fondo */
   text-align: center;
   margin-bottom: 1rem;
+  font-weight: bold;
 }
 
+/* Botón Crear Curso */
 .btn-create {
-  background-color: #3498db;
+  background-color: #4a5c93; /* Azul oscuro */
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.2rem;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btn-create:hover {
-  background-color: #2980b9;
+  background-color: #3b4a71; /* Azul más oscuro */
+  transform: scale(1.05);
 }
 
+/* Tabla de cursos */
 .courses-table {
   width: 100%;
   border-collapse: collapse;
-}
-
-.courses-table th,
-.courses-table td {
-  border: 1px solid #ccc;
-  padding: 0.75rem;
-  text-align: left;
+  background-color: transparent; /* Fondo transparente */
+  color: #4a5c93;
 }
 
 .courses-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
+  background-color: rgba(112, 149, 210, 0.6); /* Fondo semitransparente */
+  color: white;
+  padding: 0.75rem;
+  font-size: 1rem;
 }
 
+.courses-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(112, 149, 210, 0.4); /* Bordes suaves */
+  background-color: transparent; /* Sin fondo */
+}
+
+/* Botones de acciones */
 .view-btn,
 .edit-btn,
 .delete-btn {
-  background-color: #3498db;
+  background-color: #4a5c93; /* Azul oscuro */
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
   margin-right: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .view-btn:hover,
 .edit-btn:hover,
 .delete-btn:hover {
-  background-color: #2980b9;
+  background-color: #3b4a71; /* Azul más oscuro */
+  transform: scale(1.05);
 }
 
+/* Controles de búsqueda y paginación */
 .controls-container {
   display: flex;
   justify-content: space-between;
@@ -294,12 +309,16 @@ export default {
 .pagination-controls {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+  color: #4a5c93;
 }
 
 .pagination-select {
   padding: 0.5rem;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(112, 149, 210, 0.4);
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+  color: #4a5c93;
 }
 
 .search-container {
@@ -310,11 +329,14 @@ export default {
 .search-input {
   padding: 0.5rem;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(112, 149, 210, 0.4);
   font-size: 1rem;
   width: 300px;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+  color: #4a5c93;
 }
 
+/* Paginación */
 .pagination {
   display: flex;
   align-items: center;
@@ -325,7 +347,7 @@ export default {
 
 .pagination button {
   padding: 0.5rem 1rem;
-  background-color: #3498db;
+  background-color: #4a5c93; /* Azul oscuro */
   color: white;
   border: none;
   border-radius: 5px;
@@ -334,12 +356,23 @@ export default {
 }
 
 .pagination button:disabled {
-  background-color: #bdc3c7;
+  background-color: #bdc3c7; /* Gris claro */
   cursor: not-allowed;
 }
 
 .pagination button:hover:enabled {
-  background-color: #2980b9;
+  background-color: #3b4a71; /* Azul más oscuro */
+}
+
+/* Estilo del input de página */
+.pagina-input {
+  width: 50px;
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px solid rgba(112, 149, 210, 0.4);
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+  color: #4a5c93;
 }
 </style>
 
