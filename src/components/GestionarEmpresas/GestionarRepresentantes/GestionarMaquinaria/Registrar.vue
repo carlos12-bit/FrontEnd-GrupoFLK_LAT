@@ -1,84 +1,134 @@
 <template>
-    <div>
-      <h3>Registrar Maquinaria</h3>
-      <el-form ref="registerForm" label-width="120px" class="register-form">
-        <el-form-item label="Placa">
-          <el-input v-model="maquinaria.placa" placeholder="Ingrese la placa" />
-        </el-form-item>
-        
-        <el-form-item label="Tipo de Maquinaria">
-          <el-select v-model="maquinaria.tipo_de_maquinaria_id" placeholder="Seleccione el tipo de maquinaria">
-            <el-option v-for="item in maquinariaOptions" :key="item.id" :label="item.descripcion" :value="item.id" />
-          </el-select>
-        </el-form-item>
-  
-        <el-form-item label="Estado">
-          <el-select v-model="maquinaria.estado" placeholder="Seleccione el estado">
-            <el-option label="Activo" value="Activo" />
-            <el-option label="Inactivo" value="Inactivo" />
-          </el-select>
-        </el-form-item>
-  
-        <el-form-item>
-          <el-button type="primary" @click="registerMaquinaria">Registrar</el-button>
-          <el-button @click="$emit('closeModal')">Cancelar</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-  </template>
-  
-  <script>
-  import { ref, onMounted } from 'vue';
-  import supabase from '@/supabase';
-  
-  export default {
-    emits: ['closeModal', 'refreshTable'],
-    setup(_, { emit }) {
-      const maquinaria = ref({
-        placa: '',
-        tipo_de_maquinaria_id: null,
-        estado: 'Activo',
-      });
-  
-      const maquinariaOptions = ref([]);
-  
-      const fetchMaquinariaOptions = async () => {
-        const { data, error } = await supabase.from('Tipo_De_Maquinaria').select('id, descripcion');
-        if (error) {
-          console.error('Error al obtener tipos de maquinaria:', error.message);
-        } else {
-          maquinariaOptions.value = data;
-        }
-      };
-  
-      const registerMaquinaria = async () => {
-        const { error } = await supabase
-          .from('maquinariaXRepresentante_De_Empresa')
-          .insert([maquinaria.value]);
-  
-        if (error) {
-          console.error('Error al registrar maquinaria:', error.message);
-        } else {
-          alert('Maquinaria registrada con éxito');
-          emit('refreshTable');
-          emit('closeModal');
-        }
-      };
-  
-      onMounted(fetchMaquinariaOptions);
-  
-      return {
-        maquinaria,
-        maquinariaOptions,
-        registerMaquinaria,
-      };
+  <div class="registrar-maquinaria-container">
+    <el-form
+      :model="maquinaria"
+      :rules="rules"
+      ref="maquinariaForm"
+      label-width="150px"
+      class="form-wrapper"
+    >
+      <h3 class="form-title">Registrar Maquinaria</h3>
+
+      <!-- Campos de Maquinaria -->
+      <el-form-item label="Tipo de Maquinaria" prop="tipo_de_maquinaria_id">
+        <el-select v-model="maquinaria.tipo_de_maquinaria_id" placeholder="Seleccione un tipo">
+          <el-option
+            v-for="tipo in tiposMaquinaria"
+            :key="tipo.id"
+            :label="tipo.descripcion"
+            :value="tipo.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Placa" prop="placa">
+        <el-input v-model="maquinaria.placa" placeholder="Ingrese la placa (opcional)" />
+      </el-form-item>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <el-button type="primary" @click="saveMaquinaria" :loading="loading">Registrar</el-button>
+        <el-button @click="$emit('closeModal')">Cancelar</el-button>
+      </div>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import { ref, reactive, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import supabase from '@/supabase';
+import { GetUser } from '@/auth'; // Asegúrate de importar la función para obtener el usuario
+
+export default {
+  props: {
+    representanteId: {
+      type: Number,
+      required: true,
     },
-  };
-  </script>
-  
-  <style scoped>
-  .register-form {
-    max-width: 400px;
-    margin: auto;
-  }
-  </style>
+  },
+  emits: ['closeModal', 'refreshTable'],
+  setup(props, { emit }) {
+    const maquinaria = reactive({
+      tipo_de_maquinaria_id: null,
+      placa: '',
+      representante_de_empresa_id: props.representanteId,
+      Estado: 1,
+      autor: GetUser(), // Obtener el usuario actual como autor
+      ultimo_autor: GetUser(),
+      Estado: true,
+    });
+    const tiposMaquinaria = ref([]);
+    const loading = ref(false);
+    const maquinariaForm = ref(null);
+
+    const rules = {
+      tipo_de_maquinaria_id: [{ required: true, message: 'Seleccione un tipo de maquinaria.', trigger: 'change' }],
+    };
+
+    const fetchTiposMaquinaria = async () => {
+      try {
+        const { data, error } = await supabase.from('tipo_de_maquinaria').select('id, descripcion');
+        if (error) throw error;
+        tiposMaquinaria.value = data || [];
+      } catch (err) {
+        console.error('Error al obtener tipos de maquinaria:', err.message);
+      }
+    };
+
+    const saveMaquinaria = async () => {
+      try {
+        await maquinariaForm.value.validate();
+        loading.value = true;
+
+        const { error } = await supabase.from('maquinariaxrepresentante_de_empresa').insert(maquinaria);
+        if (error) throw error;
+
+        ElMessage.success('Maquinaria registrada correctamente.');
+        emit('refreshTable');
+        emit('closeModal');
+      } catch (err) {
+        console.error('Error al registrar maquinaria:', err.message);
+        ElMessage.error('No se pudo registrar la maquinaria.');
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    onMounted(() => {
+      fetchTiposMaquinaria();
+    });
+
+    return {
+      maquinaria,
+      tiposMaquinaria,
+      maquinariaForm,
+      rules,
+      saveMaquinaria,
+      loading,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.registrar-maquinaria-container {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+</style>

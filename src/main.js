@@ -9,6 +9,8 @@ import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import '@/assets/styles/loader.css';
+
 
 // Importar jQuery y DataTables solo si se necesita globalmente
 import $ from 'jquery';
