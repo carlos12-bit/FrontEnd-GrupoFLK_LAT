@@ -2,65 +2,110 @@
   <div class="container">
     <h1 class="page-title">Gestión de Solicitudes de Capacitación</h1>
 
-    <!-- Control de número de registros por página -->
-    <div class="pagination-controls">
-      <label for="registrosPorPagina">Mostrar</label>
-      <select v-model="registrosPorPagina" id="registrosPorPagina">
-        <option v-for="num in [5, 10, 20]" :key="num" :value="num">{{ num }}</option>
-      </select>
-      <span>registros</span>
+    <!-- Tabla de solicitudes generales -->
+  
+    <div class="controls-container">
+      <div class="pagination-controls">
+        <label for="registrosPorPagina">Mostrar</label>
+        <select v-model="registrosPorPagina" id="registrosPorPagina">
+          <option v-for="num in [5, 10, 20]" :key="num" :value="num">{{ num }}</option>
+        </select>
+        <span>registros</span>
+      </div>
+      <div class="search-container">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Buscar por nombre del curso"
+          class="search-input"
+        />
+      </div>
     </div>
+    <table class="solicitudes-table">
+      <thead>
+        <tr>
+          <th>ID Solicitud</th>
+          <th>Nombre del Solicitante</th>
+          <th>Nombre del Curso</th>
+          <th>Fecha de Solicitud</th>
+          <th>Estado</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="solicitud in solicitudesPaginadas" :key="solicitud.id_solicitud">
+          <td>{{ solicitud.id_solicitud }}</td>
+          <td>{{ solicitud.nombre_completo }}</td>
+          <td>{{ getNombreCurso(solicitud.fk_curso) }}</td>
+          <td>{{ formatFecha(solicitud.fecha_solicitud) }}</td>
+          <td>{{ solicitud.estado || "Sin asignar" }}</td>
+          <td>
+            <button @click="viewSolicitud(solicitud)" class="view-btn">Ver</button>
+            <button @click="gestionarSolicitud(solicitud, 'aceptado')" class="view-btn">Aceptar</button>
+            <button @click="abrirModalRechazo(solicitud)" class="view-btn">Rechazar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-    <div class="table-container">
-      <table class="solicitudes-table">
-        <thead>
-          <tr>
-            <th>Curso</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-            <th>Opciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="solicitud in solicitudesPaginadas" :key="solicitud.id_solicitud">
-            <td>{{ obtenerTituloCurso(solicitud.Fk_Curso) || 'Sin curso' }}</td>
-            <td>{{ solicitud.fecha_solicitud ? new Date(solicitud.fecha_solicitud).toLocaleDateString() : 'Sin fecha' }}</td>
-            <td>
-              <span :class="getEstadoClase(solicitud.estado)">
-                {{ solicitud.estado || 'Sin estado' }}
-              </span>
-            </td>
-            <td>
-              <button @click="verDetalles(solicitud.id_solicitud)" class="btn-ver">Ver</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Controles de paginación -->
+    <!-- Paginación (nueva) -->
     <div class="pagination">
-      <span>Mostrando {{ paginaActual * registrosPorPagina - registrosPorPagina + 1 }} a {{ Math.min(paginaActual * registrosPorPagina, solicitudes.length) }} de {{ solicitudes.length }} registros</span>
-      <button @click="paginaActual = 1" :disabled="paginaActual === 1">Primero</button>
-      <button @click="paginaActual--" :disabled="paginaActual === 1">Anterior</button>
-      <button @click="paginaActual++" :disabled="paginaActual >= totalPaginas">Siguiente</button>
-      <button @click="paginaActual = totalPaginas" :disabled="paginaActual >= totalPaginas">Último</button>
+      <span>
+        Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }} a
+        {{ Math.min(paginaActual * registrosPorPagina, solicitudesFiltradas.length) }} de
+        {{ solicitudesFiltradas.length }} registros
+      </span>
+      <button @click="irPrimeraPagina" :disabled="paginaActual === 1">Primero</button>
+      <button @click="irPaginaAnterior" :disabled="paginaActual === 1">Anterior</button>
+      <input
+        type="number"
+        v-model.number="paginaActual"
+        min="1"
+        :max="numeroPaginas"
+        @change="validarPagina"
+        class="pagina-input"
+      />
+      <button @click="irPaginaSiguiente" :disabled="paginaActual === numeroPaginas">
+        Siguiente
+      </button>
+      <button @click="irUltimaPagina" :disabled="paginaActual === numeroPaginas">Último</button>
     </div>
 
-    <!-- Sección de Dashboard de Solicitudes Aceptadas -->
+    <!-- Modal de rechazo -->
+    <div v-if="mostrarModalRechazo" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Motivo de Rechazo</h3>
+        <textarea v-model="motivoRechazo" placeholder="Ingrese el motivo del rechazo"></textarea>
+        <div class="modal-buttons">
+          <button @click="confirmarRechazo" class="btn-cerrar-modal">Confirmar</button>
+          <button @click="cerrarModalRechazo" class="btn-cerrar-modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segunda tabla: Carrusel de solicitudes aceptadas -->
+    <h2 class="table-title">Solicitudes Aceptadas</h2>
+    <div class="search-container">
+      <input
+        type="text"
+        v-model="searchId"
+        placeholder="Buscar por ID de Solicitud"
+        class="search-input"
+      />
+    </div>
     <div class="dashboard-aceptadas">
-      <h2 class="dashboard-title">Solicitudes Aceptadas</h2>
       <div class="carousel">
         <button @click="prevCard" class="carousel-button left">‹</button>
         <div class="aceptadas-grid" ref="aceptadasGrid">
           <div
-            v-for="solicitud in solicitudesAceptadas"
+            v-for="solicitud in solicitudesAceptadasFiltradas"
             :key="solicitud.id_solicitud"
             class="aceptada-card"
-            @click="abrirModal(solicitud)"
+            @click="abrirModalDetalles(solicitud)"
           >
-            <h3>{{ obtenerTituloCurso(solicitud.Fk_Curso) || 'Sin curso' }}</h3>
-            <p><strong>Fecha de Solicitud:</strong> {{ new Date(solicitud.fecha_solicitud).toLocaleDateString() }}</p>
+            <h3>ID: {{ solicitud.id_solicitud }}</h3>
+            <h4>{{ getNombreCurso(solicitud.fk_curso) || "Sin curso" }}</h4>
+            <p><strong>Fecha de Solicitud:</strong> {{ formatFecha(solicitud.fecha_solicitud) }}</p>
             <p><strong>Solicitante:</strong> {{ solicitud.nombre_completo }}</p>
           </div>
         </div>
@@ -68,224 +113,400 @@
       </div>
     </div>
 
-    <!-- Modal de Detalles -->
-    <div v-if="modalVisible" class="modal-overlay" @click.self="cerrarModal">
+    <!-- Modal de detalles (Segunda Tabla) -->
+    <div v-if="mostrarModalDetalles" class="modal-overlay">
       <div class="modal-content">
         <h3>Detalles de la Solicitud</h3>
-        <p><strong>Curso:</strong> {{ obtenerTituloCurso(detalleSolicitud?.Fk_Curso) || 'Sin curso' }}</p>
-        <p><strong>Fecha de Solicitud:</strong> {{ detalleSolicitud?.fecha_solicitud ? new Date(detalleSolicitud.fecha_solicitud).toLocaleDateString() : 'Sin fecha' }}</p>
-        <p><strong>Solicitante:</strong> {{ detalleSolicitud?.nombre_completo }}</p>
-        <p><strong>Número Telefónico:</strong> {{ detalleSolicitud?.nro_telefonico }}</p>
-        <p><strong>DNI:</strong> {{ detalleSolicitud?.dni }}</p>
-        <p><strong>Fecha de Nacimiento:</strong> {{ detalleSolicitud?.fecha_nacimiento ? new Date(detalleSolicitud.fecha_nacimiento).toLocaleDateString() : 'Sin fecha' }}</p>
-        <p><strong>Dirección:</strong> {{ detalleSolicitud?.direccion }}</p>
-        <p><strong>Teléfono de Contacto:</strong> {{ detalleSolicitud?.telefono_contacto }}</p>
-        <p><strong>Correo Electrónico:</strong> {{ detalleSolicitud?.correo_electronico }}</p>
-        <p><strong>Nacionalidad:</strong> {{ detalleSolicitud?.nacionalidad }}</p>
-        <p><strong>Ocupación Actual:</strong> {{ detalleSolicitud?.ocupacion_actual }}</p>
-        <p><strong>Nombre de Empresa:</strong> {{ detalleSolicitud?.nombre_empresa }}</p>
-        <p><strong>Cargo Actual:</strong> {{ detalleSolicitud?.cargo_actual }}</p>
-        <p><strong>Experiencia con Maquinaria:</strong> {{ detalleSolicitud?.experiencia_maquinaria }}</p>
-        <p><strong>Contacto de Emergencia:</strong> {{ detalleSolicitud?.nombre_contacto_emergencia }}</p>
-        <p><strong>Relación de Contacto:</strong> {{ detalleSolicitud?.relacion_contacto_emergencia }}</p>
-        <p><strong>Teléfono de Emergencia:</strong> {{ detalleSolicitud?.telefono_contacto_emergencia }}</p>
-        <p><strong>Fecha de Inicio Preferida:</strong> {{ detalleSolicitud?.fecha_inicio_preferida ? new Date(detalleSolicitud.fecha_inicio_preferida).toLocaleDateString() : 'Sin fecha' }}</p>
-        <p><strong>Turno Preferido:</strong> {{ detalleSolicitud?.turno_preferido }}</p>
-        <p><strong>Alergias o Condiciones:</strong> {{ detalleSolicitud?.alergias_condiciones }}</p>
-        <p><strong>Necesidades Especiales:</strong> {{ detalleSolicitud?.necesidades_especiales }}</p>
-        <p><strong>Consentimiento de Participación:</strong> {{ detalleSolicitud?.consentimiento_participacion ? 'Sí' : 'No' }}</p>
-        <p><strong>Autorización de Imagen:</strong> {{ detalleSolicitud?.autorizacion_imagen ? 'Sí' : 'No' }}</p>
-        <p><strong>Consentimiento para Tratamiento de Datos:</strong> {{ detalleSolicitud?.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
-        <p><strong>Firma:</strong> {{ detalleSolicitud?.firma }}</p>
+        <div class="modal-details">
+          <div class="detail-item">
+            <div class="detail-title">ID Solicitud:</div>
+            <div class="detail-value">{{ solicitudActual.id_solicitud }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">DNI:</div>
+            <div class="detail-value">{{ solicitudActual.dni }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Nombre Completo:</div>
+            <div class="detail-value">{{ solicitudActual.nombre_completo }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Número Telefónico:</div>
+            <div class="detail-value">{{ solicitudActual.nro_telefonico }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Dirección:</div>
+            <div class="detail-value">{{ solicitudActual.direccion }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Teléfono de Contacto:</div>
+            <div class="detail-value">{{ solicitudActual.telefono_contacto }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Correo Electrónico:</div>
+            <div class="detail-value">{{ solicitudActual.correo_electronico }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Nacionalidad:</div>
+            <div class="detail-value">{{ solicitudActual.nacionalidad }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Curso Solicitado:</div>
+            <div class="detail-value">{{ getNombreCurso(solicitudActual.fk_curso) }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Nombre de la Empresa:</div>
+            <div class="detail-value">{{ solicitudActual.nombre_empresa }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Cargo Actual:</div>
+            <div class="detail-value">{{ solicitudActual.cargo_actual }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Experiencia en Maquinaria:</div>
+            <div class="detail-value">{{ solicitudActual.experiencia_maquinaria }}</div>
+          </div>
+        </div>
 
-        <button @click="cerrarModal" class="btn-cerrar-modal">Cerrar</button>
+        <!-- Botón para cerrar el modal -->
+        <div class="modal-buttons">
+          <button @click="cerrarModalDetalles" class="btn-cerrar-modal">Cerrar</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { supabase } from '@/supabase.js';
+import { ref, onMounted, computed } from "vue";
+import { supabase } from "@/supabase.js";
+import { useRouter } from "vue-router";
 
 export default {
-  name: "GestionarSolicitudes",
-  data() {
-    return {
-      solicitudes: [],
-      cursos: [],
-      solicitudesAceptadas: [],
-      modalVisible: false,
-      detalleSolicitud: null,
-      paginaActual: 1,
-      registrosPorPagina: 5,
-      cardIndex: 0 // Índice para el desplazamiento de una tarjeta a la vez
-    };
-  },
-  computed: {
-    totalPaginas() {
-      return Math.ceil(this.solicitudes.length / this.registrosPorPagina);
-    },
-    solicitudesPaginadas() {
-      const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
-      const fin = inicio + this.registrosPorPagina;
-      return this.solicitudes.slice(inicio, fin);
-    }
-  },
-  async mounted() {
-    let { data: solicitudes, error: errorSolicitudes } = await supabase
-      .from('Solicitud_Capacitacion')
-      .select('*');
+  setup() {
+    // Variables reactivas
+    const solicitudes = ref([]);
+    const cursos = ref([]);
+    const registrosPorPagina = ref(5);
+    const paginaActual = ref(1);
+    const searchQuery = ref("");
+    const searchId = ref("");
+    const mostrarModalRechazo = ref(false);
+    const mostrarModalDetalles = ref(false);
+    const motivoRechazo = ref("");
+    const solicitudActual = ref(null);
+    const router = useRouter();
 
-    if (errorSolicitudes) {
-      console.error("Error fetching solicitudes: ", errorSolicitudes);
-    } else {
-      this.solicitudes = solicitudes;
-      this.solicitudesAceptadas = solicitudes.filter(solicitud => solicitud.estado === 'Aceptada');
-    }
+    // Funciones para cargar datos
+    const fetchSolicitudes = async () => {
+  try {
+    const { data, error } = await supabase.from("solicitud_capacitacion").select("*");
+    if (error) throw error;
 
-    let { data: cursos, error: errorCursos } = await supabase
-      .from('Cursos')
-      .select('Pk_Curso, titulo_curso');
-
-    if (errorCursos) {
-      console.error("Error fetching cursos: ", errorCursos);
-    } else {
-      this.cursos = cursos;
-    }
-  },
-  methods: {
-    obtenerTituloCurso(fkCurso) {
-      const curso = this.cursos.find(curso => curso.Pk_Curso === fkCurso);
-      return curso ? curso.titulo_curso : null;
-    },
-    verDetalles(idSolicitud) {
-      this.$router.push({ name: 'Details', params: { id: idSolicitud } });
-    },
-    getEstadoClase(estado) {
-      if (estado === 'Aceptada') {
-        return 'estado-aceptada';
-      } else if (estado === 'Rechazada') {
-        return 'estado-rechazada';
-      } else {
-        return 'estado-pendiente';
-      }
-    },
-    prevCard() {
-      if (this.cardIndex > 0) {
-        this.cardIndex--;
-        this.scrollToCurrentCard();
-      }
-    },
-    nextCard() {
-      if (this.cardIndex < this.solicitudesAceptadas.length - 4) {
-        this.cardIndex++;
-        this.scrollToCurrentCard();
-      }
-    },
-    scrollToCurrentCard() {
-      const grid = this.$refs.aceptadasGrid;
-      const cardWidth = grid.querySelector(".aceptada-card").offsetWidth;
-      grid.scrollTo({
-        left: this.cardIndex * (cardWidth + 10), // Ajuste para margen
-        behavior: "smooth"
-      });
-    },
-    abrirModal(solicitud) {
-      this.detalleSolicitud = solicitud;
-      this.modalVisible = true;
-    },
-    cerrarModal() {
-      this.modalVisible = false;
-      this.detalleSolicitud = null;
-    }
+    console.log("Solicitudes cargadas:", data); // Verificar los datos obtenidos en consola
+    solicitudes.value = data.sort((a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud));
+  } catch (error) {
+    console.error("Error al cargar las solicitudes:", error.message);
   }
 };
+
+
+    const fetchCursos = async () => {
+      const { data, error } = await supabase.from("cursos").select("*");
+      if (!error) cursos.value = data;
+    };
+
+    // Computed: Filtrar y paginar solicitudes
+    const solicitudesFiltradas = computed(() => {
+      return solicitudes.value
+        .filter(
+          (solicitud) =>
+            !searchQuery.value ||
+            (getNombreCurso(solicitud.fk_curso) || "").toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+        .sort((a, b) => a.id_solicitud - b.id_solicitud); // Ordenar por ID
+    });
+
+    const solicitudesPaginadas = computed(() => {
+      const inicio = (paginaActual.value - 1) * registrosPorPagina.value;
+      return solicitudesFiltradas.value.slice(inicio, inicio + registrosPorPagina.value);
+    });
+
+    // Nueva propiedad computada: Filtrar solicitudes aceptadas
+    const solicitudesAceptadasFiltradas = computed(() => {
+      return solicitudes.value
+        .filter(
+          (solicitud) =>
+            solicitud.estado === "Aceptada" &&
+            (!searchId.value || solicitud.id_solicitud.toString().includes(searchId.value))
+        )
+        .sort((a, b) => a.id_solicitud - b.id_solicitud); // Ordenar por ID
+    });
+
+    // Computed: Número total de páginas
+    const numeroPaginas = computed(() => {
+      return Math.ceil(solicitudesFiltradas.value.length / registrosPorPagina.value);
+    });
+
+    // Funciones de paginación
+    const irPrimeraPagina = () => {
+      paginaActual.value = 1;
+    };
+
+    const irUltimaPagina = () => {
+      paginaActual.value = numeroPaginas.value;
+    };
+
+    const irPaginaAnterior = () => {
+      if (paginaActual.value > 1) paginaActual.value--;
+    };
+
+    const irPaginaSiguiente = () => {
+      if (paginaActual.value < numeroPaginas.value) paginaActual.value++;
+    };
+
+    const validarPagina = () => {
+      if (paginaActual.value < 1) paginaActual.value = 1;
+      if (paginaActual.value > numeroPaginas.value) paginaActual.value = numeroPaginas.value;
+    };
+
+    const gestionarSolicitud = async (solicitud, estado) => {
+      try {
+        const nuevoEstado = estado === "aceptado" ? "Aceptada" : "Rechazada";
+        const { error } = await supabase
+          .from("solicitud_capacitacion")
+          .update({ estado: nuevoEstado, motivo_rechazo: estado === "rechazado" ? motivoRechazo.value : null })
+          .eq("id_solicitud", solicitud.id_solicitud);
+
+        if (error) throw error;
+
+        // Enviar correo tras actualizar el estado
+        await enviarCorreo(solicitud, estado);
+
+        alert(`Solicitud ${nuevoEstado}`);
+        fetchSolicitudes();
+      } catch (error) {
+        console.error(`Error al ${estado} la solicitud:`, error);
+      }
+    };
+
+    const confirmarRechazo = async () => {
+      await gestionarSolicitud(solicitudActual.value, "rechazado");
+      cerrarModalRechazo();
+    };
+
+    const abrirModalRechazo = (solicitud) => {
+      solicitudActual.value = solicitud;
+      mostrarModalRechazo.value = true;
+    };
+
+    const cerrarModalRechazo = () => {
+      mostrarModalRechazo.value = false;
+      motivoRechazo.value = "";
+    };
+
+    async function enviarCorreo(solicitud, estado) {
+      try {
+        // Configuración del asunto y cuerpo del correo
+        const asunto = `Estado de tu solicitud: ${
+          estado === "aceptado" ? "Aceptada" : "Rechazada"
+        }`;
+        const cuerpo = `
+          <h2>Estado de tu solicitud</h2>
+          <p>Hola,</p>
+          <p>Tu solicitud para el curso <strong>${getNombreCurso(
+            solicitud.fk_curso
+          )}</strong> ha sido
+          <strong>${estado === "aceptado" ? "Aceptada" : "Rechazada"}</strong>.</p>
+          <p>${
+            estado === "aceptado"
+              ? "¡Felicitaciones! Tu solicitud ha sido aprobada."
+              : motivoRechazo.value
+          }</p>
+          <p>Para confirmar esta acción, haz clic en el siguiente enlace:</p>
+          <p><a href="https://tu-app.com/confirmacion?solicitud=${
+            solicitud.id_solicitud
+          }">Confirmar acción</a></p>
+          <p>Gracias,</p>
+          <p>Equipo de Gestión de Capacitación</p>
+        `;
+
+        // Llama a la función RPC en Supabase
+        const { error } = await supabase.rpc("enviar_correo", {
+          destinatario: solicitud.correo_electronico, // Correo del destinatario
+          asunto: asunto, // Asunto del correo
+          cuerpo: cuerpo, // Contenido del correo
+        });
+
+        if (error) throw error;
+
+        alert("Correo enviado exitosamente");
+      } catch (error) {
+        console.error("Error al enviar el correo:", error);
+        alert("Hubo un error al enviar el correo.");
+      }
+    }
+
+    // Modal de detalles
+    const abrirModalDetalles = (solicitud) => {
+      solicitudActual.value = solicitud;
+      mostrarModalDetalles.value = true;
+    };
+
+    const cerrarModalDetalles = () => {
+      mostrarModalDetalles.value = false;
+    };
+
+    // Funciones del carrusel (segunda tabla)
+    const prevCard = () => {
+      const grid = document.querySelector(".aceptadas-grid");
+      grid.scrollBy({ left: -220, behavior: "smooth" });
+    };
+
+    const nextCard = () => {
+      const grid = document.querySelector(".aceptadas-grid");
+      grid.scrollBy({ left: 220, behavior: "smooth" });
+    };
+
+    // Utilidades
+    const formatFecha = (fecha) => {
+      if (!fecha) return "Fecha no disponible";
+      const date = new Date(fecha);
+      return date.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" });
+    };
+
+    const getNombreCurso = (fk_curso) => {
+      const curso = cursos.value.find((c) => c.pk_curso === fk_curso);
+      return curso ? curso.titulo_curso : "Curso no encontrado";
+    };
+
+    const viewSolicitud = (solicitud) => {
+      router.push({ path: "ManageRequest/Details", query: { id: solicitud.id_solicitud } });
+    };
+
+    // Inicialización
+    onMounted(() => {
+      fetchSolicitudes();
+      fetchCursos();
+    });
+
+    return {
+      solicitudes,
+      cursos,
+      registrosPorPagina,
+      paginaActual,
+      solicitudesFiltradas,
+      solicitudesPaginadas,
+      solicitudesAceptadasFiltradas, // Nueva propiedad computada
+      numeroPaginas,
+      irPrimeraPagina,
+      irUltimaPagina,
+      irPaginaAnterior,
+      irPaginaSiguiente,
+      validarPagina,
+      searchQuery,
+      searchId,
+      gestionarSolicitud,
+      abrirModalRechazo,
+      cerrarModalRechazo,
+      confirmarRechazo,
+      abrirModalDetalles,
+      cerrarModalDetalles,
+      prevCard,
+      nextCard,
+      formatFecha,
+      getNombreCurso,
+      viewSolicitud,
+      mostrarModalRechazo,
+      mostrarModalDetalles,
+      motivoRechazo,
+      solicitudActual,
+    };
+  },
+};
 </script>
-
 <style scoped>
+/* Contenedor principal */
 .container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2rem;
-  background-color: #f4f4f9;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  background-color: #f9f9f9; /* Fondo claro */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombras suaves */
 }
 
-.page-title {
+/* Títulos */
+.page-title,
+.table-title {
+  color: #333333; /* Color de texto más suave */
   text-align: center;
-  font-size: 2rem;
-  color: #1A5276;
-  margin-bottom: 2rem;
   font-weight: bold;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
   margin-bottom: 1rem;
 }
 
-.pagination-controls label,
-.pagination-controls span {
-  margin-right: 0.5rem;
+.page-title {
+  font-size: 2.2rem;
 }
 
-.table-container {
-  overflow-x: auto;
+.table-title {
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
 }
 
+/* Tabla */
 .solicitudes-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.solicitudes-table th, .solicitudes-table td {
-  padding: 1rem;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
+  background-color: #ffffff; /* Fondo blanco */
+  color: #444444; /* Texto más suave */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombras suaves */
 }
 
 .solicitudes-table th {
-  background-color: #f2f2f2;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
+  background-color: #4a90e2; /* Fondo azul vibrante */
+  color: #ffffff; /* Texto blanco */
+  padding: 0.75rem;
+  font-size: 1rem;
+  text-align: left;
 }
 
 .solicitudes-table td {
-  font-size: 1rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid #eeeeee; /* Bordes suaves */
+  background-color: #fdfdfd; /* Fondo claro */
 }
 
-.btn-ver {
-  background-color: #2ecc71;
-  color: white;
-  padding: 0.5rem 1rem;
+.solicitudes-table tr:nth-child(even) td {
+  background-color: #f7f9fc; /* Fondo alternado para filas pares */
+}
+
+.solicitudes-table tr:hover td {
+  background-color: #eaf4ff; /* Resaltado en hover */
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Botones */
+.view-btn {
+  background-color: #007bff; /* Azul principal */
+  color: #ffffff;
   border: none;
+  padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.btn-ver:hover {
-  background-color: #27ae60;
-}
-
-/* Paginación */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  font-size: 1rem;
+.view-btn:hover {
+  background-color: #0056b3; /* Azul más oscuro */
+  transform: scale(1.05);
 }
 
 .pagination button {
   padding: 0.5rem 1rem;
-  background-color: #3498db;
+  background-color: #4a90e2; /* Azul vibrante */
   color: white;
   border: none;
   border-radius: 5px;
@@ -294,134 +515,119 @@ export default {
 }
 
 .pagination button:disabled {
-  background-color: #bdc3c7;
+  background-color: #cccccc;
   cursor: not-allowed;
 }
 
 .pagination button:hover:enabled {
-  background-color: #2980b9;
+  background-color: #0056b3; /* Azul más oscuro */
 }
 
-/* Dashboard de Solicitudes Aceptadas */
+/* Controles de búsqueda y paginación */
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pagination-controls label,
+.pagination-controls select,
+.search-input {
+  font-size: 1rem;
+  color: #333333;
+}
+
+.search-input {
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  padding: 0.5rem;
+  background-color: #ffffff; /* Fondo blanco */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Apariencia de relieve */
+}
+
+.search-input:focus {
+  border-color: #007bff; /* Resaltado azul en foco */
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Sombra azul */
+}
+
+/* Carrusel de solicitudes aceptadas */
 .dashboard-aceptadas {
   margin-top: 2rem;
 }
 
-.dashboard-title {
-  text-align: center;
-  font-size: 2rem;
-  color: #1A5276;
-  margin-bottom: 1rem;
-  font-weight: bold;
-}
-
-.carousel {
-  display: flex;
-  align-items: center;
-}
-
-.aceptadas-grid {
-  display: flex;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  padding: 1rem;
-}
-
 .aceptada-card {
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  min-width: 200px;
-  max-width: 200px;
+  background-color: #ffffff; /* Fondo blanco */
+  border: 1px solid #4a90e2; /* Borde azul vibrante */
+  color: #333333;
   text-align: center;
-  margin: 0 0.5rem;
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombras suaves */
+  transition: transform 0.2s, box-shadow 0.3s;
 }
 
 .aceptada-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  background-color: #f0f8ff;
+  background-color: #eaf4ff; /* Fondo azul claro */
+  transform: scale(1.02);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Sombras más intensas */
 }
 
-.aceptada-card:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-/* Modal de Detalles */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
-  animation: fadeIn 0.3s ease-in-out;
+  align-items: center;
 }
 
 .modal-content {
-  background: #fff;
+  background-color: #ffffff;
   padding: 2rem;
-  border-radius: 10px;
-  max-width: 700px; /* Mayor ancho */
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  overflow-y: auto;
-  max-height: 90vh;
-  padding: 2rem 3rem; /* Espaciado adicional */
-  animation: slideDown 0.3s ease-in-out;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .modal-content h3 {
+  margin-bottom: 1rem;
   font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 1rem;
+  color: #333333;
 }
 
-.modal-content p {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 1rem;
-}
-
-.btn-cerrar-modal {
-  background-color: #e74c3c;
-  color: white;
+.modal-buttons button {
   padding: 0.5rem 1rem;
-  border: none;
+  margin: 0 0.5rem;
   border-radius: 5px;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-weight: bold;
 }
 
-.btn-cerrar-modal:hover {
-  background-color: #c0392b;
+.modal-buttons button.btn-cerrar-modal {
+  background-color: #ff4d4f; /* Rojo vibrante */
+  color: white;
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.modal-buttons button.btn-cerrar-modal:hover {
+  background-color: #cc0000;
 }
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-  }
-  to {
-    transform: translateY(0);
-  }
+.modal-buttons button.btn-confirmar {
+  background-color: #4caf50; /* Verde */
+  color: white;
+}
+
+.modal-buttons button.btn-confirmar:hover {
+  background-color: #2e7d32; /* Verde más oscuro */
 }
 </style>
+
+
+

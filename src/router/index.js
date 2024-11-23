@@ -25,7 +25,7 @@ const routes = [
       { path: 'ManageCredentials', component: () => import('@/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue') },
       { path: 'ManagementServices', component: () => import('@/views/UseCases/Admin/ManagementServices/View.vue') },
       { path: 'ManageRequest', component: () => import('@/views/UseCases/Admin/ManageRequest/ManageRequest.vue') },
-      { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
+      { path: 'ManageRequest/Details', name: 'detalles' ,component: () => import('@/components/ManageRequest/Details.vue') },
       { path: 'ManageCourses/Create', name: 'Create', component: () => import('@/components/ManageCourses/Create.vue') },
       { path: 'ManageCourses/Edit', name: 'Edit', component: () => import('@/components/ManageCourses/Edit.vue') },
       { path: 'ManageCourses/Details', name: 'Detail', component: () => import('@/components/ManageCourses/Details.vue') },
@@ -119,5 +119,5 @@ function getNombreRol(rolId) {
     default: return null;
   }
 }
-
 export default router;
+

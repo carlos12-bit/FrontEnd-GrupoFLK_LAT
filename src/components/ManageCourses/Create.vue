@@ -112,7 +112,7 @@ export default {
 
     const fetchDocentesPractica = async () => {
       let { data: docentes, error } = await supabase
-        .from('Instructor')
+        .from('Instructor') // Tabla actualizada
         .select('Pk_docentepractico, nombre');
       if (!error) {
         docentesPractica.value = docentes;
@@ -122,8 +122,8 @@ export default {
     const fetchUbicaciones = async () => {
       let { data: ubicaciones, error } = await supabase.from('Ubicaciones').select('*');
       if (!error) {
-        ubicacionesTeoria.value = ubicaciones.filter(u => u.tipo_ubicacion === 'Teoría');
-        ubicacionesPractica.value = ubicaciones.filter(u => u.tipo_ubicacion === 'Practica');
+        ubicacionesTeoria.value = ubicaciones.filter(u => u.Fk_modo_curso === 1);
+        ubicacionesPractica.value = ubicaciones.filter(u => u.Fk_modo_curso === 2);
       }
     };
 
@@ -134,25 +134,35 @@ export default {
     });
 
     const createCourse = async () => {
-      const { error } = await supabase
-        .from('Cursos')
-        .insert({
+      try {
+        const autorUUID = "e6dc41d2-228b-409f-95e1-1ee113235f1c"; // UUID válido
+        const ultimoAutorUUID = "e6dc41d2-228b-409f-95e1-1ee113235f1c"; // UUID válido
+
+        const { error } = await supabase.from('cursos').insert({
           titulo_curso: titulo_curso.value,
-          Fk_docenteteoria: Fk_docenteteoria.value,
-          Fk_docentepractico: Fk_docentepractico.value,
-          Fk_ubicacion_teoria: Fk_ubicacion_teoria.value,
-          Fk_ubicacion_practica: Fk_ubicacion_practica.value,
+          fk_docenteteoria: Fk_docenteteoria.value,
+          fk_docentepractico: Fk_docentepractico.value,
+          fk_ubicacion_teoria: Fk_ubicacion_teoria.value,
+          fk_ubicacion_practica: Fk_ubicacion_practica.value,
           fecha_hora_inicio_teoria: fecha_hora_inicio_teoria.value,
           fecha_hora_fin_teoria: fecha_hora_fin_teoria.value,
           fecha_hora_inicio_practica: fecha_hora_inicio_practica.value,
-          fecha_hora_fin_practica: fecha_hora_fin_practica.value
+          fecha_hora_fin_practica: fecha_hora_fin_practica.value,
+          autor: autorUUID,
+          ultimo_autor: ultimoAutorUUID,
+          estado: "Activo",
         });
 
-      if (error) {
-        console.error('Error al crear el curso:', error.message);
-      } else {
-        alert('Curso creado con éxito');
-        router.push({ path: '/admin-dashboard/ManageCourses' });
+        if (error) {
+          console.error('Error al crear el curso:', error.message);
+          alert('Error al crear el curso: ' + error.message);
+        } else {
+          alert('Curso creado con éxito');
+          router.push({ path: '/admin-dashboard/ManageCourses' });
+        }
+      } catch (err) {
+        console.error('Error inesperado:', err.message);
+        alert('Error inesperado: ' + err.message);
       }
     };
 
@@ -170,11 +180,12 @@ export default {
       docentesPractica,
       ubicacionesTeoria,
       ubicacionesPractica,
-      createCourse
+      createCourse,
     };
-  }
+  },
 };
 </script>
+
 
 <style scoped>
 .form-container {
