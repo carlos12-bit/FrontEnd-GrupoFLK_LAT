@@ -24,7 +24,7 @@
     <table class="solicitudes-table">
       <thead>
         <tr>
-          <th>ID Solicitud</th>
+          <th>DNI</th>
           <th>Nombre del Solicitante</th>
           <th>Nombre del Curso</th>
           <th>Fecha de Solicitud</th>
@@ -34,7 +34,7 @@
       </thead>
       <tbody>
         <tr v-for="solicitud in solicitudesPaginadas" :key="solicitud.id_solicitud">
-          <td>{{ solicitud.id_solicitud }}</td>
+          <td>{{ solicitud.dni }}</td>
           <td>{{ solicitud.nombre_completo }}</td>
           <td>{{ getNombreCurso(solicitud.fk_curso) }}</td>
           <td>{{ formatFecha(solicitud.fecha_solicitud) }}</td>
@@ -89,91 +89,106 @@
       <input
         type="text"
         v-model="searchId"
-        placeholder="Buscar por ID de Solicitud"
+        placeholder="Buscar por DNI"
         class="search-input"
       />
     </div>
     <div class="dashboard-aceptadas">
-      <div class="carousel">
-        <button @click="prevCard" class="carousel-button left">‹</button>
-        <div class="aceptadas-grid" ref="aceptadasGrid">
-          <div
-            v-for="solicitud in solicitudesAceptadasFiltradas"
-            :key="solicitud.id_solicitud"
-            class="aceptada-card"
-            @click="abrirModalDetalles(solicitud)"
-          >
-            <h3>ID: {{ solicitud.id_solicitud }}</h3>
-            <h4>{{ getNombreCurso(solicitud.fk_curso) || "Sin curso" }}</h4>
-            <p><strong>Fecha de Solicitud:</strong> {{ formatFecha(solicitud.fecha_solicitud) }}</p>
-            <p><strong>Solicitante:</strong> {{ solicitud.nombre_completo }}</p>
-          </div>
-        </div>
-        <button @click="nextCard" class="carousel-button right">›</button>
-      </div>
+  <button @click="prevCard" class="carousel-button left">‹</button>
+  <div class="aceptadas-grid" ref="aceptadasGrid">
+    <div
+      v-for="solicitud in solicitudesAceptadasFiltradas"
+      :key="solicitud.id_solicitud"
+      class="aceptada-card"
+      @click="abrirModalDetalles(solicitud)"
+    >
+      <h3>DNI: {{ solicitud.dni }}</h3>
+      <h4>{{ getNombreCurso(solicitud.fk_curso) || "Sin curso" }}</h4>
+      <p><strong>Fecha de Solicitud:</strong> {{ formatFecha(solicitud.fecha_solicitud) }}</p>
+      <p><strong>Solicitante:</strong> {{ solicitud.nombre_completo }}</p>
     </div>
+  </div>
+  <button @click="nextCard" class="carousel-button right">›</button>
+</div>
+
 
     <!-- Modal de detalles (Segunda Tabla) -->
     <div v-if="mostrarModalDetalles" class="modal-overlay">
-      <div class="modal-content">
-        <h3>Detalles de la Solicitud</h3>
-        <div class="modal-details">
-          <div class="detail-item">
-            <div class="detail-title">ID Solicitud:</div>
-            <div class="detail-value">{{ solicitudActual.id_solicitud }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">DNI:</div>
-            <div class="detail-value">{{ solicitudActual.dni }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Nombre Completo:</div>
-            <div class="detail-value">{{ solicitudActual.nombre_completo }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Número Telefónico:</div>
-            <div class="detail-value">{{ solicitudActual.nro_telefonico }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Dirección:</div>
-            <div class="detail-value">{{ solicitudActual.direccion }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Teléfono de Contacto:</div>
-            <div class="detail-value">{{ solicitudActual.telefono_contacto }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Correo Electrónico:</div>
-            <div class="detail-value">{{ solicitudActual.correo_electronico }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Nacionalidad:</div>
-            <div class="detail-value">{{ solicitudActual.nacionalidad }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Curso Solicitado:</div>
-            <div class="detail-value">{{ getNombreCurso(solicitudActual.fk_curso) }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Nombre de la Empresa:</div>
-            <div class="detail-value">{{ solicitudActual.nombre_empresa }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Cargo Actual:</div>
-            <div class="detail-value">{{ solicitudActual.cargo_actual }}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-title">Experiencia en Maquinaria:</div>
-            <div class="detail-value">{{ solicitudActual.experiencia_maquinaria }}</div>
-          </div>
-        </div>
-
-        <!-- Botón para cerrar el modal -->
-        <div class="modal-buttons">
-          <button @click="cerrarModalDetalles" class="btn-cerrar-modal">Cerrar</button>
-        </div>
+  <div class="modal-content">
+    <!-- Botón cerrar en la esquina -->
+    <button class="modal-close" @click="cerrarModalDetalles">×</button>
+    <h3>Detalles de la Solicitud</h3>
+    <div class="modal-details">
+      <!-- Campos en diseño compacto -->
+      <div class="detail-item">
+        <div class="detail-title">ID Solicitud:</div>
+        <div class="detail-value">{{ solicitudActual.id_solicitud }}</div>
       </div>
+      <div class="detail-item">
+        <div class="detail-title">DNI:</div>
+        <div class="detail-value">{{ solicitudActual.dni }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Nombre Completo:</div>
+        <div class="detail-value">{{ solicitudActual.nombre_completo }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Número Telefónico:</div>
+        <div class="detail-value">{{ solicitudActual.nro_telefonico }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Fecha de Nacimiento:</div>
+        <div class="detail-value">{{ formatFecha(solicitudActual.fecha_nacimiento) }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Dirección:</div>
+        <div class="detail-value">{{ solicitudActual.direccion }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Teléfono de Contacto:</div>
+        <div class="detail-value">{{ solicitudActual.telefono_contacto }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Correo Electrónico:</div>
+        <div class="detail-value">{{ solicitudActual.correo_electronico }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Nacionalidad:</div>
+        <div class="detail-value">{{ solicitudActual.nacionalidad }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Ocupación Actual:</div>
+        <div class="detail-value">{{ solicitudActual.ocupacion_actual }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Curso Solicitado (ID):</div>
+        <div class="detail-value">{{ solicitudActual.fk_curso }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Nombre de la Empresa:</div>
+        <div class="detail-value">{{ solicitudActual.nombre_empresa }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Cargo Actual:</div>
+        <div class="detail-value">{{ solicitudActual.cargo_actual }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Experiencia en Maquinaria:</div>
+        <div class="detail-value">{{ solicitudActual.experiencia_maquinaria }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-title">Estado:</div>
+        <div class="detail-value">{{ solicitudActual.estado }}</div>
+      </div>
+      
     </div>
+    <!-- Botón de cerrar al final -->
+    <div class="modal-buttons">
+      <button @click="cerrarModalDetalles" class="btn-cerrar-modal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -204,7 +219,7 @@ export default {
     if (error) throw error;
 
     console.log("Solicitudes cargadas:", data); // Verificar los datos obtenidos en consola
-    solicitudes.value = data.sort((a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud));
+    solicitudes.value = data;
   } catch (error) {
     console.error("Error al cargar las solicitudes:", error.message);
   }
@@ -218,14 +233,15 @@ export default {
 
     // Computed: Filtrar y paginar solicitudes
     const solicitudesFiltradas = computed(() => {
-      return solicitudes.value
-        .filter(
-          (solicitud) =>
-            !searchQuery.value ||
-            (getNombreCurso(solicitud.fk_curso) || "").toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
-        .sort((a, b) => a.id_solicitud - b.id_solicitud); // Ordenar por ID
-    });
+  return solicitudes.value
+    .filter(
+      (solicitud) =>
+        !searchQuery.value ||
+        (getNombreCurso(solicitud.fk_curso) || "").toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+    .sort((a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud)); // Ordenar por fecha descendente
+});
+
 
     const solicitudesPaginadas = computed(() => {
       const inicio = (paginaActual.value - 1) * registrosPorPagina.value;
@@ -234,14 +250,12 @@ export default {
 
     // Nueva propiedad computada: Filtrar solicitudes aceptadas
     const solicitudesAceptadasFiltradas = computed(() => {
-      return solicitudes.value
-        .filter(
-          (solicitud) =>
-            solicitud.estado === "Aceptada" &&
-            (!searchId.value || solicitud.id_solicitud.toString().includes(searchId.value))
-        )
-        .sort((a, b) => a.id_solicitud - b.id_solicitud); // Ordenar por ID
-    });
+  return solicitudes.value.filter(
+    (solicitud) =>
+      solicitud.estado === "Aceptada" &&
+      (!searchId.value || solicitud.dni.toString().includes(searchId.value))
+  );
+});
 
     // Computed: Número total de páginas
     const numeroPaginas = computed(() => {
@@ -280,8 +294,7 @@ export default {
 
         if (error) throw error;
 
-        // Enviar correo tras actualizar el estado
-        await enviarCorreo(solicitud, estado);
+        
 
         alert(`Solicitud ${nuevoEstado}`);
         fetchSolicitudes();
@@ -305,47 +318,7 @@ export default {
       motivoRechazo.value = "";
     };
 
-    async function enviarCorreo(solicitud, estado) {
-      try {
-        // Configuración del asunto y cuerpo del correo
-        const asunto = `Estado de tu solicitud: ${
-          estado === "aceptado" ? "Aceptada" : "Rechazada"
-        }`;
-        const cuerpo = `
-          <h2>Estado de tu solicitud</h2>
-          <p>Hola,</p>
-          <p>Tu solicitud para el curso <strong>${getNombreCurso(
-            solicitud.fk_curso
-          )}</strong> ha sido
-          <strong>${estado === "aceptado" ? "Aceptada" : "Rechazada"}</strong>.</p>
-          <p>${
-            estado === "aceptado"
-              ? "¡Felicitaciones! Tu solicitud ha sido aprobada."
-              : motivoRechazo.value
-          }</p>
-          <p>Para confirmar esta acción, haz clic en el siguiente enlace:</p>
-          <p><a href="https://tu-app.com/confirmacion?solicitud=${
-            solicitud.id_solicitud
-          }">Confirmar acción</a></p>
-          <p>Gracias,</p>
-          <p>Equipo de Gestión de Capacitación</p>
-        `;
-
-        // Llama a la función RPC en Supabase
-        const { error } = await supabase.rpc("enviar_correo", {
-          destinatario: solicitud.correo_electronico, // Correo del destinatario
-          asunto: asunto, // Asunto del correo
-          cuerpo: cuerpo, // Contenido del correo
-        });
-
-        if (error) throw error;
-
-        alert("Correo enviado exitosamente");
-      } catch (error) {
-        console.error("Error al enviar el correo:", error);
-        alert("Hubo un error al enviar el correo.");
-      }
-    }
+     
 
     // Modal de detalles
     const abrirModalDetalles = (solicitud) => {
@@ -370,10 +343,14 @@ export default {
 
     // Utilidades
     const formatFecha = (fecha) => {
-      if (!fecha) return "Fecha no disponible";
-      const date = new Date(fecha);
-      return date.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" });
-    };
+  if (!fecha) return "Fecha no disponible";
+  const date = new Date(fecha);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
 
     const getNombreCurso = (fk_curso) => {
       const curso = cursos.value.find((c) => c.pk_curso === fk_curso);
@@ -626,6 +603,273 @@ export default {
 
 .modal-buttons button.btn-confirmar:hover {
   background-color: #2e7d32; /* Verde más oscuro */
+}
+/* Estilos para el carrusel */
+.dashboard-aceptadas {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative; /* Necesario para las flechas */
+}
+
+.aceptadas-grid {
+  display: flex;
+  gap: 1rem; /* Espaciado entre tarjetas */
+  overflow-x: auto; /* Permitir desplazamiento horizontal */
+  scroll-behavior: smooth; /* Movimiento suave */
+  padding: 1rem;
+}
+
+.aceptada-card {
+  flex: 0 0 250px; /* Cada tarjeta tiene un ancho fijo */
+  background-color: #ffffff;
+  border: 1px solid #4a90e2;
+  color: #333333;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.aceptada-card:hover {
+  background-color: #eaf4ff;
+  transform: scale(1.02);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Flechas del carrusel */
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  z-index: 1;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-button.left {
+  left: 10px;
+}
+
+.carousel-button.right {
+  right: 10px;
+}
+
+.carousel-button:hover {
+  background-color: #0056b3;
+}
+
+.carousel-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+/* Fondo translúcido del modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro translúcido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Aparece sobre otros elementos */
+}
+
+/* Contenedor del modal */
+.modal-content {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombras suaves */
+  width: 80%;
+  max-width: 500px;
+  animation: fadeIn 0.3s ease-out; /* Animación de aparición */
+  position: relative;
+}
+
+/* Título del modal */
+.modal-content h3 {
+  font-size: 1.8rem;
+  color: #333333;
+  margin-bottom: 1rem;
+  text-align: center; /* Centrar el texto */
+  font-weight: bold;
+}
+
+/* Contenido dentro del modal */
+.modal-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem; /* Espaciado entre elementos */
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-title {
+  font-weight: bold;
+  color: #555555;
+}
+
+.detail-value {
+  color: #333333;
+  font-size: 1rem;
+}
+
+/* Caja de texto dentro del modal */
+textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: none; /* Evitar redimensionar */
+  padding: 0.8rem;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  font-size: 1rem;
+  color: #333333;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Apariencia de relieve */
+  transition: border-color 0.2s ease;
+}
+
+textarea:focus {
+  border-color: #007bff; /* Azul en foco */
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Resaltado en foco */
+}
+
+/* Fondo translúcido del modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro translúcido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Contenedor del modal */
+.modal-content {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombras suaves */
+  width: 90%;
+  max-width: 600px; /* Ancho máximo del modal */
+  max-height: 80%; /* Altura máxima del modal */
+  overflow-y: auto; /* Permitir desplazamiento vertical */
+  position: relative; /* Necesario para el botón cerrar */
+  animation: fadeIn 0.3s ease-out; /* Animación */
+}
+
+/* Título del modal */
+.modal-content h3 {
+  font-size: 1.5rem;
+  color: #333333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Diseño en grid para los campos */
+.modal-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+  gap: 1rem; /* Espaciado entre elementos */
+  margin-bottom: 1rem;
+}
+
+/* Campos individuales */
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-title {
+  font-weight: bold;
+  color: #555555;
+  margin-bottom: 0.3rem;
+}
+
+.detail-value {
+  color: #333333;
+  font-size: 0.95rem;
+}
+
+/* Botón de cerrar en la esquina */
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background-color: transparent;
+  color: #333333;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: #ff4d4f; /* Cambia a rojo al pasar el mouse */
+}
+
+/* Botón de cerrar al final */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons button {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 1rem;
+}
+
+.modal-buttons button.btn-cerrar-modal {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+.modal-buttons button.btn-cerrar-modal:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
+
+/* Animación de aparición */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
 
