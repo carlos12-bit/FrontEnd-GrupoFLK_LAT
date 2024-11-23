@@ -8,7 +8,7 @@
     </div>
     <!-- Barra de búsqueda -->
     <el-input
-      placeholder="Buscar por estado o tipo de inspección"
+      placeholder="Buscar por estado, tipo de inspección o empresa"
       v-model="searchQuery"
       @input="debouncedSearch"
       class="mb-3 search-input"
@@ -27,6 +27,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- Paginación -->
+    <el-pagination
+      v-model:current-page="currentPage"
+      :page-size="itemsPerPage"
+      :total="filteredInspecciones.length"
+      layout="prev, pager, next"
+      class="mt-4"
+    />
   </div>
   <!-- Modal de Registro -->
   <el-dialog v-model="dialogVisible" title="Registrar Nueva Inspección" width="500px">
@@ -57,13 +65,13 @@ export default {
   },
   data() {
     return {
-      inspecciones: [],
-      searchQuery: '',
-      currentPage: 1,
-      itemsPerPage: 5,
-      dialogVisible: false,
-      editDialogVisible: false,
-      selectedInspeccion: null,
+      inspecciones: [], // Datos de inspecciones
+      searchQuery: '', // Consulta de búsqueda
+      currentPage: 1, // Página actual
+      itemsPerPage: 5, // Cantidad de elementos por página
+      dialogVisible: false, // Visibilidad del modal de registro
+      editDialogVisible: false, // Visibilidad del modal de edición
+      selectedInspeccion: null, // Inspección seleccionada para editar
     };
   },
   computed: {
@@ -75,9 +83,11 @@ export default {
       return this.inspecciones.filter((inspeccion) => {
         const estado = inspeccion.estado_inspeccion || ''; // Valor predeterminado si es null
         const tipo = inspeccion.nombre_tipo_producto || ''; // Valor predeterminado si es null
+        const empresa = inspeccion.nombre_empresa || ''; // Valor predeterminado si es null
         return (
-          estado.toString().toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          tipo.toString().toLowerCase().includes(this.searchQuery.toLowerCase())
+          estado.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          tipo.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          empresa.toLowerCase().includes(this.searchQuery.toLowerCase())
         );
       });
     },
@@ -100,11 +110,15 @@ export default {
       this.filterInspecciones();
     }, 300),
     async fetchInspecciones() {
-      const { data, error } = await supabase.rpc('get_inspecciones_historial');
-      if (error) {
-        console.error('Error al obtener inspecciones:', error.message);
-      } else {
-        this.inspecciones = data;
+      try {
+        const { data, error } = await supabase.rpc('get_inspecciones_historial');
+        if (error) {
+          console.error('Error al obtener inspecciones:', error.message);
+        } else {
+          this.inspecciones = data || [];
+        }
+      } catch (err) {
+        console.error('Error al conectar con Supabase:', err.message);
       }
     },
   },

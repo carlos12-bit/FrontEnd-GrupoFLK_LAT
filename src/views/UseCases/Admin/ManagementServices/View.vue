@@ -1,25 +1,14 @@
-<template> 
-  <el-container class="gestion-container">
-    <el-main class="main-content">
-      <el-row :gutter="20" class="gestion-row" type="flex" justify="space-between" align="top">
-        <!-- Gestión Tipos de Inspección -->
-        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
-          <h1 class="main-header">Gestión de Tipo de Inspección</h1>
-          <el-card shadow="hover" class="gestion-card">
-            <ListTypeInspeccion />
-          </el-card>
-        </el-col>
+<template>
+  <div class="gestionar-personal-view">
+    <h1 class="view-title animate__animated animate__bounceIn">Gestionar Servicios</h1>
+    <div class="section">
+      <ListTypeInspeccion class="animate__animated animate__bounceIn"/>
+    </div>
 
-        <!-- Gestión Tipo de Maquinaria -->
-        <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
-          <h1 class="main-header">Gestión Tipo de Maquinaria</h1>
-          <el-card shadow="hover" class="gestion-card">
-            <ListMachinery />
-          </el-card>
-        </el-col>
-      </el-row>
-    </el-main>
-  </el-container>
+    <div class="section">
+      <ListMachinery class="animate__animated animate__bounceIn"/>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -34,52 +23,53 @@ export default {
 </script>
 
 <style scoped>
-/* Contenedor principal */
-.gestion-container {
-  padding: 20px;
-  min-height: 100vh;
-  background-color: #f5f7fa; /* Fondo claro para un diseño limpio */
+.gestionar-personal-view {
+  background-color: #fff;
+}
+.view-title {
+  text-align: center; 
+  font-family: Arial Black; 
+  font-weight: bold; 
+  font-size: 30px; 
+  color: #fff; 
+  text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
 }
 
-/* Estilos para el encabezado */
-.main-header {
-  text-align: center;
-  margin-bottom: 10px;
-  font-size: 24px;
-  color: #333;
+.section {
+  margin-bottom: 40px;
 }
 
-/* Estilo para el contenido principal */
-.main-content {
-  padding: 20px;
-}
+/* Media Queries for responsiveness */
 
-/* Filas y columnas con margen y espaciado adecuado */
-.gestion-row {
-  display: flex;
-  flex-wrap: wrap; /* Asegura que se ajuste en pantallas pequeñas */
-}
-
-/* Tarjetas para cada sección */
-.gestion-card {
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  transition: box-shadow 0.3s ease;
-}
-
-.gestion-card:hover {
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Media queries para ajustar el espaciado en pantallas más pequeñas */
-@media screen and (max-width: 768px) {
-  .main-header {
-    font-size: 20px;
+/* Tablets */
+@media (max-width: 768px) {
+  .gestionar-personal-view {
     padding: 10px;
   }
-  .gestion-card {
-    padding: 15px;
+
+  .view-title {
+    font-size: 1.75rem;
+    margin-bottom: 15px;
+  }
+
+  .section {
+    margin-bottom: 30px;
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  .gestionar-personal-view {
+    padding: 5px;
+  }
+
+  .view-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .section {
+    margin-bottom: 20px;
   }
 }
 </style>
