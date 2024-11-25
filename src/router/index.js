@@ -58,6 +58,43 @@ const routes = [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
     ],
   },
+
+  {
+    path: '/operator-dashboard',
+    component: () => import('@/views/Layout/Operator/OperatorLayout.vue'),
+    meta: { requiresAuth: true, role: 'Operador' },
+    children: [
+      { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
+      { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
+      { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
+      { path: 'Courses', component: () => import('@/views/UseCases/Operator/Courses/view.vue') },
+    ],
+  },
+
+  {
+    path: '/formador-dashboard',
+    component: () => import('@/views/Layout/Formador/FormadorLayout.vue'),
+    meta: { requiresAuth: true, role: 'Formador' },
+    children: [
+      { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
+      { path: 'CourseMaterials', component: () => import('@/views/UseCases/Formador/CourseMaterials/view.vue') },
+      { path: 'AttendanceManagement', component: () => import('@/views/UseCases/Formador/AttendanceManagement/view.vue') },
+      { path: 'PerformanceReport', component: () => import('@/views/UseCases/Formador/PerformanceReport/view.vue') },
+      { path: 'ManageEvaluation', component: () => import('@/views/UseCases/Formador/ManageEvaluation/view.vue') },
+      { path: 'ProgrammerSession', component: () => import('@/views/UseCases/Formador/ProgrammerSession/ProgrammerSession.vue') },
+      { path: 'ScheduleSessions', component: () => import('@/views/UseCases/Formador/ScheduleSessions/View.vue') },
+    ],
+  },
+
+  {
+    path: '/Instructor-dashboard',
+    component: () => import('@/views/Layout/Instructor/InstructorLayout.vue'),
+    meta: { requiresAuth: true, role: 'Instructor' },
+    children: [
+      { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
+
+    ],
+  },
 ];
 
 // Crear el router

@@ -184,6 +184,7 @@ import { supabase } from '@/supabase';
 export default {
   name: 'RequestTraining',
   setup() {
+    // Estado del formulario
     const form = ref({
       nombre_completo: '',
       nro_telefonico: '',
@@ -214,77 +215,118 @@ export default {
       firma: '',
     });
 
+    // Cargar datos de países y cursos
     const paises = ref([]);
     const cursos = ref([]);
 
-    // Cargar datos de países y cursos desde la base de datos
     const loadData = async () => {
-      const { data: paisData, error: paisError } = await supabase
-        .from("pais")
-        .select("id, nombre");
-      if (paisError) {
-        console.error("Error al obtener los países:", paisError.message);
-      } else {
+      try {
+        const { data: paisData, error: paisError } = await supabase
+          .from("pais")
+          .select("id, nombre");
+        if (paisError) throw paisError;
         paises.value = paisData;
-      }
 
-      const { data: cursoData, error: cursoError } = await supabase
-        .from("cursos")
-        .select("pk_curso, titulo_curso");
-      if (cursoError) {
-        console.error("Error al obtener los cursos:", cursoError.message);
-      } else {
+        const { data: cursoData, error: cursoError } = await supabase
+          .from("cursos")
+          .select("pk_curso, titulo_curso");
+        if (cursoError) throw cursoError;
         cursos.value = cursoData;
+      } catch (error) {
+        console.error("Error al cargar datos:", error);
       }
     };
 
     onMounted(loadData);
 
-    // Manejar la subida de archivos
+    // Autocompletar datos basados en DNI
+    const fetchPersonaData = async (dni) => {
+      try {
+        const { data, error } = await supabase.rpc('autofill_persona_data', { dni_input: dni });
+        if (error) throw error;
+        return data.length > 0 ? data[0] : null;
+      } catch (error) {
+        console.error("Error al obtener los datos:", error.message);
+        return null;
+      }
+    };
+
+    const autoFillFields = async (dni) => {
+      const personaData = await fetchPersonaData(dni);
+      if (personaData) {
+        form.value.nombre_completo = personaData.nombre_completo;
+        form.value.fecha_nacimiento = personaData.fecha_nacimiento;
+        form.value.nacionalidad = personaData.nacionalidad;
+        alert("Campos completados automáticamente.");
+      } else {
+        alert("No se encontraron datos para el DNI ingresado.");
+      }
+    };
+
+    // Manejo de archivos
     const handleFileUpload = (field, event) => {
       form.value[field] = event.target.files[0];
     };
 
     const sanitizeFileName = (fileName) => {
-      return fileName.replace(/[^a-zA-Z0-9._-]/g, "_"); // Reemplaza caracteres especiales
+      return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
     };
 
     const uploadFile = async (fieldName, file) => {
-      if (file) {
-        const sanitizedFileName = sanitizeFileName(file.name);
-        const uniqueFileName = `${fieldName}_${Date.now()}_${sanitizedFileName}`; // Genera un nombre único
+      if (!file) return null;
+      const sanitizedFileName = sanitizeFileName(file.name);
+      const uniqueFileName = `${fieldName}_${Date.now()}_${sanitizedFileName}`;
+      try {
         const { data, error } = await supabase.storage
-          .from("Solicitudes_Capacitacion") // Bucket público
+          .from("Solicitudes_Capacitacion")
           .upload(uniqueFileName, file);
-
-        if (error) {
-          console.error(`Error al subir ${fieldName}:`, error.message);
-          return null;
-        }
-        return data.path; // Devuelve la ruta del archivo subido
+        if (error) throw error;
+        return data.path;
+      } catch (error) {
+        console.error(`Error al subir ${fieldName}:`, error.message);
+        return null;
       }
-      return null;
     };
 
+    // Validación de edad
     const isAdult = (fechaNacimiento) => {
       const today = new Date();
       const birthDate = new Date(fechaNacimiento);
       const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDifference = today.getMonth() - birthDate.getMonth();
-      const dayDifference = today.getDate() - birthDate.getDate();
-      if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
-        return age - 1 >= 18;
-      }
-      return age >= 18;
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      const dayDiff = today.getDate() - birthDate.getDate();
+      return monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0) ? age >= 18 : age - 1 >= 18;
     };
 
+    // Lógica para enviar correos
+    const enviarCorreo = async (to, subject, body) => {
+      try {
+        // Usa SMTP.js para enviar correos directamente desde el frontend
+        window.Email.send({
+          Host: "smtp.gmail.com",
+          Username: "grupoflk13@gmail.com", // Reemplaza con tu correo
+          Password: "dmur ursm ahld kvuj", // Contraseña generada para aplicaciones (NO tu contraseña personal)
+          To: to,
+          From: "grupoflk13@gmail.com", // Mismo correo que usas en Username
+          Subject: subject,
+          Body: body,
+        }).then((message) => {
+          if (message === "OK") {
+            alert("Correo enviado con éxito.");
+          } else {
+            console.error("Error al enviar el correo:", message);
+            alert("Hubo un error al enviar el correo.");
+          }
+        });
+      } catch (error) {
+        console.error("Error inesperado:", error);
+        alert("Hubo un error inesperado al enviar el correo.");
+      }
+    };
+
+    // Enviar el formulario
     const submitForm = async () => {
       try {
-
-        // Depuración del valor de fk_curso
-        console.log("Valor seleccionado de fk_curso:", form.value.fk_curso);
-
-
         // Validaciones previas
         if (!isAdult(form.value.fecha_nacimiento)) {
           alert("Debes tener al menos 18 años para completar este formulario.");
@@ -301,43 +343,32 @@ export default {
           return;
         }
 
-        // Subir archivos y actualizar el objeto `form` con las rutas
-        const fileFields = [
-          "dni_adjunto",
-          "certificado_medico_adjunto",
-          "licencia_conducir_adjunto",
-          "firma",
-        ];
-
+        // Subir archivos
+        const fileFields = ["dni_adjunto", "certificado_medico_adjunto", "licencia_conducir_adjunto", "firma"];
         for (const field of fileFields) {
-          if (form.value[field]) {
-            const filePath = await uploadFile(field, form.value[field]);
-            if (filePath) {
-              form.value[field] = filePath; // Actualiza el campo en el formulario con la ruta del archivo
-            } else {
-              alert(`Error al subir el archivo: ${field}. Revisa los logs para más detalles.`);
-              return;
-            }
-          }
+          const filePath = await uploadFile(field, form.value[field]);
+          if (filePath) form.value[field] = filePath;
         }
 
-        // Inserción en la base de datos
+        // Guardar en Supabase
         const { error } = await supabase.from("solicitud_capacitacion").insert([form.value]);
+        if (error) throw error;
 
-        if (error) {
-          console.error("Error al enviar la solicitud:", error.message);
-          alert("Error al enviar la solicitud. Revisa los datos e intenta nuevamente.");
-        } else {
-          alert("Solicitud enviada con éxito.");
+        // Enviar correo al usuario
+        await enviarCorreo(
+          form.value.correo_electronico,
+          "Solicitud de Capacitación Recibida",
+          `
+          <p>Estimado(a) ${form.value.nombre_completo},</p>
+          <p>Gracias por solicitar una capacitación. Nos pondremos en contacto con usted pronto.</p>
+          <p>Equipo de Capacitación</p>
+          `
+        );
 
-          // Limpia el formulario después de enviar
-          Object.keys(form.value).forEach((key) => {
-            form.value[key] = typeof form.value[key] === "boolean" ? false : "";
-          });
-        }
+        alert("Solicitud enviada con éxito.");
       } catch (error) {
-        console.error("Error inesperado:", error);
-        alert("Ocurrió un error inesperado. Revisa los logs para más detalles.");
+        console.error("Error al enviar la solicitud:", error.message);
+        alert("Ocurrió un error al enviar la solicitud.");
       }
     };
 
@@ -345,7 +376,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 /* Estilos existentes */
