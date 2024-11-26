@@ -8,7 +8,8 @@
     <a href="https://wa.me/51966401791?text=Hola%2C%20Quisiera%20solicitar%20Informes" target="_blank" class="btn btn-whatsapp">
       <i class="fab fa-whatsapp"></i> Contáctanos por WhatsApp
     </a>
-    <router-link to="/RequestTraining" class="btn btn-red btn-lg">Solicitar capacitacion</router-link>
+    <router-link to="/RequestTraining" class="btn btn-red btn-lg">Solicitar capacitación</router-link>
+    <router-link to="/ListarInspeccionesPorRUC" class="btn btn-green btn-lg">Consultar Inspecciones</router-link>
   </div>
 </template>
 
@@ -57,7 +58,13 @@ export default {
   display: inline-block;
   transition: background-color 0.3s ease;
 }
-/* Botón amarillo para "Nuestros Servicios" */
+
+.btn-yellow:hover {
+  background-color: #e6ac00;
+  color: white;
+}
+
+/* Botón rojo para "Solicitar capacitación" */
 .btn-red {
   background-color: #ff2c07;
   color: white;
@@ -68,9 +75,23 @@ export default {
   transition: background-color 0.3s ease;
 }
 
-.btn-yellow:hover {
-  background-color: #e6ac00;
+.btn-red:hover {
+  background-color: #e02007;
+}
+
+/* Botón verde para "Consultar Inspecciones" */
+.btn-green {
+  background-color: #28a745;
   color: white;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.btn-green:hover {
+  background-color: #218838;
 }
 
 /* Botón verde para WhatsApp */
@@ -106,6 +127,8 @@ export default {
   }
 
   .btn-yellow, 
+  .btn-red, 
+  .btn-green,
   .btn-whatsapp {
     padding: 0.5rem 1rem;
     font-size: 1rem;

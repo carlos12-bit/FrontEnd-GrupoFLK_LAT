@@ -2,9 +2,10 @@
   <div class="container">
     <h1 class="page-title">Detalles de la Solicitud</h1>
     <div v-if="solicitud" class="detalle-solicitud">
+      <!-- Información de la solicitud -->
       <p><strong>Nombre Completo:</strong> {{ solicitud.nombre_completo }}</p>
       <p><strong>DNI:</strong> {{ solicitud.dni }}</p>
-      <p><strong>Fecha de Nacimiento:</strong> {{ new Date(solicitud.fecha_nacimiento).toLocaleDateString() }}</p>
+      <p><strong>Fecha de Nacimiento:</strong> {{ formatFecha(solicitud.fecha_nacimiento) }}</p>
       <p><strong>Dirección:</strong> {{ solicitud.direccion }}</p>
       <p><strong>Número Telefónico:</strong> {{ solicitud.nro_telefonico }}</p>
       <p><strong>Teléfono de Contacto:</strong> {{ solicitud.telefono_contacto }}</p>
@@ -17,22 +18,23 @@
       <p><strong>Nombre del Contacto de Emergencia:</strong> {{ solicitud.nombre_contacto_emergencia }}</p>
       <p><strong>Relación con Contacto de Emergencia:</strong> {{ solicitud.relacion_contacto_emergencia }}</p>
       <p><strong>Teléfono de Contacto de Emergencia:</strong> {{ solicitud.telefono_contacto_emergencia }}</p>
-      <p><strong>Curso Solicitado:</strong> {{ solicitud.Cursos.titulo_curso }}</p>
-      <p><strong>Fecha de Inicio Preferida:</strong> {{ new Date(solicitud.fecha_inicio_preferida).toLocaleDateString() }}</p>
+      <p><strong>Curso Solicitado:</strong> {{ solicitud.cursos?.titulo_curso || 'Sin título de curso' }}</p>
+      <p><strong>Fecha de Inicio Preferida:</strong> {{ formatFecha(solicitud.fecha_inicio_preferida) }}</p>
       <p><strong>Turno Preferido:</strong> {{ solicitud.turno_preferido }}</p>
       <p><strong>Alergias o Condiciones:</strong> {{ solicitud.alergias_condiciones }}</p>
       <p><strong>Necesidades Especiales:</strong> {{ solicitud.necesidades_especiales }}</p>
       <p><strong>Consentimiento de Participación:</strong> {{ solicitud.consentimiento_participacion ? 'Sí' : 'No' }}</p>
       <p><strong>Autorización de Imagen:</strong> {{ solicitud.autorizacion_imagen ? 'Sí' : 'No' }}</p>
-      <p><strong>Fecha de Solicitud:</strong> {{ new Date(solicitud.fecha_solicitud).toLocaleDateString() }}</p>
+      <p><strong>Fecha de Solicitud:</strong> {{ formatFecha(solicitud.fecha_solicitud) }}</p>
       <p><strong>Consentimiento para Tratamiento de Datos:</strong> {{ solicitud.consentimiento_tratamiento_datos ? 'Sí' : 'No' }}</p>
       <p><strong>Firma:</strong> {{ solicitud.firma }}</p>
 
+      <!-- Adjuntos -->
       <div v-if="solicitud.dni_adjunto">
         <p><strong>DNI Adjunto:</strong></p>
         <img :src="solicitud.dni_adjunto" alt="DNI Adjunto" class="imagen-adjunta" />
       </div>
-      
+
       <div v-if="solicitud.certificado_medico_adjunto">
         <p><strong>Certificado Médico Adjunto:</strong></p>
         <img :src="solicitud.certificado_medico_adjunto" alt="Certificado Médico Adjunto" class="imagen-adjunta" />
@@ -42,110 +44,59 @@
         <p><strong>Licencia de Conducir Adjunto:</strong></p>
         <img :src="solicitud.licencia_conducir_adjunto" alt="Licencia de Conducir Adjunto" class="imagen-adjunta" />
       </div>
-           <!-- Botones de Aceptar y Rechazar -->
-      <button @click="gestionarSolicitud('aceptado')" class="card-btn">Aceptar</button>
-      <button @click="abrirModalRechazo" class="card-btn card-btn-rechazar">Rechazar</button>
-    </div>
 
-    <div v-if="mostrarModalRechazo" class="modal">
-      <div class="modal-content">
-        <h3>Motivo de Rechazo</h3>
-        <textarea v-model="motivoRechazo" placeholder="Ingrese el motivo del rechazo"></textarea>
-        <div class="modal-buttons">
-          <button @click="gestionarSolicitud('rechazado')" class="card-btn">Confirmar Rechazo</button>
-          <button @click="cerrarModalRechazo" class="card-btn card-btn-rechazar">Cancelar</button>
-        </div>
-      </div>
+      <!-- Botón de Cerrar -->
+      <button @click="$router.push({ path: '/admin-dashboard/ManageRequest' })" class="card-btn">Cerrar</button>
     </div>
   </div>
 </template>
 
 <script>
-import { supabase } from '@/supabase.js';
+import { supabase } from "@/supabase.js";
 
 export default {
   name: "DetallesSolicitud",
   data() {
     return {
       solicitud: null,
-      mostrarModalRechazo: false,
-      motivoRechazo: "" // Motivo para el rechazo
     };
   },
   async mounted() {
-    let { data: solicitud, error } = await supabase
-      .from('Solicitud_Capacitacion')
-      .select(`*, Cursos (titulo_curso)`)
-      .eq('id_solicitud', this.$route.params.id)
-      .single();
+    const solicitudId = this.$route.query.id;
 
-    if (error) {
-      console.error("Error fetching data: ", error);
-    } else {
-      this.solicitud = solicitud;
+    if (!solicitudId) {
+      console.error("ID de solicitud no encontrado en la URL.");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("solicitud_capacitacion")
+        .select(
+          `*, 
+           cursos!fk_curso (titulo_curso)` // Especificar la relación
+        )
+        .eq("id_solicitud", solicitudId)
+        .single();
+
+      if (error) throw error;
+
+      this.solicitud = data;
+    } catch (error) {
+      console.error("Error al cargar los detalles de la solicitud:", error);
     }
   },
   methods: {
-    abrirModalRechazo() {
-      this.mostrarModalRechazo = true;
+    formatFecha(fecha) {
+      if (!fecha) return "Sin fecha";
+      const date = new Date(fecha);
+      return date.toLocaleDateString("es-ES");
     },
-    cerrarModalRechazo() {
-      this.mostrarModalRechazo = false;
-    },
-    async gestionarSolicitud(estado) {
-      let nuevoEstado = estado === 'aceptado' ? 'Aceptada' : 'Rechazada';
-
-      try {
-        const { error } = await supabase
-          .from('Solicitud_Capacitacion')
-          .update({ 
-            estado: nuevoEstado, 
-            motivo_rechazo: estado === 'rechazado' ? this.motivoRechazo : null 
-          })
-          .eq('id_solicitud', this.$route.params.id);
-
-        if (error) {
-          throw error;
-        }
-
-        // Enviar correo de aceptación o rechazo usando la configuración SMTP de Supabase
-        await this.enviarCorreoEstado(estado);
-
-        alert(`La solicitud ha sido ${nuevoEstado}`);
-        this.$router.push({ path: '/admin-dashboard/ManageRequest' });
-
-      } catch (error) {
-        console.error(`Error al ${estado} la solicitud: `, error);
-        alert(`Ocurrió un error al ${estado} la solicitud`);
-      } finally {
-        this.cerrarModalRechazo();
-      }
-    },
-    async enviarCorreoEstado(estado) {
-      const subject = estado === 'aceptado' 
-        ? "Solicitud Aceptada"
-        : "Solicitud Rechazada";
-        
-      const mensaje = estado === 'aceptado'
-        ? `Estimado ${this.solicitud.nombre_completo}, su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido aceptada.`
-        : `Estimado ${this.solicitud.nombre_completo}, lamentamos informarle que su solicitud para el curso "${this.solicitud.Cursos.titulo_curso}" ha sido rechazada. Motivo: ${this.motivoRechazo}`;
-
-      // Llamada al procedimiento almacenado de Supabase para enviar el correo
-      const { error } = await supabase.rpc('enviar_correo', {
-        destinatario: this.solicitud.correo_electronico,
-        asunto: subject,
-        mensaje: mensaje
-      });
-
-      if (error) {
-        console.error("Error al enviar el correo:", error);
-      } else {
-        console.log("Correo de estado enviado correctamente.");
-      }
-    }
-  }
+  },
 };
 </script>
+
+
 <style scoped>
 .container {
   max-width: 900px;
@@ -194,75 +145,19 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.card-btn, .card-btn-rechazar {
+.card-btn {
   padding: 0.75rem 1.5rem;
   font-size: 1.1rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 1rem;
-  transition: all 0.3s ease;
-}
-
-.card-btn {
   background-color: #1A5276;
   color: white;
+  transition: all 0.3s ease;
 }
 
 .card-btn:hover {
   background-color: #2980b9;
-}
-
-.card-btn-rechazar {
-  background-color: #C0392B;
-  color: white;
-}
-
-.card-btn-rechazar:hover {
-  background-color: #E74C3C;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-.modal-content h3 {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  color: #34495e;
-}
-
-.modal-content textarea {
-  width: 100%;
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-around;
 }
 </style>

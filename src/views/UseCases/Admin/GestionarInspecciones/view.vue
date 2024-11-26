@@ -12,7 +12,7 @@
   
   <script>
   // Importa el componente GestionarInspecciones
-  import GestionarInspecciones from '../../../../components/GesionarInspecciones/ListarInspecciones.vue';
+  import GestionarInspecciones from '@/components/GesionarInspecciones/ListarInspecciones.vue';
   
   export default {
     components: {

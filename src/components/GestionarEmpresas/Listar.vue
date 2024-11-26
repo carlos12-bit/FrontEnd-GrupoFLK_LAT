@@ -1,255 +1,166 @@
 <template>
   <div class="data-table-container">
-    <h2 class="text-center mb-4">Historial de Empresas Registradas</h2>
-    <div class="button-group mb-3">
-      <button class="btn btn-primary" @click="openRegisterModal">Registrar Empresa</button>
-      <button class="btn btn-success mx-3" @click="exportToExcel">Exportar a Excel</button>
-    </div>
+    <h2 class="text-center mb-4">Listado de Empresas</h2>
 
+    <!-- Barra de búsqueda -->
     <el-input
-      placeholder="Buscar por nombre de empresa o país"
+      placeholder="Buscar por RUC o Nombre Comercial"
       v-model="searchQuery"
+      @input="debouncedFetch"
       class="mb-3 search-input"
     />
 
-    <el-table :data="paginatedEmpresas" style="width: 100%" border>
-      <el-table-column prop="empresa_id" label="ID" width="60" />
-      <el-table-column prop="nombre_empresa" label="Nombre de Empresa" sortable />
-      <el-table-column prop="pais" label="País" sortable />
-      <el-table-column label="Acciones" width="200">
+    <!-- Tabla de empresas -->
+    <el-table :data="empresas" style="width: 100%" border v-loading="loading">
+      <el-table-column prop="nro_identificacion" label="RUC" width="120" />
+      <el-table-column prop="nombre_comercial" label="Nombre Comercial" sortable />
+      <el-table-column prop="pais_nombre" label="País" sortable />
+      <el-table-column label="Acciones" width="250">
         <template #default="scope">
-          <el-button size="mini" @click="viewDetails(scope.row.empresa_id)">Detalle</el-button>
-          <el-button size="mini" type="primary" @click="editCompany(scope.row.empresa_id)">Editar</el-button>
-          <el-button size="mini" type="warning" @click="toggleEstado(scope.row)">
-            {{ scope.row.estado ? 'Inactivar' : 'Activar' }}
+          <el-button size="mini" type="primary" @click="openEditModal(scope.row)">
+            Editar
+          </el-button>
+          <el-button size="mini" type="success" @click="openRepresentantesModal(scope.row)">
+            Representantes
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <!-- Contenedor de paginación -->
-    <div class="pagination-container">
-      <el-pagination
-        @current-change="handlePageChange"
-        :current-page="currentPage"
-        :page-size="itemsPerPage"
-        :total="filteredEmpresas.length"
-        layout="total, prev, pager, next"
-      />
-      <div class="select-with-message mt-1">
-        <span class="page-size-message">Mostrar</span>
-        <el-select v-model="itemsPerPage" @change="handleItemsPerPageChange" class="page-size-select" placeholder="Items por página">
-          <el-option label="5" :value="5" />
-          <el-option label="10" :value="10" />
-          <el-option label="15" :value="15" />
-          <el-option label="20" :value="20" />
-        </el-select>
-        <span class="page-size-message">registros</span>
-      </div>
-    </div>
-
-    <!-- Modal para Registrar Empresa -->
-    <el-dialog
-      v-model="dialogVisible"
-      title="Registrar Nueva Empresa"
-      width="500px"
-      :before-close="handleClose"
-    >
-      <RegistrarEmpresa @closeModal="dialogVisible = false" @refreshTable="fetchEmpresas" />
-    </el-dialog>
-
-    <!-- Modal para Editar Empresa -->
-    <el-dialog
-      v-model="isEditModalVisible"
-      title="Editar Empresa"
-      width="500px"
-      @close="closeEditModal"
-    >
-      <EditarEmpresa :company="selectedCompany" @companyUpdated="fetchEmpresas" @closeModal="closeEditModal" />
-    </el-dialog>
-
-    <!-- Modal para Confirmar Eliminación -->
-    <el-dialog
-      v-model="isDeleteModalVisible"
-      title="Eliminar Empresa"
-      width="400px"
-      @close="closeDeleteModal"
-    >
-      <p>¿Estás seguro de que deseas eliminar esta empresa?</p>
-      <el-button type="danger" @click="confirmDeleteCompany">Eliminar</el-button>
-      <el-button @click="closeDeleteModal">Cancelar</el-button>
-    </el-dialog>
   </div>
+  
+    <!-- Paginación -->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :total="totalItems"
+      :page-size="itemsPerPage"
+      @current-change="handlePageChange"
+    />
+
+    <!-- Modal de Edición -->
+    <el-dialog v-model="editDialogVisible" title="Editar Empresa" width="600px">
+      <EditarEmpresa
+        v-if="selectedEmpresa"
+        :empresaInicial="selectedEmpresa"
+        @closeModal="closeEditModal"
+        @refreshTable="fetchEmpresas"
+      />
+    </el-dialog>
+
+    <!-- Modal de Representantes -->
+    <el-dialog
+      v-model="representantesDialogVisible"
+      width="800px"
+    >
+      <ListarRepresentantes
+        v-if="selectedEmpresa"
+        :empresaId="selectedEmpresa.id"
+        :empresaNombre="selectedEmpresa.nombre_comercial"
+      />
+    </el-dialog>
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
+import debounce from 'lodash/debounce';
 import supabase from '@/supabase';
-import * as XLSX from 'xlsx';
-import RegistrarEmpresa from './Registrar.vue';
 import EditarEmpresa from './Editar.vue';
+import ListarRepresentantes from './GestionarRepresentantes/Listar.vue';
 
 export default {
   components: {
-    RegistrarEmpresa,
     EditarEmpresa,
+    ListarRepresentantes,
   },
   setup() {
-    const dialogVisible = ref(false);
-    const isEditModalVisible = ref(false);
-    const isDeleteModalVisible = ref(false);
     const empresas = ref([]);
     const searchQuery = ref('');
     const currentPage = ref(1);
-    const itemsPerPage = ref(5);
-    const selectedCompany = ref(null);
+    const itemsPerPage = ref(10);
+    const totalItems = ref(0);
+    const loading = ref(false);
 
-    const openRegisterModal = () => {
-      dialogVisible.value = true;
-    };
+    const editDialogVisible = ref(false);
+    const representantesDialogVisible = ref(false);
+    const selectedEmpresa = ref(null);
 
-    const viewDetails = (companyId) => {
-      alert(`Detalles de la empresa con ID: ${companyId}`);
-    };
+    const debouncedFetch = debounce(() => fetchEmpresas(), 300);
 
-    const editCompany = async (companyId) => {
-      const { data, error } = await supabase
-        .from('empresa')
-        .select('*')
-        .eq('id', companyId)
-        .single();
+    const fetchEmpresas = async () => {
+      loading.value = true;
+      try {
+        const { data, error, count } = await supabase
+          .from('empresa')
+          .select('id, nro_identificacion, nombre_comercial, pais_id', { count: 'exact' })
+          .ilike('nro_identificacion', `%${searchQuery.value}%`)
+          .range((currentPage.value - 1) * itemsPerPage.value, currentPage.value * itemsPerPage.value - 1);
 
-      if (error) {
-        console.error('Error al obtener la empresa:', error.message);
-        alert('Error al cargar la empresa para edición');
-        return;
-      }
+        if (error) throw error;
 
-      selectedCompany.value = data;
-      isEditModalVisible.value = true;
-    };
-
-    const toggleEstado = async (company) => {
-      const nuevoEstado = !company.estado;
-      const { error } = await supabase
-        .from('empresa')
-        .update({ estado: nuevoEstado })
-        .eq('id', company.empresa_id);
-
-      if (error) {
-        console.error('Error al cambiar el estado de la empresa:', error.message);
-      } else {
-        alert(`Estado de la empresa actualizado a ${nuevoEstado ? 'Activo' : 'Inactivo'}`);
-        fetchEmpresas();
+        totalItems.value = count;
+        empresas.value = data.map((empresa) => ({
+          ...empresa,
+          pais_nombre: getPaisNombre(empresa.pais_id),
+        }));
+      } catch (err) {
+        console.error('Error al obtener empresas:', err.message);
+      } finally {
+        loading.value = false;
       }
     };
 
-    const closeEditModal = () => {
-      isEditModalVisible.value = false;
-      selectedCompany.value = null;
+    const getPaisNombre = (paisId) => {
+      // Supongamos que esta función devuelve el nombre del país según su ID
+      return "País de Ejemplo"; // Esto se puede mejorar con una caché local
     };
-
-    const deleteCompany = (company) => {
-      selectedCompany.value = company;
-      isDeleteModalVisible.value = true;
-    };
-
-    const closeDeleteModal = () => {
-      isDeleteModalVisible.value = false;
-      selectedCompany.value = null;
-    };
-
-    const handleClose = (done) => {
-      done();
-    };
-
-const fetchEmpresas = async () => {
-  const { data, error } = await supabase.rpc('obtenerdatosempresapais');
-
-  if (error) {
-    console.error('Error al obtener empresas:', error.message);
-  } else {
-    console.log('Datos obtenidos:', data);  // Verifica los datos obtenidos
-    empresas.value = data;
-  }
-};
-
-    const filteredEmpresas = computed(() =>
-      empresas.value.filter((empresa) =>
-        empresa.nombre_empresa.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        empresa.pais.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
-    );
-
-    const paginatedEmpresas = computed(() => {
-      const start = (currentPage.value - 1) * itemsPerPage.value;
-      return filteredEmpresas.value.slice(start, start + itemsPerPage.value);
-    });
 
     const handlePageChange = (page) => {
       currentPage.value = page;
+      fetchEmpresas();
     };
 
-    const handleItemsPerPageChange = (value) => {
-      itemsPerPage.value = value;
-      currentPage.value = 1;
+    const openEditModal = (empresa) => {
+      selectedEmpresa.value = empresa;
+      editDialogVisible.value = true;
     };
 
-    const exportToExcel = () => {
-      const ws = XLSX.utils.json_to_sheet(empresas.value);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Empresas');
-      XLSX.writeFile(wb, 'Empresas.xlsx');
+    const closeEditModal = () => {
+      editDialogVisible.value = false;
+      selectedEmpresa.value = null;
     };
 
-    const confirmDeleteCompany = async () => {
-      const { error } = await supabase
-        .from('empresa')
-        .delete()
-        .eq('id', selectedCompany.value.empresa_id);
-      if (error) {
-        console.error('Error al eliminar empresa:', error.message);
-      } else {
-        alert('Empresa eliminada con éxito');
-        fetchEmpresas();
-        closeDeleteModal();
-      }
+    const openRepresentantesModal = (empresa) => {
+      selectedEmpresa.value = empresa;
+      representantesDialogVisible.value = true;
     };
-
-    onMounted(fetchEmpresas);
 
     return {
-      dialogVisible,
-      isEditModalVisible,
-      isDeleteModalVisible,
       empresas,
       searchQuery,
       currentPage,
       itemsPerPage,
-      selectedCompany,
-      openRegisterModal,
-      viewDetails,
-      editCompany,
-      toggleEstado,
-      closeEditModal,
-      deleteCompany,
-      closeDeleteModal,
-      handleClose,
+      totalItems,
+      loading,
+      editDialogVisible,
+      representantesDialogVisible,
+      selectedEmpresa,
+      debouncedFetch,
       fetchEmpresas,
-      filteredEmpresas,
-      paginatedEmpresas,
       handlePageChange,
-      handleItemsPerPageChange,
-      exportToExcel,
-      confirmDeleteCompany,
+      openEditModal,
+      closeEditModal,
+      openRepresentantesModal,
     };
+  },
+  mounted() {
+    this.fetchEmpresas();
   },
 };
 </script>
 
 <style scoped>
 .data-table-container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: auto;
   background-color: #ffffff;
   border-radius: 8px;
@@ -261,34 +172,11 @@ const fetchEmpresas = async () => {
   width: 100%;
 }
 
-.page-size-select {
-  width: 70px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.pagination-container {
-  display: auto;
-  align-items: center;
+.el-table {
   margin-top: 20px;
 }
 
-.select-with-message {
-  display: flex;
-  align-items: center;
-}
-
-.page-size-message {
-  margin-right: 10px;
-}
-
-.el-table th {
-  background-color: #f5f5f5;
-  color: #333;
-  font-weight: bold;
-}
-
-.el-table td {
-  color: #666;
+.ml-3 {
+  margin-left: 10px;
 }
 </style>

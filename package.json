@@ -13,7 +13,10 @@
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
+<<<<<<< HEAD
     "@fullcalendar/timegrid": "^6.1.15",
+=======
+>>>>>>> c5afaf8d52beb3624dc7adbf03f699a803e28863
     "@fullcalendar/vue3": "^6.1.15",
     "@supabase/supabase-js": "^2.46.1",
     "animate.css": "^4.1.1",

@@ -1,150 +1,147 @@
 <template>
-    <div class="data-table-container">
-      <h2 class="text-center mb-4">Lista de Representantes</h2>
-      <div class="button-group mb-3">
-        <button class="btn btn-primary" @click="openRegisterModal">Registrar Representante</button>
-      </div>
-  
-      <el-input
-        placeholder="Buscar por nombre o provincia"
-        v-model="searchQuery"
-        class="mb-3 search-input"
-      />
-  
-      <el-table :data="paginatedRepresentantes" style="width: 100%" border>
-        <el-table-column prop="id" label="ID" width="60" />
-        <el-table-column prop="provincia" label="Provincia" sortable />
-        <el-table-column prop="region" label="Región" sortable />
-        <el-table-column prop="nombre_completo" label="Nombre Completo" sortable />
-        <el-table-column prop="estado" label="Estado" sortable />
-        <el-table-column label="Acciones" width="200">
-          <template #default="scope">
-            <el-button size="mini" @click="viewDetails(scope.row.id)">Detalle</el-button>
-            <el-button size="mini" type="primary" @click="editRepresentante(scope.row.id)">Editar</el-button>
-            <el-button size="mini" type="warning" @click="toggleEstado(scope.row)">
-              {{ scope.row.estado === 'Activo' ? 'Cambiar Estado' : 'Activar' }}
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-  
-      <div class="pagination-container">
-        <el-pagination
-          @current-change="handlePageChange"
-          :current-page="currentPage"
-          :page-size="itemsPerPage"
-          :total="filteredRepresentantes.length"
-          layout="total, prev, pager, next"
-        />
-      </div>
-  
-      <!-- Modal para Registrar Representante -->
-      <el-dialog v-model="dialogVisible" title="Registrar Representante" width="500px" :before-close="handleClose">
-        <RegistrarRepresentante @closeModal="dialogVisible = false" @refreshTable="fetchRepresentantes" />
-      </el-dialog>
-  
-      <!-- Modal para Editar Representante -->
-      <el-dialog v-model="isEditModalVisible" title="Editar Representante" width="500px" @close="closeEditModal">
-        <EditarRepresentante :representante="selectedRepresentante" @representanteUpdated="fetchRepresentantes" @closeModal="closeEditModal" />
-      </el-dialog>
+  <div class="listar-representantes-container">
+    <h2 class="text-center mb-4">Listado de Representantes</h2>
+
+    <!-- Botones para registrar -->
+    <div class="button-group mb-3">
+      <el-button type="primary" @click="openRegisterModal">Registrar Representante</el-button>
     </div>
-  </template>
-  
-  <script>
-  import { ref, computed, onMounted } from 'vue';
-  import supabase from '@/supabase';
-  import Registrar from './Registrar.vue';
-  import Editar from './Editar.vue';
-  
-  export default {
-    components: {
-      Registrar,
-      Editar,
+
+    <!-- Tabla de representantes -->
+    <el-table :data="representantes" style="width: 100%" border v-loading="loading">
+      <el-table-column prop="dni" label="DNI" width="100" />
+      <el-table-column
+        label="Nombre Completo"
+        :formatter="formatNombreCompleto"
+      />
+      <el-table-column prop="direccion_sede" label="Dirección Sede" />
+      <el-table-column label="Acciones" width="250">
+        <template #default="scope">
+          <el-button size="mini" type="primary" @click="openEditModal(scope.row.id)">Editar</el-button>
+          <el-button size="mini" type="success" @click="openMaquinariaModal(scope.row.id)">Maquinaria</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+      <!-- Modal de Registro -->
+      <el-dialog v-model="dialogVisible" title="Registrar Representante" width="600px">
+      <Registrar
+        :empresaId="empresaId"
+        @closeModal="dialogVisible = false"
+        @refreshTable="fetchRepresentantes"
+      />
+    </el-dialog>
+
+    <!-- Modal de Edición -->
+    <el-dialog v-model="editDialogVisible" title="Editar Representante" width="600px">
+      <Editar
+        :representanteId="selectedRepresentanteId"
+        @closeModal="editDialogVisible = false"
+        @refreshTable="fetchRepresentantes"
+      />
+    </el-dialog>
+
+    <!-- Modal de Maquinaria -->
+    <el-dialog v-model="maquinariaDialogVisible" title="Gestionar Maquinaria" width="800px">
+      <GestionarMaquinaria
+        :representanteId="selectedRepresentanteId"
+        @closeModal="maquinariaDialogVisible = false"
+        @refreshTable="fetchRepresentantes"
+      />
+    </el-dialog>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import supabase from '@/supabase';
+import Registrar from './Registrar.vue';
+import Editar from './Editar.vue';
+import GestionarMaquinaria from './GestionarMaquinaria/Listar.vue';
+
+export default {
+  components: { Registrar, Editar, GestionarMaquinaria },
+  props: {
+    empresaId: {
+      type: Number,
+      required: true,
     },
-    setup() {
-      const dialogVisible = ref(false);
-      const isEditModalVisible = ref(false);
-      const representantes = ref([]);
-      const searchQuery = ref('');
-      const currentPage = ref(1);
-      const itemsPerPage = ref(5);
-      const selectedRepresentante = ref(null);
-  
-      const openRegisterModal = () => {
-        dialogVisible.value = true;
-      };
-  
-      const viewDetails = (representanteId) => {
-        alert(`Detalles del representante con ID: ${representanteId}`);
-      };
-  
-      const editRepresentante = async (representanteId) => {
+  },
+  setup(props) {
+    const representantes = ref([]);
+    const loading = ref(false);
+    const dialogVisible = ref(false);
+    const editDialogVisible = ref(false);
+    const maquinariaDialogVisible = ref(false);
+    const selectedRepresentanteId = ref(null);
+
+    const fetchRepresentantes = async () => {
+      try {
+        loading.value = true;
         const { data, error } = await supabase
-          .from('Representante_De_Empresa')
+          .from('representante_de_empresa')
           .select('*')
-          .eq('id', representanteId)
-          .single();
-  
-        if (error) {
-          console.error('Error al obtener el representante:', error.message);
-          alert('Error al cargar el representante para edición');
-          return;
-        }
-  
-        selectedRepresentante.value = data;
-        isEditModalVisible.value = true;
-      };
-  
-      const toggleEstado = async (representante) => {
-        const nuevoEstado = representante.estado === 'Activo' ? 'Inactivo' : 'Activo';
-        const { error } = await supabase
-          .from('Representante_De_Empresa')
-          .update({ estado: nuevoEstado === 'Activo' })
-          .eq('id', representante.id);
-  
-        if (error) {
-          console.error('Error al cambiar el estado del representante:', error.message);
-        } else {
-          alert(`Estado del representante actualizado a ${nuevoEstado}`);
-          fetchRepresentantes();
-        }
-      };
-  
-      const fetchRepresentantes = async () => {
-        const { data, error } = await supabase.rpc('ObtenerDatosRepresentante');
-        if (error) {
-          console.error('Error al obtener representantes:', error.message);
-        } else {
-          representantes.value = data;
-        }
-      };
-  
-      onMounted(fetchRepresentantes);
-  
-      return {
-        dialogVisible,
-        isEditModalVisible,
-        representantes,
-        searchQuery,
-        currentPage,
-        itemsPerPage,
-        selectedRepresentante,
-        openRegisterModal,
-        viewDetails,
-        editRepresentante,
-        toggleEstado,
-        fetchRepresentantes,
-      };
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .data-table-container {
-    max-width: 800px;
-    margin: auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-  }
-  </style>
+          .eq('empresa_id', props.empresaId);
+
+        if (error) throw error;
+        representantes.value = data || [];
+      } catch (err) {
+        ElMessage.error('Error al cargar representantes.');
+        console.error('Error al cargar representantes:', err.message);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const openRegisterModal = () => {
+      dialogVisible.value = true;
+    };
+
+    const openEditModal = (representanteId) => {
+      selectedRepresentanteId.value = representanteId;
+      editDialogVisible.value = true;
+    };
+
+    const openMaquinariaModal = (representanteId) => {
+      selectedRepresentanteId.value = representanteId;
+      maquinariaDialogVisible.value = true;
+    };
+
+    const formatNombreCompleto = (row) => {
+      return `${row.nombre} ${row.apellido_paterno} ${row.apellido_materno}`;
+    };
+
+    onMounted(fetchRepresentantes);
+
+    return {
+      representantes,
+      loading,
+      dialogVisible,
+      editDialogVisible,
+      maquinariaDialogVisible,
+      selectedRepresentanteId,
+      fetchRepresentantes,
+      openRegisterModal,
+      openEditModal,
+      openMaquinariaModal,
+      formatNombreCompleto,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.listar-representantes-container {
+  max-width: 900px;
+  margin: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+.button-group {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+</style>

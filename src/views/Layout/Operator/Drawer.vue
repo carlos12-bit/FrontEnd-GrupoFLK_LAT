@@ -9,7 +9,7 @@
     @close="handleClose"
   >
     <div class="logo">
-      <img src="@/assets/SELLO_FLK.png" alt="Logo" />
+      <img zsrc="@/assets/SELLO_FLK.png" alt="Logo" />
     </div>
 
     <!-- Submenú Gestión General -->
