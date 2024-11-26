@@ -227,20 +227,27 @@ h3 {
   margin-right: 100px;
 }
 
-
 table {
+  color: rgb(3, 3, 3);
   width: 150%; /* Ajusta el ancho de la tabla */
   border-collapse: collapse; /* Elimina espacios entre bordes */
   margin: 0; /* Elimina márgenes predeterminados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra alrededor */
   margin-left: auto; /* Configura para centrar o mover a la izquierda */
   margin-right: auto; /* Configura para centrar o mover a la derecha */
 }
 
+tbody tr:nth-child(odd) {
+  background-color: #f1ef9d; /* Color de fondo para filas impares */
+}
 
+tbody tr:nth-child(even) {
+  background-color: #f1ef9d; /* Color de fondo para filas pares */
+}
 
 thead th {
   background-color: #4991df;
-  color: white;
+  color: rgb(243, 241, 241);
   padding: 9px;
   text-align: left;
 }

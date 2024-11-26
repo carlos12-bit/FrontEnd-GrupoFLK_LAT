@@ -79,12 +79,18 @@ const routes = [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
       { path: 'CourseMaterials', component: () => import('@/views/UseCases/Formador/CourseMaterials/view.vue') },
       { path: 'AttendanceManagement', component: () => import('@/views/UseCases/Formador/AttendanceManagement/view.vue') },
-      { path: 'PerformanceReport', component: () => import('@/views/UseCases/Formador/PerformanceReport/view.vue') },
+      { path: 'PerformanceReport', component: () => import('@/views/UseCases/Formador/PerformanceReport/View.vue') },
       { path: 'ManageEvaluation', component: () => import('@/views/UseCases/Formador/ManageEvaluation/view.vue') },
       { path: 'ProgrammerSession', component: () => import('@/views/UseCases/Formador/ProgrammerSession/ProgrammerSession.vue') },
       { path: 'ScheduleSessions', component: () => import('@/views/UseCases/Formador/ScheduleSessions/View.vue') },
-    ],
+      {
+        path: "/CreateEvaluation/:cursoId",
+        name: "Create",
+        component: () => import("@/views/UseCases/Formador/CreateEvaluation/Create.vue"),
+        props: true, // Permite recibir cursoId como prop
+      }],
   },
+
 
   {
     path: '/Instructor-dashboard',

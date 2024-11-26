@@ -1,272 +1,176 @@
 <template>
   <div class="evaluation-container">
-    <h1>Evaluación Teórica</h1>
-
-    <!-- Información del Alumno y Curso -->
-    <div class="student-info">
-      <p><strong>Alumno:</strong> {{ alumno.nombre_completo }}</p>
-      <p><strong>Curso:</strong> {{ cursoSeleccionado }}</p>
+    <h1>Gestionar Evaluaciones</h1>
+    <div v-if="cursos.length === 0">
+      <p>No tienes cursos asignados.</p>
     </div>
-
-    <!-- Formulario de Evaluación -->
-    <form @submit.prevent="finalizarEvaluacion">
-      <div v-for="(pregunta, index) in preguntas" :key="pregunta.id" class="question">
-        <p><strong>{{ index + 1 }}. {{ pregunta.enunciado }}</strong></p>
-        <div v-for="opcion in pregunta.opciones" :key="opcion">
-          <label>
-            <input
-              type="radio"
-              :name="'pregunta-' + pregunta.id"
-              :value="opcion"
-              v-model="respuestas[pregunta.id]"
-            />
-            {{ opcion }}
-          </label>
-        </div>
+    <div v-else class="cards-container">
+      <div v-for="curso in cursos" :key="curso.pk_curso" class="card">
+        <h2>{{ curso.titulo_curso }}</h2>
+        <p><strong>Docente de Teoría:</strong> {{ curso.docenteTeoria }}</p>
+        <p><strong>Ubicación Teoría:</strong> {{ curso.ubicacionTeoria }}</p>
+        <p><strong>Inicio de Teoría:</strong> {{ formatDate(curso.fecha_hora_inicio_teoria) }}</p>
+        <p><strong>Fin de Teoría:</strong> {{ formatDate(curso.fecha_hora_fin_teoria) }}</p>
+        <button class="create-evaluation-button" @click="irACrearEvaluacion(curso.pk_curso)">
+          Crear Evaluación
+        </button>
       </div>
-
-      <!-- Botón para finalizar la evaluación -->
-      <button type="submit" class="submit-button">Finalizar Evaluación</button>
-    </form>
-
-    <!-- Botón para agregar nuevas preguntas (formador) -->
-    <div v-if="esFormador">
-      <h2>Agregar Nuevas Preguntas</h2>
-      <button @click="mostrarModalAgregarPregunta" class="add-button">Agregar Pregunta</button>
-
-      <!-- Modal para agregar una pregunta -->
-      <div v-if="mostrarModal" class="modal">
-        <h3>Nueva Pregunta</h3>
-        <label>Enunciado:</label>
-        <textarea v-model="nuevaPregunta.enunciado" rows="3"></textarea>
-
-        <label>Opciones:</label>
-        <div v-for="(opcion, index) in nuevaPregunta.opciones" :key="index">
-          <input
-            type="text"
-            v-model="nuevaPregunta.opciones[index]"
-            placeholder="Escribe una opción"
-          />
-        </div>
-        <button @click="agregarOpcion" class="add-option">Agregar Opción</button>
-
-        <label>Respuesta Correcta:</label>
-        <select v-model="nuevaPregunta.respuesta_correcta">
-          <option v-for="opcion in nuevaPregunta.opciones" :key="opcion" :value="opcion">
-            {{ opcion }}
-          </option>
-        </select>
-
-        <button @click="guardarPregunta" class="save-button">Guardar Pregunta</button>
-        <button @click="cerrarModal" class="close-button">Cancelar</button>
-      </div>
-    </div>
-
-    <!-- Mostrar resultados -->
-    <div v-if="resultado">
-      <h2>Resultados</h2>
-      <p><strong>Nota:</strong> {{ resultado.nota }}</p>
-      <p><strong>Respuestas Correctas:</strong></p>
-      <ul>
-        <li v-for="respuesta in resultado.correctas" :key="respuesta.id">
-          Pregunta {{ respuesta.id }}: {{ respuesta.respuesta_correcta }}
-        </li>
-      </ul>
     </div>
   </div>
 </template>
 
----
-
-#### Script del Componente
-
-```javascript
 <script>
 import { ref, onMounted } from "vue";
 import { supabase } from "@/supabase";
+import { useRouter } from "vue-router";
 
 export default {
-  name: "EvaluacionTeorica",
+  name: "View",
   setup() {
-    const preguntas = ref([]); // Preguntas de la evaluación
-    const respuestas = ref({}); // Respuestas seleccionadas por el alumno
-    const resultado = ref(null); // Resultado final de la evaluación
-    const cursoSeleccionado = ref("Manejo de Montacargas"); // Curso actual
-    const alumno = ref({ nombre_completo: "Carlos Martínez" }); // Alumno actual (simulado)
-    const esFormador = true; // Simulación de permisos de formador
+    const cursos = ref([]);
+    const router = useRouter();
 
-    // Estado para agregar preguntas
-    const mostrarModal = ref(false);
-    const nuevaPregunta = ref({
-      enunciado: "",
-      opciones: ["", ""], // Por defecto, dos opciones mínimas
-      respuesta_correcta: "",
+    const cargarCursos = async () => {
+      try {
+        const { data: { session }, error: authError } = await supabase.auth.getSession();
+
+        if (authError || !session) throw new Error("Usuario no autenticado");
+
+        const usuarioEmail = session.user.email;
+
+        const { data, error } = await supabase
+          .from("cursos")
+          .select(`
+            pk_curso,
+            titulo_curso,
+            fecha_hora_inicio_teoria,
+            fecha_hora_fin_teoria,
+            ubicacionTeoria:fk_ubicacion_teoria(nombre_ubicacion),
+            docenteTeoria:fk_docenteteoria(nombre, correo)
+          `)
+          .eq("docenteTeoria.correo", usuarioEmail);
+
+        if (error) throw error;
+
+        cursos.value = data.map(curso => ({
+          pk_curso: curso.pk_curso,
+          titulo_curso: curso.titulo_curso || "Sin título",
+          docenteTeoria: curso.docenteTeoria?.nombre || "No asignado",
+          ubicacionTeoria: curso.ubicacionTeoria?.nombre_ubicacion || "No especificada",
+          fecha_hora_inicio_teoria: curso.fecha_hora_inicio_teoria,
+          fecha_hora_fin_teoria: curso.fecha_hora_fin_teoria,
+        }));
+      } catch (error) {
+        console.error("Error al cargar los cursos:", error.message);
+      }
+    };
+
+    const irACrearEvaluacion = (cursoId) => {
+      router.push({ name: "Create", params: { cursoId } });
+    };
+
+
+    const formatDate = (date) => new Date(date).toLocaleString();
+
+    onMounted(() => {
+      cargarCursos();
     });
 
-    // Cargar preguntas de la tabla `preguntas_teoricas`
-    const cargarPreguntas = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("preguntas_teoricas")
-          .select("*")
-          .eq("fk_curso", 1); // Filtrar por curso
-
-        if (error) throw error;
-        preguntas.value = data;
-      } catch (error) {
-        console.error("Error al cargar preguntas:", error.message);
-      }
-    };
-
-    // Finalizar la evaluación
-    const finalizarEvaluacion = async () => {
-      try {
-        const respuestasCorrectas = preguntas.value.filter(
-          (pregunta) => respuestas.value[pregunta.id] === pregunta.respuesta_correcta
-        );
-
-        const nota = (respuestasCorrectas.length / preguntas.value.length) * 100;
-
-        // Guardar evaluación en la tabla `evaluaciones_teoricas`
-        const { error } = await supabase.from("evaluaciones_teoricas").insert({
-          fk_alumno: 1, // ID del alumno
-          fk_curso: 1, // ID del curso
-          respuestas: respuestas.value,
-          nota: nota,
-          aprobado: nota >= 70,
-          respuestas_correctas: respuestasCorrectas.map((r) => ({
-            id: r.id,
-            respuesta_correcta: r.respuesta_correcta,
-          })),
-          fecha_realizacion: new Date(),
-        });
-
-        if (error) throw error;
-
-        resultado.value = {
-          nota,
-          correctas: respuestasCorrectas,
-        };
-
-        alert("Evaluación finalizada con éxito.");
-      } catch (error) {
-        console.error("Error al finalizar evaluación:", error.message);
-        alert("Error al finalizar la evaluación.");
-      }
-    };
-
-    // Mostrar modal para agregar pregunta
-    const mostrarModalAgregarPregunta = () => {
-      mostrarModal.value = true;
-    };
-
-    // Cerrar modal
-    const cerrarModal = () => {
-      mostrarModal.value = false;
-      nuevaPregunta.value = { enunciado: "", opciones: ["", ""], respuesta_correcta: "" };
-    };
-
-    // Agregar una opción de respuesta
-    const agregarOpcion = () => {
-      nuevaPregunta.value.opciones.push("");
-    };
-
-    // Guardar nueva pregunta en la tabla `preguntas_teoricas`
-    const guardarPregunta = async () => {
-      try {
-        if (
-          !nuevaPregunta.value.enunciado ||
-          nuevaPregunta.value.opciones.length < 2 ||
-          !nuevaPregunta.value.respuesta_correcta
-        ) {
-          alert("Completa todos los campos antes de guardar.");
-          return;
-        }
-
-        const { error } = await supabase.from("preguntas_teoricas").insert({
-          fk_curso: 1, // ID del curso
-          enunciado: nuevaPregunta.value.enunciado,
-          opciones: nuevaPregunta.value.opciones,
-          respuesta_correcta: nuevaPregunta.value.respuesta_correcta,
-          autor: "formador_id", // ID del formador
-          fecha_creacion: new Date(),
-        });
-
-        if (error) throw error;
-
-        alert("Pregunta guardada con éxito.");
-        cerrarModal();
-        cargarPreguntas(); // Recargar preguntas
-      } catch (error) {
-        console.error("Error al guardar la pregunta:", error.message);
-      }
-    };
-
-    // Cargar preguntas al montar el componente
-    onMounted(cargarPreguntas);
-
     return {
-      preguntas,
-      respuestas,
-      resultado,
-      cursoSeleccionado,
-      alumno,
-      esFormador,
-      mostrarModal,
-      nuevaPregunta,
-      finalizarEvaluacion,
-      mostrarModalAgregarPregunta,
-      cerrarModal,
-      agregarOpcion,
-      guardarPregunta,
+      cursos,
+      irACrearEvaluacion,
+      formatDate,
     };
   },
 };
 </script>
 <style scoped>
 .evaluation-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
-h1, h2, h3 {
+h1 {
   text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #000000;
 }
 
-.student-info, .question {
-  margin-bottom: 20px;
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 50px;
 }
 
-.add-button, .submit-button {
-  background-color: #4caf50;
+.card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden; /* Mantiene los bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Fondo con imagen y transparencia */
+    background: linear-gradient(
+      rgba(255, 255, 255, 0.5), /* Color blanco semitransparente */
+      rgba(255, 255, 255, 0.5)
+    ),
+    url('@/assets/imagen-Solicitud.jpg'); /* Ruta de la imagen */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: blur(0px); /* Difumina la imagen */
+}
+
+.card-content {
+  position: relative; /* Asegura que el contenido esté encima del fondo */
+  padding: 20px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.7); /* Fondo blanco semitransparente */
+  border-radius: 10px; /* Bordes redondeados */
+  z-index: 1; /* Asegura que el contenido esté encima del fondo */
+}
+
+.card h2 {
+  font-size: 20px;
+  color: #030303;
+  margin-bottom: 10px;
+  padding: 5px 10px; /* Espaciado interno */
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+  display: inline-block; /* Ajusta el tamaño al contenido */
+  border-radius: 5px; /* Bordes redondeados */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra del título */
+}
+
+.card p {
+  font-size: 16px;
+  margin: 5px 0;
+  color: #0e0d0d;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+p {
+  text-align: center;
+  font-size: 18px;
+  color: #080707;
+}
+
+/* Estilo para el botón */
+.create-evaluation-button {
+  background-color: #2ec933ee;
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.add-option, .save-button, .close-button {
   margin-top: 10px;
-  background-color: #008cba;
-  color: white;
-  border: none;
-  padding: 5px 15px;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  border: 1px solid #ccc;
-  padding: 20px;
-  width: 400px;
-  z-index: 10;
+.create-button:hover {
+  background-color: #45a049;
 }
 </style>

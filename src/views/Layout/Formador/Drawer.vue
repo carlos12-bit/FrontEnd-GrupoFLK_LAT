@@ -14,21 +14,24 @@
 <!-- Submenú Gestión General -->
 <el-sub-menu index="1">
       <template #title>
-        <el-icon><icon-menu /></el-icon>
+        <img src="@/assets/clases.png" alt="Icono Sesiones" class="menu-icon1" />
         <span>GESTIONAR CLASE</span>
       </template>
         <!-- Subgrupo de Gestión Operativa con opciones -->
         <el-menu-item index="1-1">
+          <img src="@/assets/clases.png" alt="Icono Sesiones" class="menu-icon1" />
           <router-link class="nav-link" to="/formador-dashboard/ScheduleSessions">
             Sesiones Programadas
           </router-link>
         </el-menu-item>
         <el-menu-item index="1-2">
+          <img src="@/assets/MATERIALES.png" alt="Icono Sesiones" class="menu-icon2" />
           <router-link class="nav-link" to="/formador-dashboard/CourseMaterials">
             Materiales de Curso
           </router-link>
         </el-menu-item>
         <el-menu-item index="1-2">
+          <img src="@/assets/asistencia.png" alt="Icono Sesiones" class="menu-icon3" />
           <router-link class="nav-link" to="/formador-dashboard/AttendanceManagement">
           Gestion de asistencia
           </router-link>
@@ -37,15 +40,17 @@
     <!-- Submenú Gestión de Alumnos y Solicitudes -->
     <el-sub-menu index="2">
       <template #title>
-        <el-icon><icon-menu /></el-icon>
+        <img src="@/assets/evaluacion.png" alt="Icono Sesiones" class="menu-icon3" />
         <span>GESTION EVALUACION </span>
       </template>
       <el-menu-item index="2-1">
+        <img src="@/assets/evaluacion.png" alt="Icono Sesiones" class="menu-icon3" />
         <router-link class="nav-link" to="/formador-dashboard/ManageEvaluation">
           Evaluacion
         </router-link>
       </el-menu-item>
       <el-menu-item index="2-2">
+        <img src="@/assets/informe de desempeño.png" alt="Icono Sesiones" class="menu-icon3" />
         <router-link class="nav-link" to="/formador-dashboard/PerformanceReport">
           Informe de Desempeño
         </router-link>
@@ -135,7 +140,7 @@ onBeforeUnmount(() => {
 /* Menú principal */
 .el-menu-vertical-demo {
   background-color: #ffffff;
-  color: #333;
+  color: #0f0f0f;
   width: 250px;
   transition: all 0.3s;
   font-size: 16px;
@@ -152,6 +157,22 @@ onBeforeUnmount(() => {
   width: 80%;
   margin: 20px auto;
   display: block;
+}
+
+.menu-icon1 {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+.menu-icon2 {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+.menu-icon3 {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 
 /* Títulos */
