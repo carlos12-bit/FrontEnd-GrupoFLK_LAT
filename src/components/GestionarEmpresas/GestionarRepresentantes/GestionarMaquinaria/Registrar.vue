@@ -84,6 +84,10 @@ export default {
         if (error) throw error;
 
         ElMessage.success('Maquinaria registrada correctamente.');
+        
+        // Limpiar el formulario después de un registro exitoso
+        limpiarFormulario();
+
         emit('refreshTable');
         emit('closeModal');
       } catch (err) {
@@ -92,6 +96,11 @@ export default {
       } finally {
         loading.value = false;
       }
+    };
+
+    const limpiarFormulario = () => {
+      maquinaria.tipo_de_maquinaria_id = null;
+      maquinaria.placa = '';
     };
 
     onMounted(() => {
