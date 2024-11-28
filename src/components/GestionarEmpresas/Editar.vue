@@ -1,192 +1,89 @@
 <template>
-  <div class="edit-empresa-container">
-    <el-form
-      :model="empresa"
-      :rules="rules"
-      ref="empresaForm"
-      label-width="150px"
-      class="form-wrapper"
-    >
-      <!-- Título -->
-      <h3 class="form-title">Editar Empresa</h3>
+  <el-form :model="empresa" ref="form" label-width="120px">
+    <el-form-item label="RUC" :label-width="formLabelWidth">
+      <el-input v-model="empresa.ruc" :disabled="true" />
+    </el-form-item>
+    <el-form-item label="Nombre Comercial" :label-width="formLabelWidth">
+      <el-input v-model="empresa.nombre_comercial" />
+    </el-form-item>
+    <el-form-item label="País" :label-width="formLabelWidth">
+      <el-input v-model="empresa.pais_nombre" :disabled="true" />
+    </el-form-item>
+    <el-form-item label="Dirección Central" :label-width="formLabelWidth">
+      <el-input v-model="empresa.direccion_central" />
+    </el-form-item>
+    <el-form-item label="Estado" :label-width="formLabelWidth">
+      <el-switch v-model="empresa.estado" active-text="Activo" inactive-text="Inactivo" />
+    </el-form-item>
 
-      <!-- RUC -->
-      <el-form-item label="RUC" prop="nro_identificacion">
-        <el-input v-model="empresa.nro_identificacion" disabled />
-      </el-form-item>
-
-      <!-- Razón Social -->
-      <el-form-item label="Razón Social" prop="razon_social">
-        <el-input
-          v-model="empresa.razon_social"
-          placeholder="Ingrese la razón social"
-        />
-      </el-form-item>
-
-      <!-- Nombre Comercial -->
-      <el-form-item label="Nombre Comercial" prop="nombre_comercial">
-        <el-input
-          v-model="empresa.nombre_comercial"
-          placeholder="Ingrese el nombre comercial"
-        />
-      </el-form-item>
-
-      <!-- Dirección Central -->
-      <el-form-item label="Dirección Central" prop="direccion_central">
-        <el-input
-          v-model="empresa.direccion_central"
-          placeholder="Ingrese la dirección central"
-        />
-      </el-form-item>
-
-      <!-- País -->
-      <el-form-item label="País" prop="pais_id">
-        <el-select v-model="empresa.pais_id" placeholder="Seleccione un país">
-          <el-option
-            v-for="pais in paises"
-            :key="pais.id"
-            :label="pais.nombre"
-            :value="pais.id"
-          />
-        </el-select>
-      </el-form-item>
-
-      <!-- Botones de acción -->
-      <div class="form-actions">
-        <el-button
-          type="primary"
-          :loading="loading"
-          @click="saveEmpresa"
-          icon="el-icon-check"
-        >
-          Guardar Cambios
-        </el-button>
-        <el-button @click="$emit('closeModal')" icon="el-icon-close">
-          Cancelar
-        </el-button>
-      </div>
-    </el-form>
-  </div>
+    <el-button type="primary" @click="updateEmpresa">Actualizar</el-button>
+    <el-button @click="closeModal">Cerrar</el-button>
+  </el-form>
 </template>
 
 <script>
-import { reactive, ref, watch } from 'vue';
-import { ElMessage } from 'element-plus'; // Importación de ElMessage
+import { ref, watch } from 'vue';
 import supabase from '@/supabase';
 
 export default {
   props: {
-    empresaInicial: {
-      type: Object,
-      required: true,
-    },
+    empresaInicial: Object,
   },
-  emits: ['closeModal', 'refreshTable'],
   setup(props, { emit }) {
-    const empresa = reactive({ ...props.empresaInicial }); // Clonación reactiva de datos
-    const empresaForm = ref(null);
-    const loading = ref(false);
-    const paises = ref([]);
+    // Creamos una ref para manejar los datos de la empresa
+    const empresa = ref({
+      ...props.empresaInicial, // Al principio se llena con los datos recibidos como propiedad
+    });
 
-    // Reglas de validación
-    const rules = {
-      razon_social: [
-        { required: true, message: 'La razón social es obligatoria.', trigger: 'blur' },
-      ],
-      nombre_comercial: [
-        { required: true, message: 'El nombre comercial es obligatorio.', trigger: 'blur' },
-      ],
-      direccion_central: [
-        { required: true, message: 'La dirección central es obligatoria.', trigger: 'blur' },
-      ],
-      pais_id: [
-        { required: true, message: 'Seleccione un país.', trigger: 'change' },
-      ],
-    };
+    const formLabelWidth = '120px';
 
-    // Obtener la lista de países
-    const fetchPaises = async () => {
-      try {
-        const { data, error } = await supabase.from('pais').select('id, nombre');
-        if (error) throw error;
-        paises.value = data || [];
-      } catch (err) {
-        console.error('Error al obtener los países:', err.message);
-      }
-    };
-
-    // Guardar cambios en la empresa
-    const saveEmpresa = async () => {
-      if (!empresaForm.value) return;
+    // Función para actualizar la empresa
+    const updateEmpresa = async () => {
+      const { id, ruc, nombre_comercial, pais_nombre, direccion_central, Estado } = empresa.value;
 
       try {
-        await empresaForm.value.validate();
-
-        loading.value = true;
-
         const { error } = await supabase
           .from('empresa')
           .update({
-            razon_social: empresa.razon_social,
-            nombre_comercial: empresa.nombre_comercial,
-            direccion_central: empresa.direccion_central,
-            pais_id: empresa.pais_id,
-            fecha_de_modificacion: new Date().toISOString(),
+            nombre_comercial,
+            direccion_central,
+            Estado,  // Ahora se usa 'estado' y no 'Estado'
           })
-          .eq('id', empresa.id);
+          .eq('id', id);
 
         if (error) throw error;
 
-        ElMessage.success('Empresa actualizada correctamente.');
         emit('refreshTable');
         emit('closeModal');
       } catch (err) {
-        console.error('Error al actualizar la empresa:', err.message || err);
-        ElMessage.error('Hubo un problema al actualizar la empresa.');
-      } finally {
-        loading.value = false;
+        console.error('Error al actualizar empresa:', err.message);
       }
     };
 
-    // Cargar países al montar el componente
-    fetchPaises();
+    // Función para cerrar el modal y limpiar los datos del formulario
+    const closeModal = () => {
+      // Limpiar los datos de la empresa y reiniciar el formulario
+      empresa.value = { ruc: '', nombre_comercial: '', pais_nombre: '', direccion_central: '', estado: true };
+      emit('closeModal');
+    };
+
+    // Limpiar los datos cuando cambie la propiedad "empresaInicial"
+    watch(() => props.empresaInicial, (newValue) => {
+      empresa.value = { ...newValue }; // Asignamos los nuevos datos cuando la empresa inicial cambia
+    });
 
     return {
       empresa,
-      empresaForm,
-      rules,
-      saveEmpresa,
-      paises,
-      loading,
+      formLabelWidth,
+      updateEmpresa,
+      closeModal,
     };
   },
 };
 </script>
 
 <style scoped>
-.edit-empresa-container {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.form-wrapper {
-  margin: 0;
-}
-
-.form-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.25rem;
-  color: #333;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+.el-button {
+  margin-top: 10px;
 }
 </style>
