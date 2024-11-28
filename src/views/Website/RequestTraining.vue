@@ -57,6 +57,19 @@
             <input type="text" id="ocupacion_actual" v-model="form.ocupacion_actual" required />
           </div>
 
+          <!-- Desplegable para Fk_Curso -->
+          <div class="form-group">
+            <label for="Fk_Curso">Curso</label>
+            <select id="Fk_Curso" v-model="form.fk_curso" required>
+              <option value="" disabled>Seleccione un curso</option>
+              <option v-for="curso in cursos" :key="curso.pk_curso" :value="curso.pk_curso">
+                {{ curso.titulo_curso }}
+              </option>
+            </select>
+          </div>
+
+
+
           <div class="form-group">
             <label for="nombre_empresa">Nombre de la Empresa</label>
             <input type="text" id="nombre_empresa" v-model="form.nombre_empresa" />
@@ -87,14 +100,6 @@
             <input type="tel" id="telefono_contacto_emergencia" v-model="form.telefono_contacto_emergencia" />
           </div>
 
-          <!-- Desplegable para Fk_Curso -->
-          <div class="form-group">
-            <label for="Fk_Curso">Curso</label>
-            <select id="Fk_Curso" v-model="form.Fk_Curso" required>
-              <option value="" disabled>Seleccione un curso</option>
-              <option v-for="curso in cursos" :key="curso.Pk_Curso" :value="curso.Pk_Curso">{{ curso.titulo_curso }}</option>
-            </select>
-          </div>
 
           <div class="form-group">
             <label for="fecha_inicio_preferida">Fecha de Inicio Preferida</label>
@@ -118,12 +123,14 @@
 
           <div class="form-group">
             <label for="certificado_medico_adjunto">Certificado Médico Adjunto</label>
-            <input type="file" id="certificado_medico_adjunto" @change="handleFileUpload('certificado_medico_adjunto', $event)" />
+            <input type="file" id="certificado_medico_adjunto"
+              @change="handleFileUpload('certificado_medico_adjunto', $event)" />
           </div>
 
           <div class="form-group">
             <label for="licencia_conducir_adjunto">Licencia de Conducir Adjunto</label>
-            <input type="file" id="licencia_conducir_adjunto" @change="handleFileUpload('licencia_conducir_adjunto', $event)" />
+            <input type="file" id="licencia_conducir_adjunto"
+              @change="handleFileUpload('licencia_conducir_adjunto', $event)" />
           </div>
 
           <div class="form-group">
@@ -170,7 +177,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/supabase';
@@ -178,6 +184,7 @@ import { supabase } from '@/supabase';
 export default {
   name: 'RequestTraining',
   setup() {
+    // Estado del formulario
     const form = ref({
       nombre_completo: '',
       nro_telefonico: '',
@@ -194,7 +201,7 @@ export default {
       nombre_contacto_emergencia: '',
       relacion_contacto_emergencia: '',
       telefono_contacto_emergencia: '',
-      Fk_Curso: null,
+      fk_curso: null,
       fecha_inicio_preferida: '',
       turno_preferido: '',
       dni_adjunto: '',
@@ -208,71 +215,160 @@ export default {
       firma: '',
     });
 
+    // Cargar datos de países y cursos
     const paises = ref([]);
     const cursos = ref([]);
 
     const loadData = async () => {
-      const { data: paisData, error: paisError } = await supabase.from('pais').select('id, nombre');
-      if (paisError) {
-        console.error('Error al obtener los países:', paisError.message);
-      } else {
+      try {
+        const { data: paisData, error: paisError } = await supabase
+          .from("pais")
+          .select("id, nombre");
+        if (paisError) throw paisError;
         paises.value = paisData;
-      }
 
-      const { data: cursoData, error: cursoError } = await supabase.from('Cursos').select('Pk_Curso, titulo_curso');
-      if (cursoError) {
-        console.error('Error al obtener los cursos:', cursoError.message);
-      } else {
+        const { data: cursoData, error: cursoError } = await supabase
+          .from("cursos")
+          .select("pk_curso, titulo_curso");
+        if (cursoError) throw cursoError;
         cursos.value = cursoData;
+      } catch (error) {
+        console.error("Error al cargar datos:", error);
       }
     };
 
     onMounted(loadData);
 
+    // Autocompletar datos basados en DNI
+    const fetchPersonaData = async (dni) => {
+      try {
+        const { data, error } = await supabase.rpc('autofill_persona_data', { dni_input: dni });
+        if (error) throw error;
+        return data.length > 0 ? data[0] : null;
+      } catch (error) {
+        console.error("Error al obtener los datos:", error.message);
+        return null;
+      }
+    };
+
+    const autoFillFields = async (dni) => {
+      const personaData = await fetchPersonaData(dni);
+      if (personaData) {
+        form.value.nombre_completo = personaData.nombre_completo;
+        form.value.fecha_nacimiento = personaData.fecha_nacimiento;
+        form.value.nacionalidad = personaData.nacionalidad;
+        alert("Campos completados automáticamente.");
+      } else {
+        alert("No se encontraron datos para el DNI ingresado.");
+      }
+    };
+
+    // Manejo de archivos
     const handleFileUpload = (field, event) => {
       form.value[field] = event.target.files[0];
     };
 
-    const submitForm = async () => {
-      if (!form.value.consentimiento_tratamiento_datos) {
-        alert('Debes aceptar el consentimiento de tratamiento de datos');
-        return;
-      }
+    const sanitizeFileName = (fileName) => {
+      return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+    };
 
-      const uploadFile = async (fieldName, file) => {
-        if (file) {
-          const { data, error } = await supabase.storage
-            .from('your-storage-bucket') // Reemplaza con el nombre de tu bucket
-            .upload(`${fieldName}/${file.name}`, file);
-          if (error) {
-            console.error(`Error al subir ${fieldName}:`, error.message);
-            return null;
-          }
-          return data.path;
-        }
+    const uploadFile = async (fieldName, file) => {
+      if (!file) return null;
+      const sanitizedFileName = sanitizeFileName(file.name);
+      const uniqueFileName = `${fieldName}_${Date.now()}_${sanitizedFileName}`;
+      try {
+        const { data, error } = await supabase.storage
+          .from("Solicitudes_Capacitacion")
+          .upload(uniqueFileName, file);
+        if (error) throw error;
+        return data.path;
+      } catch (error) {
+        console.error(`Error al subir ${fieldName}:`, error.message);
         return null;
-      };
-
-      // Subir archivos si existen
-      const fileFields = ['dni_adjunto', 'certificado_medico_adjunto', 'licencia_conducir_adjunto', 'firma'];
-      for (const field of fileFields) {
-        if (form.value[field]) {
-          const filePath = await uploadFile(field, form.value[field]);
-          if (filePath) {
-            form.value[field] = filePath;
-          }
-        }
       }
+    };
 
-      const { id_solicitud, ...dataToSend } = form.value;
-      const { error } = await supabase.from('Solicitud_Capacitacion').insert([dataToSend]);
+    // Validación de edad
+    const isAdult = (fechaNacimiento) => {
+      const today = new Date();
+      const birthDate = new Date(fechaNacimiento);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      const dayDiff = today.getDate() - birthDate.getDate();
+      return monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0) ? age >= 18 : age - 1 >= 18;
+    };
 
-      if (error) {
-        console.error('Error al enviar la solicitud:', error.message);
-        alert('Error al enviar la solicitud.');
-      } else {
-        alert('Solicitud enviada con éxito.');
-        Object.keys(form.value).forEach((key) => (form.value[key] = ''));
+    // Lógica para enviar correos
+    const enviarCorreo = async (to, subject, body) => {
+      try {
+        // Usa SMTP.js para enviar correos directamente desde el frontend
+        window.Email.send({
+          Host: "smtp.gmail.com",
+          Username: "grupoflk13@gmail.com", // Reemplaza con tu correo
+          Password: "dmur ursm ahld kvuj", // Contraseña generada para aplicaciones (NO tu contraseña personal)
+          To: to,
+          From: "grupoflk13@gmail.com", // Mismo correo que usas en Username
+          Subject: subject,
+          Body: body,
+        }).then((message) => {
+          if (message === "OK") {
+            alert("Correo enviado con éxito.");
+          } else {
+            console.error("Error al enviar el correo:", message);
+            alert("Hubo un error al enviar el correo.");
+          }
+        });
+      } catch (error) {
+        console.error("Error inesperado:", error);
+        alert("Hubo un error inesperado al enviar el correo.");
+      }
+    };
+
+    // Enviar el formulario
+    const submitForm = async () => {
+      try {
+        // Validaciones previas
+        if (!isAdult(form.value.fecha_nacimiento)) {
+          alert("Debes tener al menos 18 años para completar este formulario.");
+          return;
+        }
+
+        if (!form.value.consentimiento_tratamiento_datos) {
+          alert("Debes aceptar el consentimiento de tratamiento de datos.");
+          return;
+        }
+
+        if (!form.value.fk_curso) {
+          alert("Debes seleccionar un curso.");
+          return;
+        }
+
+        // Subir archivos
+        const fileFields = ["dni_adjunto", "certificado_medico_adjunto", "licencia_conducir_adjunto", "firma"];
+        for (const field of fileFields) {
+          const filePath = await uploadFile(field, form.value[field]);
+          if (filePath) form.value[field] = filePath;
+        }
+
+        // Guardar en Supabase
+        const { error } = await supabase.from("solicitud_capacitacion").insert([form.value]);
+        if (error) throw error;
+
+        // Enviar correo al usuario
+        await enviarCorreo(
+          form.value.correo_electronico,
+          "Solicitud de Capacitación Recibida",
+          `
+          <p>Estimado(a) ${form.value.nombre_completo},</p>
+          <p>Gracias por solicitar una capacitación. Nos pondremos en contacto con usted pronto.</p>
+          <p>Equipo de Capacitación</p>
+          `
+        );
+
+        alert("Solicitud enviada con éxito.");
+      } catch (error) {
+        console.error("Error al enviar la solicitud:", error.message);
+        alert("Ocurrió un error al enviar la solicitud.");
       }
     };
 

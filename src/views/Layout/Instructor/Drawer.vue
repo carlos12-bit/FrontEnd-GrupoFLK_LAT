@@ -2,51 +2,63 @@
   <!-- Menú lateral (drawer) con diseño profesional -->
   <el-menu
     v-if="!isMobile || !isCollapse"
-    default-active="2"
+    default-active="1-1"
     class="el-menu-vertical-demo"
     :collapse="isCollapse"
     @open="handleOpen"
     @close="handleClose"
   >
-  <div class="logo">
-    <img src="@/assets/SELLO_FLK.png" alt="Logo" />
-  </div>
+    <div class="logo">
+      <img src="@/assets/SELLO_FLK.png" alt="Logo" />
+    </div>
+
+    <!-- Submenú Gestión General -->
     <el-sub-menu index="1">
       <template #title>
-        <el-icon><location /></el-icon>
-        <span>Navigator One</span>
+        <el-icon><icon-menu /></el-icon>
+        <span>CURSOS</span>
       </template>
-      <el-menu-item-group>
-        <template #title><span>Group One</span></template>
-        <el-menu-item index="1-1">Item One</el-menu-item>
-        <el-menu-item index="1-2">Item Two</el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="Group Two">
-        <el-menu-item index="1-3">Item Three</el-menu-item>
-      </el-menu-item-group>
-      <el-sub-menu index="1-4">
-        <template #title><span>Item Four</span></template>
-        <el-menu-item index="1-4-1">Item One</el-menu-item>
-      </el-sub-menu>
+     
+        <!-- Subgrupo de Gestión Operativa con opciones -->
+        <el-menu-item index="1-1">
+          <router-link class="nav-link" to="/Instructor-dashboard/">
+            Calendario de Actividades
+          </router-link>
+        </el-menu-item>
+        <el-menu-item index="1-2">
+          <router-link class="nav-link" to="">
+            Sesiones Programadas
+          </router-link>
+        </el-menu-item>
     </el-sub-menu>
-    <el-menu-item index="2">
-      <el-icon><icon-menu /></el-icon>
-      <template #title>Navigator Two</template>
-    </el-menu-item>
-    <el-menu-item index="3" disabled>
-      <el-icon><document /></el-icon>
-      <template #title>Navigator Three</template>
-    </el-menu-item>
-    <el-menu-item index="4">
-      <el-icon><setting /></el-icon>
-      <router-link class="nav-link" to="/admin-dashboard/ManageTypeMachinery">Inicio</router-link>
-      <template #title>Navigator Four</template>
-    </el-menu-item>
 
+    <!-- Submenú Gestión de Alumnos y Solicitudes -->
+    <el-sub-menu index="2">
+      <template #title>
+        <el-icon><icon-menu /></el-icon>
+        <span>EVALUACION </span>
+      </template>
+      <el-menu-item index="2-1">
+        <router-link class="nav-link" to="">
+          Calificaciones
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="2-2">
+        <router-link class="nav-link" to="">
+          Informe de Desempeño
+        </router-link>
+      </el-menu-item>
+    </el-sub-menu>
+      <!-- Submenú Certificado -->
+      <el-menu-item index="3" @click="handleLogout">
+      <el-icon><icon-menu /></el-icon>
+      <template #title>GESTION CERTIFICADO</template>
+    </el-menu-item>
+  
     <!-- Botón de Cerrar Sesión -->
-    <el-menu-item @click="handleLogout">
-      <el-icon><setting /></el-icon>
-      <template #title>Cerrar Sesión</template>
+    <el-menu-item index="4" @click="handleLogout">
+      <el-icon><User /></el-icon>
+      <template #title>CERRAR SESION</template>
     </el-menu-item>
   </el-menu>
 
@@ -64,17 +76,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { supabase } from '@/supabase'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { supabase } from '@/supabase';
+import { useRouter } from 'vue-router';
 
 // Importar íconos de Element Plus
-import {
-  Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
-} from '@element-plus/icons-vue'
+import { Document, Menu as IconMenu, Location, Setting, User } from '@element-plus/icons-vue';
 
 // Estado para controlar si el menú está colapsado o no
 const isCollapse = ref(false)
@@ -147,8 +154,10 @@ onBeforeUnmount(() => {
 .el-menu-item {
   color: #000000;
   transition: color 0.3s ease;
-  font-size: 20px; /* Ajuste del tamaño de fuente */
-  font-weight: 600; /* Peso equilibrado */
+  font-size: relative; /* Ajuste del tamaño de fuente */
+  font-weight: relative; /* Peso equilibrado */
+  height: auto !important; /* Asegura que los ítems del menú ajusten su altura */
+  overflow: visible; /* Permite que el contenido no se corte */
 }
 
 .el-menu-item.is-active {
@@ -179,6 +188,16 @@ onBeforeUnmount(() => {
 
 .el-menu-item.is-active .el-icon, .el-menu-item:hover .el-icon {
   color: #000000; /* Mismo cambio de color en hover para los iconos */
+}
+
+/* Estilo para los textos largos en el menú */
+.menu-item-long-text {
+  white-space: normal; /* Permite que el texto se ajuste en varias líneas */
+  word-wrap: break-word; /* Ajusta el texto en palabras largas */
+  max-width: 180px; /* Establece un ancho máximo para los ítems del menú */
+  line-height: 1.5; /* Ajusta la altura de línea para mejor legibilidad */
+  overflow-wrap: break-word; /* Fuerza el ajuste del texto cuando es necesario */
+  padding: 10px 0; /* Aumenta el espacio vertical para evitar que el texto se vea comprimido */
 }
 
 /* Estilos del botón de hamburguesa */
@@ -230,7 +249,8 @@ onBeforeUnmount(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  margin: 20px auto; /* Center the logo horizontally */
-  display: block; /* Ensure the image is treated as a block element */
+  margin: 20px auto; /* Centra el logo horizontalmente */
+  display: block; /* Asegura que la imagen se trate como un bloque */
 }
+
 </style>

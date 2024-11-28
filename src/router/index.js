@@ -1,19 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { getSession, buscarRol } from '@/auth';
+
+// Configuración de rutas
 const routes = [
   { path: '/', component: () => import('@/views/Website/Home.vue') },
   { path: '/login', component: () => import('@/views/Security/Login.vue') },
   { path: '/register', component: () => import('@/views/Security/Register.vue') },
   { path: '/services', component: () => import('@/views/Website/Services.vue') },
   { path: '/resetpassword', component: () => import('@/views/Security/ResetPassword.vue') },
-  { path: '/RequestTraining', component: () => import('../views/Website/RequestTraining.vue') },
+  { path: '/RequestTraining', component: () => import('@/views/Website/RequestTraining.vue') },
+  { path: '/ListarInspeccionesPorRUC', component: () => import('../views/Website/ListarInspeccionesPorRUC.vue') },
+  // Dashboard Administrador
   {
     path: '/admin-dashboard',
     component: () => import('@/views/Layout/Admin/AdminLayout.vue'),
     meta: { requiresAuth: true, role: 'Administrador' },
     children: [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
-      { path: 'GestionarEmpresas', component: () => import('../views/UseCases/Admin/GestionarEmpresas/view.vue') },
+      { path: 'GestionarEmpresas', component: () => import('@/views/UseCases/Admin/GestionarEmpresas/view.vue') },
       { path: 'GestionarInspecciones', component: () => import('@/views/UseCases/Admin/GestionarInspecciones/view.vue') },
       { path: 'GestionarPersonal', component: () => import('@/views/UseCases/Admin/GestionarPersonal/view.vue') },
       { path: 'GestionarServicios', component: () => import('@/views/UseCases/Admin/GestionarServicios/view.vue') },
@@ -21,7 +25,7 @@ const routes = [
       { path: 'ManageCredentials', component: () => import('@/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue') },
       { path: 'ManagementServices', component: () => import('@/views/UseCases/Admin/ManagementServices/View.vue') },
       { path: 'ManageRequest', component: () => import('@/views/UseCases/Admin/ManageRequest/ManageRequest.vue') },
-      { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
+      { path: 'ManageRequest/Details', name: 'detalles' ,component: () => import('@/components/ManageRequest/Details.vue') },
       { path: 'ManageCourses/Create', name: 'Create', component: () => import('@/components/ManageCourses/Create.vue') },
       { path: 'ManageCourses/Edit', name: 'Edit', component: () => import('@/components/ManageCourses/Edit.vue') },
       { path: 'ManageCourses/Details', name: 'Detail', component: () => import('@/components/ManageCourses/Details.vue') },
@@ -30,9 +34,10 @@ const routes = [
     ],
   },
 
+  // Dashboard Recepcionista
   {
     path: '/receptionist-dashboard',
-    component: () => import('../views/Layout/Receptionist/ReceptionistLayout.vue'),
+    component: () => import('@/views/Layout/Receptionist/ReceptionistLayout.vue'),
     meta: { requiresAuth: true, role: 'Recepcionista' },
     children: [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
@@ -40,13 +45,36 @@ const routes = [
       { path: 'RegisterInstructor', component: () => import('@/views/UseCases/Recepcionist/ManageUsers/RegisterInstructor/View.vue') },
       { path: 'RegisterOperator', component: () => import('@/views/UseCases/Recepcionist/ManageUsers/RegisterOperator/View.vue') },
       { path: 'RegisterTrainer', component: () => import('@/views/UseCases/Recepcionist/ManageUsers/RegisterTrainer/View.vue') },
-      { path: 'ManageRequest', component: () => import('../views/UseCases/Recepcionist/ManageTraining/ManageRequest/ManageRequest.vue') },
-      { path: 'ScheduleTraining', component: () => import('../components/ManageRequest/ScheduleTraining.vue') },
+      { path: 'ManageRequest', component: () => import('@/views/UseCases/Recepcionist/ManageTraining/ManageRequest/ManageRequest.vue') },
+      { path: 'ScheduleTraining', component: () => import('@/components/ManageRequest/ScheduleTraining.vue') },
       { path: 'details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
-      { path: 'RegisterOperador1', component: () => import('../components/UserList/RegistrarOperador1.vue') },
-      { path: 'RegisterFormador1', component: () => import('../components/UserList/RegistrarFormador1.vue') },
-      { path: 'RegisterInstructor1', component: () => import('../components/UserList/RegistrarInstructor.vue') },
+      { path: 'RegisterOperador1', component: () => import('@/components/UserList/RegistrarOperador1.vue') },
+      { path: 'RegisterFormador1', component: () => import('@/components/UserList/RegistrarFormador1.vue') },
+      { path: 'RegisterInstructor1', component: () => import('@/components/UserList/RegistrarInstructor.vue') },
+      { path: 'GestionarVisitas', component: () => import('@/views/UseCases/Admin/GestionarVisitas/view.vue') },
+    ],
+  },
 
+  // Dashboard Asistente de Operaciones
+  // Dashboard Asistente de Operaciones
+  {
+    path: '/operations-assistant-dashboard',
+    component: () => import('@/views/Layout/Op.Asist/OperationsAssistantLayout.vue'),
+    meta: { requiresAuth: true, role: 'Asistente de Operaciones'},
+    children: [
+      { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
+      {
+        path: 'VisitasAsignadas',
+        component: () => import('@/views/UseCases/Asist.Op/VisitasProgramadas/view.vue'),
+      },
+      {
+        path: 'realizarinspeccion/:id',
+        component: () => import('@/views/UseCases/Asist.Op/VisitasProgramadas/realizarinspeccion.vue'),
+      },
+      {
+        path: 'verificarinspeccion/:id',
+        component: () => import('@/views/UseCases/Asist.Op/VisitasProgramadas/verificarinspeccion.vue'),
+      },
     ],
   },
 
@@ -59,6 +87,9 @@ const routes = [
       { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
       { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
       { path: 'Courses', component: () => import('@/views/UseCases/Operator/Courses/view.vue') },
+      { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
+      { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
+      { path: 'Courses', component: () => import('@/views/UseCases/Operator/Courses/view.vue') },
       { path: 'CertificateState', component: () => import('@/views/UseCases/Operator/CertificateState/view.vue') },
       { path: 'PracticalEvaluation', component: () => import('@/views/UseCases/Operator/PracticalEvaluation/View.vue') },
       { path: 'TeoricalEvaluation', component: () => import('@/views/UseCases/Operator/TeoricalEvaluation/View.vue') },
@@ -66,8 +97,38 @@ const routes = [
       { path: 'RealizarEvaluacion', component: () => import('@/views/UseCases/Operator/RealizarEvaluacion/View.vue') },
     ],
   },
-];
 
+  {
+    path: '/formador-dashboard',
+    component: () => import('@/views/Layout/Formador/FormadorLayout.vue'),
+    meta: { requiresAuth: true, role: 'Formador' },
+    children: [
+      { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
+      { path: 'CourseMaterials', component: () => import('@/views/UseCases/Formador/CourseMaterials/view.vue') },
+      { path: 'AttendanceManagement', component: () => import('@/views/UseCases/Formador/AttendanceManagement/view.vue') },
+      { path: 'PerformanceReport', component: () => import('@/views/UseCases/Formador/PerformanceReport/View.vue') },
+      { path: 'ManageEvaluation', component: () => import('@/views/UseCases/Formador/ManageEvaluation/view.vue') },
+      { path: 'ProgrammerSession', component: () => import('@/views/UseCases/Formador/ProgrammerSession/ProgrammerSession.vue') },
+      { path: 'ScheduleSessions', component: () => import('@/views/UseCases/Formador/ScheduleSessions/View.vue') },
+      {
+        path: "/CreateEvaluation/:cursoId",
+        name: "Create",
+        component: () => import("@/views/UseCases/Formador/CreateEvaluation/Create.vue"),
+        props: true, // Permite recibir cursoId como prop
+      }],
+  },
+
+
+  {
+    path: '/Instructor-dashboard',
+    component: () => import('@/views/Layout/Instructor/InstructorLayout.vue'),
+    meta: { requiresAuth: true, role: 'Instructor' },
+    children: [
+      { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
+
+    ],
+  },
+];
 // Crear el router
 const router = createRouter({
   history: createWebHistory(),
@@ -109,5 +170,5 @@ function getNombreRol(rolId) {
     default: return null;
   }
 }
-
 export default router;
+
