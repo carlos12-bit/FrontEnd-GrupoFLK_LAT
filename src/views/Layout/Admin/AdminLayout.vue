@@ -1,11 +1,10 @@
+<!-- src/layouts/MainLayout.vue -->
 <template>
-  <el-container style="height: 100vh">
+  <el-container style="height: 100vh;" class="admin-layout">
     <Drawer ref="drawer" class="d-md-none" />
-      <el-container>
-      <el-main class="iso">
-      <router-view class="mt-5"></router-view>
-      </el-main>
-      </el-container>
+    <el-main>
+      <router-view></router-view> 
+    </el-main>
   </el-container>
 </template>
 
@@ -18,13 +17,16 @@ export default {
   },
 };
 </script>
-
-<style>
-.iso {
-  background-color: #fcfcfc; /* Mantén el color principal */
-  opacity: 0.8; /* Transparencia ligera */
-  background-size: cover; /* Elimina las líneas repetitivas */
-  background-image: none; /* Quita las líneas verticales */
+<style scoped>
+/* Aplicar fondo al layout principal */
+.admin-layout {
+background-image: linear-gradient(rgba(255, 255, 255, 0.774), rgba(255, 255, 255, 0.877)), url('/src/assets/Carrusel3.png');
+background-repeat: no-repeat;
+background-size: cover; /* Asegura que ocupe todo el espacio */
+background-position: center;
+height: 100vh; /* Asegura que ocupe la altura completa */
+width: 100%;
+position: fixed; /* Fija el fondo para que no se desplace */
+z-index: -1; /* Asegura que el contenido esté encima del fondo */
 }
 </style>
-

@@ -144,15 +144,15 @@ export default {
     };
 
     const viewCourse = (id) => {
-      router.push({ path: "ManageCourses/Details", query: { id } });
+      router.push({ path: "/ManageCourses/Details", query: { id } });
     };
 
     const goToCreateCourse = () => {
-      router.push("ManageCourses/Create");
+      router.push({ path: "/ManageCourses/Create" }); // Redirección corregida
     };
 
     const goToEditCourse = (id) => {
-      router.push({ path: "ManageCourses/Edit", query: { id } });
+      router.push({ path: "/ManageCourses/Edit", query: { id } });
     };
 
     const deleteCourse = async (id) => {
@@ -214,7 +214,7 @@ export default {
       irPaginaSiguiente,
       validarPagina,
     };
-  },
+  },
 };
 </script>
 
