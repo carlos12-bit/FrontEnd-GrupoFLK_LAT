@@ -60,7 +60,7 @@ const routes = [
   {
     path: '/operations-assistant-dashboard',
     component: () => import('@/views/Layout/Op.Asist/OperationsAssistantLayout.vue'),
-    meta: { requiresAuth: true, role: 'Asistente de Operaciones' },
+    meta: { requiresAuth: true, role: 'Asistente de Operaciones'},
     children: [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
       {
@@ -87,6 +87,14 @@ const routes = [
       { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
       { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
       { path: 'Courses', component: () => import('@/views/UseCases/Operator/Courses/view.vue') },
+      { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
+      { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
+      { path: 'Courses', component: () => import('@/views/UseCases/Operator/Courses/view.vue') },
+      { path: 'CertificateState', component: () => import('@/views/UseCases/Operator/CertificateState/view.vue') },
+      { path: 'PracticalEvaluation', component: () => import('@/views/UseCases/Operator/PracticalEvaluation/View.vue') },
+      { path: 'TeoricalEvaluation', component: () => import('@/views/UseCases/Operator/TeoricalEvaluation/View.vue') },
+      { path: 'PerformanceReport', component: () => import('@/views/UseCases/Operator/PerformanceReport/View.vue') },
+      { path: 'RealizarEvaluacion', component: () => import('@/views/UseCases/Operator/RealizarEvaluacion/View.vue') },
     ],
   },
 
