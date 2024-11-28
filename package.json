@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "serve": "vite",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
@@ -12,14 +13,14 @@
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
     "@fullcalendar/vue3": "^6.1.15",
-    "@google/generative-ai": "^0.21.0",
-    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/supabase-js": "^2.46.1",
     "animate.css": "^4.1.1",
     "aos": "^2.3.4",
     "axios": "^1.7.7",
-    "body-parser": "^1.20.3",
     "bootstrap": "^5.3.3",
+    "chart.js": "^4.4.6",
     "datatables.net": "^2.1.8",
     "datatables.net-bs5": "^2.1.7",
     "datatables.net-dt": "^2.1.8",
@@ -30,8 +31,10 @@
     "jquery": "^3.7.1",
     "jspdf": "^2.5.2",
     "jwt-decode": "^4.0.0",
-    "mailgun-js": "^0.22.0",
+    "lodash": "^4.17.21",
+    "mailgun-js": "^0.6.7",
     "path": "^0.12.7",
+    "pg": "^8.13.1",
     "pdfjs-dist": "^2.15.349",
     "rellax": "^1.12.1",
     "tabulator-tables": "^6.3.0",
@@ -43,7 +46,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
-    "vite": "^5.2.0",
+    "supabase": "^1.223.10",
+    "vite": "^5.2.0"
     "vite-plugin-static-copy": "^2.1.0"
   }
 }

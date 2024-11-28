@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+/*import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const config = {
   GoogleGenerativeAI: {
@@ -34,3 +34,4 @@ async function generateContent() {
 generateContent();
 
 export default config;
+*/

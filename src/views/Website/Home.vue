@@ -19,7 +19,7 @@ import WhyChooseUs from '@/components/Website/Home/WhyChooseUs.vue';
 import FAQSection from '@/components/Website/Home/FAQSection.vue';
 import FooterSection from '@/components/Website/Home/FooterSection.vue';
 import Services from '@/components/Website/Home/Services.vue';
-import Chatbot from '@/components/ChatBot/ChatBot.vue'; // Importar el componente Chatbot
+//import Chatbot from '@/components/ChatBot/ChatBot.vue'; // Importar el componente Chatbot
 
 export default {
   name: 'Home',
@@ -32,7 +32,7 @@ export default {
     FAQSection,
     FooterSection,
     Services,
-    Chatbot
+    //Chatbot
   }
 };
 </script>
