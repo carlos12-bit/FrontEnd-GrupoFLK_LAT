@@ -16,7 +16,7 @@
     <el-sub-menu index="1">
       <template #title>
         <el-icon><icon-menu /></el-icon>
-        <span>Modulo Inspecciones</span>
+        <span class="MenuDesplegable">Modulo Inspecciones</span>
       </template>
     
         <!-- Subgrupo de Gestión Operativa con opciones -->
@@ -41,7 +41,7 @@
     <el-sub-menu index="2">
       <template #title>
         <el-icon><icon-menu /></el-icon>
-        <span>Modulo Curso</span>
+        <span class="MenuDesplegable">Modulo Curso</span>
       </template>
       
       <!-- Submenú para "Gestionar Solicitudes" -->
@@ -72,10 +72,11 @@
         </router-link>
       </el-menu-item>
     </el-sub-menu>
+
     <el-sub-menu index="3">
       <template #title>
         <el-icon><icon-menu /></el-icon>
-        <span>General</span>
+        <span class="MenuDesplegable">General</span>
       </template>
       
       <!-- Submenú para "Gestionar Solicitudes" -->
@@ -86,8 +87,8 @@
       </el-menu-item>
     </el-sub-menu>
 
-    <!-- Botón de Cerrar Sesión -->
-    <el-menu-item index="4" @click="handleLogout">
+    <!-- Botón de Cerrar Sesión al final -->
+    <el-menu-item index="4" @click="handleLogout" class="MenuDesplegable">
       <el-icon><User /></el-icon>
       <template #title>Cerrar Sesión</template>
     </el-menu-item>
@@ -156,8 +157,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .el-menu-vertical-demo {
-  background-color: #2e8332a9; /* Negro elegante */
-  color: #000000; /* Naranja corporativo */
+  background-color: #1c1c1c; /* Fondo oscuro */
+  color: #f1f1f1; /* Texto blanco suave */
   border-right: none;
   width: 200px;
   font-size: 18px;
@@ -169,7 +170,7 @@ onBeforeUnmount(() => {
 }
 
 .el-menu-item {
-  color: #000000;
+  color: #333333;
   transition: color 0.3s ease;
   font-size: relative;
   height: auto !important;
@@ -177,30 +178,31 @@ onBeforeUnmount(() => {
 }
 
 .el-menu-item.is-active {
-  background-color: rgba(255, 165, 0, 0.1);
-  color: #000000;
+  background-color: #ff8c00; /* Naranja para ítem activo */
+  color: #ffffff;
 }
 
 .el-menu-item:hover {
-  color: #000000;
+  background-color: #333333; /* Fondo claro en hover */
+  color: #ff8c00; /* Texto naranja */
 }
 
 .el-sub-menu .el-menu-item-group__title, .el-sub-menu .el-sub-menu__title {
-  color: #000000;
+  color: #f1f1f1;
   font-size: 19px;
   font-weight: 600;
 }
 
 .el-sub-menu__title:hover {
-  color: #000000;
+  color: #ff8c00; /* Naranja en hover */
 }
 
 .el-menu-item .el-icon, .el-sub-menu .el-icon {
-  color: #000000;
+  color: #f1f1f1;
 }
 
 .el-menu-item.is-active .el-icon, .el-menu-item:hover .el-icon {
-  color: #000000;
+  color: #f1f1f1;
 }
 
 .logo img {
@@ -230,14 +232,14 @@ onBeforeUnmount(() => {
 .hamburger-menu .bar {
   width: 100%;
   height: 4px;
-  background-color: #ffa500;
+  background-color: #ff8c00;
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
 }
 
 .hamburger-menu.active .bar:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
-  background-color: #000000;
+  background-color: #ffffff;
 }
 
 .hamburger-menu.active .bar:nth-child(2) {
@@ -246,10 +248,15 @@ onBeforeUnmount(() => {
 
 .hamburger-menu.active .bar:nth-child(3) {
   transform: rotate(-45deg) translate(5px, -5px);
-  background-color: #000000;
+  background-color: #ffffff;
 }
 
 .hamburger-menu:hover .bar {
-  background-color: #e69500;
+  background-color: #e69500; /* Color naranja brillante */
+}
+
+.MenuDesplegable
+{
+  color: #f1f1f1;
 }
 </style>
