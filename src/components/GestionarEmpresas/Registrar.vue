@@ -184,13 +184,20 @@ export default {
   Estado: true, // Si aplica
 });
 
-
         if (error) throw error;
 
         // Notificar éxito
         ElMessage.success('Empresa registrada correctamente.');
         emit('refreshTable');
         emit('closeModal');
+        
+        // Limpiar los campos del formulario
+        empresa.nro_identificacion = '';
+        empresa.razon_social = '';
+        empresa.nombre_comercial = '';
+        empresa.direccion_central = '';
+        empresa.pais_id = null;
+
       } catch (err) {
         console.error('Error al registrar la empresa:', err.message || err);
         ElMessage.error('Hubo un problema al registrar la empresa.');

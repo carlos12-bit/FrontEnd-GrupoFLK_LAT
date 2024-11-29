@@ -97,7 +97,7 @@ export default {
       this.dialogVisible = true;
     },
     openEditModal(inspeccion) {
-      this.selectedInspeccion = inspeccion;
+      this.selectedInspeccion = { ...inspeccion }; // Copia del objeto para mantener reactividad
       this.editDialogVisible = true;
     },
     async exportToExcel() {
@@ -127,6 +127,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .data-table-container {

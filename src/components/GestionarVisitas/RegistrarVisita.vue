@@ -154,6 +154,35 @@
       </el-select>
     </el-form-item>
 
+    <!-- Horarios de la Semana -->
+<el-form-item label="Horario Semanal">
+  <div v-for="(horarios, dia) in horariosSemana" :key="dia">
+    <el-row>
+      <el-col :span="6">
+        <span>{{ dia.charAt(0).toUpperCase() + dia.slice(1) }}:</span>
+      </el-col>
+      <el-col :span="9">
+        <el-time-picker
+          v-model="horarios.inicio"
+          is-range
+          placeholder="Hora de inicio"
+          format="HH:mm"
+          :disabled="horarios.fin"
+        />
+      </el-col>
+      <el-col :span="9">
+        <el-time-picker
+          v-model="horarios.fin"
+          is-range
+          placeholder="Hora de fin"
+          format="HH:mm"
+          :disabled="!horarios.inicio"
+        />
+      </el-col>
+    </el-row>
+  </div>
+</el-form-item>
+
     <!-- Botones de Acción -->
     <el-button type="primary" @click="submitInspection">Registrar</el-button>
     <el-button @click="closeComponent">Cancelar</el-button>
@@ -223,6 +252,16 @@ export default {
       today.setHours(0, 0, 0, 0); // Asegurar que solo compara fechas, no horas
       return date < today;
     };
+    const horariosSemana = reactive({
+  lunes: { inicio: '', fin: '' },
+  martes: { inicio: '', fin: '' },
+  miercoles: { inicio: '', fin: '' },
+  jueves: { inicio: '', fin: '' },
+  viernes: { inicio: '', fin: '' },
+  sabado: { inicio: '', fin: '' },
+  domingo: { inicio: '', fin: '' },
+});
+
 
     const resetInspectionData = () => {
       selectedRepresentanteId.value = null;
@@ -326,6 +365,7 @@ export default {
 
     const closeRegistrarEmpresa = () => {
       isRegistrarEmpresaVisible.value = false;
+      fetchEmpresas();
     };
 
     const openRegistrarRepresentante = () => {
@@ -338,6 +378,7 @@ export default {
 
     const closeRegistrarRepresentante = () => {
       isRegistrarRepresentanteVisible.value = false;
+      fetchRepresentantes();
     };
 
     const openRegistrarMaquinaria = () => {
@@ -350,6 +391,7 @@ export default {
 
     const closeRegistrarMaquinaria = () => {
       isRegistrarMaquinariaVisible.value = false;
+      fetchMaquinarias();
     };
 
     const handleMaquinariaChange = () => {
@@ -400,11 +442,39 @@ export default {
       return;
     }
 
-    // Obtener inspecciones existentes del inspector
+    // Verificar si ya existe una inspección para el inspector en la fecha seleccionada
     const { data: inspectorInspections, error: inspectorError } = await supabase.rpc('fetch_fechas_por_inspector', {
       p_inspector_id: newInspection.inspector_id,
     });
+
     if (inspectorError) throw inspectorError;
+
+    // Verificamos si hay una inspección en el mismo rango de tiempo
+    const hayConflictos = (inspections) => {
+      return inspections.some((insp) => {
+        const inicioExistente = new Date(insp.fecha_hora_inicio);
+        const finExistente = new Date(inicioExistente);
+        finExistente.setHours(finExistente.getHours() + 4); // Suponiendo que las inspecciones duran 4 horas
+
+        return (
+          (fechaInicio >= inicioExistente && fechaInicio < finExistente) || // El inicio de la nueva inspección se cruza con una existente
+          (fechaFin > inicioExistente && fechaFin <= finExistente) || // El fin de la nueva inspección se cruza con una existente
+          (fechaInicio <= inicioExistente && fechaFin >= finExistente) // La nueva inspección cubre toda la inspección existente
+        );
+      });
+    };
+
+    // Verificar conflictos con el inspector
+    if (hayConflictos(inspectorInspections)) {
+      await ElMessageBox.alert(
+        'El inspector ya tiene una inspección registrada en esta fecha y no puede registrarse nuevamente.',
+        'Conflicto detectado',
+        {
+          type: 'warning',
+        }
+      );
+      return; // Detener el flujo aquí, no registrar la inspección
+    }
 
     // Obtener inspecciones existentes del certificador
     const { data: certificadorInspections, error: certificadorError } = await supabase.rpc('fetch_fechas_por_certificador', {
@@ -412,32 +482,7 @@ export default {
     });
     if (certificadorError) throw certificadorError;
 
-    // Validar conflictos de horarios
-    const hayConflictos = (inspections) => {
-      return inspections.some((insp) => {
-        const inicioExistente = new Date(insp.fecha_hora_inicio);
-        const finExistente = new Date(inicioExistente);
-        finExistente.setHours(finExistente.getHours() + 4); // Suponiendo que las inspecciones duran 4 horas
-        return (
-          (fechaInicio >= inicioExistente && fechaInicio < finExistente) ||
-          (fechaFin > inicioExistente && fechaFin <= finExistente) ||
-          (fechaInicio <= inicioExistente && fechaFin >= finExistente)
-        );
-      });
-    };
-
-    // Verificar conflictos
-    if (hayConflictos(inspectorInspections)) {
-      await ElMessageBox.alert(
-        'El horario seleccionado se cruza con otra inspección asignada al inspector.',
-        'Conflicto detectado',
-        {
-          type: 'warning',
-        }
-      );
-      return; // Detener el flujo aquí
-    }
-
+    // Validar conflictos con el certificador
     if (hayConflictos(certificadorInspections)) {
       await ElMessageBox.alert(
         'El horario seleccionado se cruza con otra inspección asignada al certificador.',
@@ -446,7 +491,7 @@ export default {
           type: 'warning',
         }
       );
-      return; // Detener el flujo aquí
+      return; // Detener el flujo aquí, no registrar la inspección
     }
 
     // Asignar datos de la inspección
@@ -458,23 +503,49 @@ export default {
     newInspection.fecha_de_modificacion = new Date().toISOString();
 
     // Insertar inspección en la base de datos
-    const { error } = await supabase.from('inspeccion').insert([newInspection]);
+    const { data: insertedInspections, error } = await supabase.from('inspeccion').insert([newInspection]).select('id');
     if (error) throw error;
 
+    // Obtener el ID de la inspección recién insertada
+    const inspeccionId = insertedInspections[0].id;
+
+    // Insertar en la tabla 'registro' con la nueva inspección
+    const fechaMaximaEvaluacion = new Date(fechaInicio);
+    fechaMaximaEvaluacion.setDate(fechaMaximaEvaluacion.getDate() + 30); // Sumar 30 días
+
+    const registroData = {
+      inspeccion_id_1: inspeccionId, // Usamos el ID de la inspección recién insertada
+      maquinariaxrepresentante_de_empresa_id: newInspection.maquinariaxrepresentante_de_empresa_id, // Asume que este campo existe en 'newInspection'
+      fecha_hora_registro_1: fechaInicio.toISOString(),
+      fecha_maxima_de_evaluacion: fechaMaximaEvaluacion.toISOString(),
+      Estado: 'en proceso 1',
+    };
+
+    const { error: registroError } = await supabase.from('registro').insert([registroData]);
+    if (registroError) throw registroError;
+
     // Mostrar mensaje de éxito
-    await ElMessageBox.alert('Inspección registrada con éxito.', 'Éxito', {
+    await ElMessageBox.alert('Inspección registrada con éxito y visita asociada.', 'Éxito', {
       type: 'success',
     });
 
     emit('refreshTable');
     resetInspectionData();
+    resetAllData(); // Limpiar todos los campos después de registrar
     emit('closeModal');
   } catch (err) {
-    await ElMessageBox.alert(`Error al registrar inspección: ${err.message}`, 'Error', {
+    console.error('Error al registrar la inspección:', err.message);
+    await ElMessageBox.alert('Ocurrió un error al registrar la inspección. Intente nuevamente.', 'Error', {
       type: 'error',
     });
   }
 };
+
+
+
+
+
+
 
 
 

@@ -150,6 +150,10 @@ export default {
         if (error) throw error;
 
         ElMessage.success('Representante registrado correctamente.');
+
+        // Limpiar los campos del formulario
+        limpiarFormulario();
+
         emit('refreshTable');
         emit('closeModal');
       } catch (err) {
@@ -158,6 +162,18 @@ export default {
       } finally {
         loading.value = false;
       }
+    };
+
+    const limpiarFormulario = () => {
+      representante.dni = '';
+      representante.nombre = '';
+      representante.apellido_paterno = '';
+      representante.apellido_materno = '';
+      representante.correo_electronico = '';
+      representante.numero_de_contacto = '';
+      representante.direccion_sede = '';
+      representante.region_id = null;
+      representante.provincia_id = null;
     };
 
     const checkDuplicateField = async (field, value, errorMessage) => {
