@@ -9,7 +9,7 @@
     @close="handleClose"
   >
     <div class="logo">
-      <img src="@/assets/FLK_logo.png" alt="Logo" />
+      <img src="../../../assets/FLK_Logo.png" alt="Logo" />
     </div>
 
     <!-- Submenú Gestión Operativa -->
@@ -167,6 +167,7 @@ onBeforeUnmount(() => {
   border-right: none;
   width: 200px;
   font-size: 18px;
+} /* <-- Closing brace added here */
 
 .el-menu-vertical-demo.el-menu--collapse {
   width: 64px;
@@ -258,8 +259,8 @@ onBeforeUnmount(() => {
   background-color: #e69500; /* Color naranja brillante */
 }
 
-.MenuDesplegable
-{
+.MenuDesplegable {
   color: #f1f1f1;
 }
 </style>
+

@@ -31,7 +31,7 @@ const routes = [
       { path: 'ManageCourses/Details', name: 'Detail', component: () => import('@/components/ManageCourses/Details.vue') },
       { path: 'ScheduleTraining', component: () => import('@/components/ManageRequest/ScheduleTraining.vue') },
       { path: 'GestionarVisitas', component: () => import('@/views/UseCases/Admin/GestionarVisitas/view.vue') },
-      { path: 'AsignacionOperador', component: () => import('@/views/UseCases/Admin/AsignacionOperador/view.vue') },
+      { path: 'AsignacionOperador', component: () => import('../views/UseCases/Admin/AsignacionOperador/View.vue') },
     ],
   },
 
@@ -89,7 +89,7 @@ const routes = [
       { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
       { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
       { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
-      { path: 'CertificateState', component: () => import('@/views/UseCases/Operator/CertificateState/view.vue') },
+      { path: 'CertificateState', component: () => import('../views/UseCases/Operator/CertificateState/View.vue') },
       { path: 'TeoricalEvaluation', component: () => import('@/views/UseCases/Operator/TeoricalEvaluation/View.vue') },
       { path: 'PerformanceReport', component: () => import('@/views/UseCases/Operator/PerformanceReport/View.vue') },
       { path: 'RealizarEvaluacion', component: () => import('@/views/UseCases/Operator/RealizarEvaluacion/View.vue') },
@@ -102,10 +102,10 @@ const routes = [
     meta: { requiresAuth: true, role: 'Formador' },
     children: [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
-      { path: 'CourseMaterials', component: () => import('@/views/UseCases/Formador/CourseMaterials/view.vue') },
-      { path: 'AttendanceManagement', component: () => import('@/views/UseCases/Formador/AttendanceManagement/view.vue') },
+      { path: 'CourseMaterials', component: () => import('../views/UseCases/Formador/CourseMaterials/View.vue') },
+      { path: 'AttendanceManagement', component: () => import('@/views/UseCases/Formador/AttendanceManagement/View.vue') },
       { path: 'PerformanceReport', component: () => import('@/views/UseCases/Formador/PerformanceReport/View.vue') },
-      { path: 'ManageEvaluation', component: () => import('@/views/UseCases/Formador/ManageEvaluation/view.vue') },
+      { path: 'ManageEvaluation', component: () => import('../views/UseCases/Formador/CreateEvaluation/Create.vue') },
       { path: 'ProgrammerSession', component: () => import('@/views/UseCases/Formador/ProgrammerSession/ProgrammerSession.vue') },
       { path: 'ScheduleSessions', component: () => import('@/views/UseCases/Formador/ScheduleSessions/View.vue') },
       {
