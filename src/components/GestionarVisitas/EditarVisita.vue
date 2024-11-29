@@ -1,76 +1,129 @@
 <template>
-  <div>
-    <el-form :model="inspeccion" ref="form" label-width="120px">
-      <el-form-item label="Empresa">
-        <el-input v-model="inspeccion.nombre_empresa" placeholder="Nombre de la empresa" />
+  <el-dialog v-model="dialogVisible" title="Editar Inspección" width="500px">
+    <el-form :model="formData" ref="form" label-width="120px" :rules="formRules">
+      <!-- ID de Inspección (solo lectura) -->
+      <el-form-item label="ID Inspección" prop="id_inspeccion">
+        <el-input v-model="formData.id_inspeccion" disabled />
       </el-form-item>
-      <el-form-item label="Ubicación">
-        <el-input v-model="inspeccion.ubicacion" placeholder="Ubicación de la inspección" />
+
+      <!-- Nombre de la Empresa -->
+      <el-form-item label="Empresa" prop="nombre_empresa">
+        <el-input v-model="formData.nombre_empresa" />
       </el-form-item>
-      <el-form-item label="Fecha de Inicio">
+
+      <!-- Ubicación -->
+      <el-form-item label="Ubicación" prop="ubicacion">
+        <el-input v-model="formData.ubicacion" />
+      </el-form-item>
+
+      <!-- Fecha de Inicio -->
+      <el-form-item label="Fecha de Inicio" prop="fecha_inicio">
         <el-date-picker
-          v-model="inspeccion.fecha_inicio"
-          type="datetime"
-          placeholder="Fecha de inicio"
-          style="width: 100%"
+          v-model="formData.fecha_inicio"
+          type="date"
+          placeholder="Seleccionar fecha"
+          format="yyyy-MM-dd"
         />
       </el-form-item>
-      <el-form-item label="Estado">
-        <el-select v-model="inspeccion.estado_inspeccion" placeholder="Estado de la inspección">
+
+      <!-- Tipo de Producto -->
+      <el-form-item label="Tipo de Producto" prop="nombre_tipo_producto">
+        <el-input v-model="formData.nombre_tipo_producto" />
+      </el-form-item>
+
+      <!-- Estado de la Inspección -->
+      <el-form-item label="Estado" prop="estado_inspeccion">
+        <el-select v-model="formData.estado_inspeccion" placeholder="Seleccionar estado">
           <el-option label="Pendiente" value="Pendiente" />
-          <el-option label="En proceso" value="En proceso" />
-          <el-option label="Finalizada" value="Finalizada" />
-          <el-option label="Cancelada" value="Cancelada" />
+          <el-option label="Completado" value="Completado" />
+          <el-option label="Cancelado" value="Cancelado" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Tipo de Producto">
-        <el-input v-model="inspeccion.nombre_tipo_producto" placeholder="Tipo de producto" />
-      </el-form-item>
+
+      <!-- Botones para guardar o cancelar -->
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="closeModal">Cancelar</el-button>
+        <el-button type="primary" @click="saveInspection">Guardar</el-button>
+      </div>
     </el-form>
-    
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="closeModal">Cancelar</el-button>
-      <el-button type="primary" @click="saveChanges">Guardar Cambios</el-button>
-    </div>
-  </div>
+  </el-dialog>
 </template>
 
 <script>
+import { ref, onMounted, watch } from 'vue';
+import { ElMessage } from 'element-plus';
+import supabase from '@/supabase';
+
 export default {
   props: {
     inspeccion: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
+    closeModal: {
+      type: Function,
+      required: true,
+    },
+    refreshTable: {
+      type: Function,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      dialogVisible: true,
+      formData: { ...this.inspeccion }, // Evitar que sea null
+      formRules: {
+        nombre_empresa: [{ required: true, message: 'Por favor ingresa el nombre de la empresa', trigger: 'blur' }],
+        ubicacion: [{ required: true, message: 'Por favor ingresa la ubicación', trigger: 'blur' }],
+        fecha_inicio: [{ required: true, message: 'Por favor selecciona la fecha de inicio', trigger: 'change' }],
+        nombre_tipo_producto: [{ required: true, message: 'Por favor ingresa el tipo de producto', trigger: 'blur' }],
+        estado_inspeccion: [{ required: true, message: 'Por favor selecciona el estado de la inspección', trigger: 'change' }],
+      },
+    };
+  },
+  watch: {
+    inspeccion(newValue) {
+      if (newValue) {
+        this.formData = { ...newValue };
+      }
+    },
   },
   methods: {
-    closeModal() {
-      this.$emit('closeModal');
-    },
-    async saveChanges() {
+    async saveInspection() {
       try {
-        // Aquí puedes realizar la lógica para guardar los cambios, por ejemplo, actualizando en la base de datos.
-        const { data, error } = await this.$supabase
+        await this.$refs.form.validate();
+        const { data, error } = await supabase
           .from('inspecciones')
-          .upsert(this.inspeccion);
-        
+          .update({
+            nombre_empresa: this.formData.nombre_empresa,
+            ubicacion: this.formData.ubicacion,
+            fecha_inicio: this.formData.fecha_inicio,
+            nombre_tipo_producto: this.formData.nombre_tipo_producto,
+            estado_inspeccion: this.formData.estado_inspeccion,
+          })
+          .eq('id_inspeccion', this.formData.id_inspeccion);
+
         if (error) {
-          console.error('Error al guardar cambios:', error.message);
+          ElMessage.error('Error al actualizar la inspección');
         } else {
-          this.$emit('refreshTable');
-          this.$emit('closeModal');
+          ElMessage.success('Inspección actualizada con éxito');
+          this.closeModal();
+          this.refreshTable();
         }
       } catch (err) {
-        console.error('Error al conectar con Supabase:', err.message);
+        ElMessage.error('Error al guardar la inspección');
+        console.error(err);
       }
+    },
+    closeModal() {
+      this.dialogVisible = false;
+    },
+  },
+  onMounted() {
+    if (!this.inspeccion) {
+      console.error('La inspección no está disponible');
     }
   }
 };
 </script>
-
-<style scoped>
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>
