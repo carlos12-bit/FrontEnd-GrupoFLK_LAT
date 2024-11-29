@@ -56,8 +56,15 @@ export default {
     };
 
     const descargarCertificado = (archivo) => {
-      const { publicURL } = supabase.storage.from("certificados").getPublicUrl(archivo);
-      window.open(publicURL, "_blank");
+      const { publicURL, error } = supabase.storage.from("Certificado").getPublicUrl(archivo);
+
+      if (error) {
+        console.error("Error al obtener la URL pública:", error.message);
+        return;
+      }
+
+      // Abre la URL pública del archivo (que es una imagen) en una nueva ventana o pestaña
+      window.open(publicURL, "https://qyfrfgcefvwpkqtzjjxi.supabase.co/storage/v1/object/public/Certificado/CV%20CARPIO%20CERTIFICADO%20DE%20MONTACARGA.pdf?t=2024-11-29T01%3A16%3A11.777Z");
     };
 
     const formatDate = (date) => (date ? new Date(date).toLocaleDateString() : "No especificado");
@@ -77,6 +84,7 @@ export default {
 
 <style scoped>
 .certificados-container {
+  
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -90,6 +98,7 @@ h1 {
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
+  background-color: #f4f4f4;
 }
 .certificados-table th,
 .certificados-table td {

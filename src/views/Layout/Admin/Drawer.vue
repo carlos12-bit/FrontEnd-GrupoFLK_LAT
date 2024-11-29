@@ -71,6 +71,11 @@
           Gestionar Credenciales
         </router-link>
       </el-menu-item>
+      <el-menu-item index="2-4">
+        <router-link class="nav-link" to="/admin-dashboard/AsignacionOperador">
+          Asignacion Operador
+        </router-link>
+      </el-menu-item>
     </el-sub-menu>
     <el-sub-menu index="3">
       <template #title>
