@@ -59,7 +59,7 @@ export default {
       try {
         const { data, error } = await this.$supabase
           .from("preguntas_teoricas")
-          .select("*")
+          .select("id")
           .eq("fk_curso", this.fk_curso); // Filtrar por curso
 
         if (error) throw error;
