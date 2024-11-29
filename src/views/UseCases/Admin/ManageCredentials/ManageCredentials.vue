@@ -15,8 +15,8 @@
             <td>{{ credencial.usuario }}</td>
             <td>{{ obtenerDocumento(credencial.FK_Operador) }}</td>
             <td>
-              <button @click="generarCredencial(credencial)" class="btn-generar">
-                Generar y Enviar
+              <button @click="enviarCorreo(credencial)" class="btn-generar">
+                Enviar Correo
               </button>
             </td>
           </tr>
@@ -33,87 +33,65 @@ export default {
   name: "ManageCredentials",
   data() {
     return {
-      credenciales: [], // Credenciales de la base de datos
-      operadores: [], // Operadores para obtener el tipo de documento
-      nuevaContrasena: "", // Contraseña generada aleatoriamente
+      credenciales: [],
+      operadores: [],
     };
   },
   async mounted() {
-    // Obtener credenciales
-    const { data: credenciales, error: credencialesError } = await supabase
-      .from("credenciales_alumnos")
-      .select("*");
+    try {
+      const { data: credenciales, error: credencialesError } = await supabase
+        .from("credenciales_alumnos")
+        .select("*");
 
-    if (credencialesError) {
-      console.error("Error fetching credenciales: ", credencialesError);
-    } else {
+      if (credencialesError) throw credencialesError;
+
       this.credenciales = credenciales;
-    }
 
-    // Obtener operadores
-    const { data: operadores, error: operadoresError } = await supabase
-      .from("Operador")
-      .select("Pk_Alumno, nro_documento");
+      const { data: operadores, error: operadoresError } = await supabase
+        .from("Operador")
+        .select("Pk_Alumno, nro_documento");
 
-    if (operadoresError) {
-      console.error("Error fetching operadores: ", operadoresError);
-    } else {
+      if (operadoresError) throw operadoresError;
+
       this.operadores = operadores;
+    } catch (error) {
+      console.error("Error al cargar datos: ", error.message);
+      alert("Ocurrió un error al cargar los datos.");
     }
   },
   methods: {
     obtenerDocumento(fkOperador) {
-      // Encuentra el operador por FK_Operador y devuelve el documento
       const operador = this.operadores.find(
         (op) => op.Pk_Alumno === fkOperador
       );
       return operador ? operador.nro_documento : "Desconocido";
     },
-    generarContraseña() {
-      // Generar contraseña aleatoria
-      return Math.random().toString(36).slice(-8);
-    },
-    async generarCredencial(credencial) {
-      this.nuevaContrasena = this.generarContraseña();
-
+    async enviarCorreo(credencial) {
       try {
-        // Actualizar credenciales en la base de datos
-        const { error: updateError } = await supabase
-          .from("credenciales_alumnos")
-          .update({ contrasena: this.nuevaContrasena })
-          .eq("id", credencial.id);
-
-        if (updateError) {
-          throw new Error("Error al actualizar la credencial en la base de datos");
-        }
-
-        // Enviar correo
-        const { error: emailError } = await supabase.rpc("send_email", {
+        const { error: emailError } = await supabase.rpc("schema_name.send_email", {
           email: credencial.usuario,
           subject: "Credenciales Generadas para Acceso",
+
           message: `
             <h1>Acceso Generado</h1>
             <p>Estimado usuario, tus credenciales han sido generadas:</p>
             <p><strong>Usuario:</strong> ${credencial.usuario}</p>
-            <p><strong>Contraseña:</strong> ${this.nuevaContrasena}</p>
+            <p><strong>Contraseña:</strong> ${credencial.contrasena}</p>
             <p>Por favor, utiliza estas credenciales para iniciar sesión en nuestro sistema.</p>
           `,
         });
 
-        if (emailError) {
-          throw new Error(`Error al enviar el correo: ${emailError.message}`);
-        }
+        if (emailError) throw emailError;
 
-        alert("Credencial generada y correo enviado correctamente.");
+        alert("Correo enviado correctamente.");
       } catch (error) {
-        console.error("Error al generar credencial: ", error);
-        alert("Ocurrió un error al generar la credencial.");
+        console.error("Error al enviar correo: ", error.message);
+        alert("Ocurrió un error al enviar el correo.");
       }
     },
   },
 };
 </script>
-
 
 <style scoped>
 .credentials-layout {
@@ -175,4 +153,3 @@ export default {
   background-color: #218838;
 }
 </style>
-

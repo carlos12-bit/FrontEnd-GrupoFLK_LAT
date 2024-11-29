@@ -180,6 +180,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/supabase';
+import { sendEmail } from '@/services/elasticEmailService';
 
 export default {
   name: 'RequestTraining',
@@ -298,36 +299,8 @@ export default {
       return monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0) ? age >= 18 : age - 1 >= 18;
     };
 
-    // Lógica para enviar correos
-    const enviarCorreo = async (to, subject, body) => {
-      try {
-        // Usa SMTP.js para enviar correos directamente desde el frontend
-        window.Email.send({
-          Host: "smtp.gmail.com",
-          Username: "grupoflk13@gmail.com", // Reemplaza con tu correo
-          Password: "dmur ursm ahld kvuj", // Contraseña generada para aplicaciones (NO tu contraseña personal)
-          To: to,
-          From: "grupoflk13@gmail.com", // Mismo correo que usas en Username
-          Subject: subject,
-          Body: body,
-        }).then((message) => {
-          if (message === "OK") {
-            alert("Correo enviado con éxito.");
-          } else {
-            console.error("Error al enviar el correo:", message);
-            alert("Hubo un error al enviar el correo.");
-          }
-        });
-      } catch (error) {
-        console.error("Error inesperado:", error);
-        alert("Hubo un error inesperado al enviar el correo.");
-      }
-    };
-
-    // Enviar el formulario
     const submitForm = async () => {
       try {
-        // Validaciones previas
         if (!isAdult(form.value.fecha_nacimiento)) {
           alert("Debes tener al menos 18 años para completar este formulario.");
           return;
@@ -343,19 +316,16 @@ export default {
           return;
         }
 
-        // Subir archivos
         const fileFields = ["dni_adjunto", "certificado_medico_adjunto", "licencia_conducir_adjunto", "firma"];
         for (const field of fileFields) {
           const filePath = await uploadFile(field, form.value[field]);
           if (filePath) form.value[field] = filePath;
         }
 
-        // Guardar en Supabase
         const { error } = await supabase.from("solicitud_capacitacion").insert([form.value]);
         if (error) throw error;
 
-        // Enviar correo al usuario
-        await enviarCorreo(
+        await sendEmail(
           form.value.correo_electronico,
           "Solicitud de Capacitación Recibida",
           `
@@ -367,11 +337,10 @@ export default {
 
         alert("Solicitud enviada con éxito.");
       } catch (error) {
-        console.error("Error al enviar la solicitud:", error.message);
+        console.error("Error al enviar la solicitud:", error);
         alert("Ocurrió un error al enviar la solicitud.");
       }
     };
-
     return { form, paises, cursos, handleFileUpload, submitForm };
   },
 };

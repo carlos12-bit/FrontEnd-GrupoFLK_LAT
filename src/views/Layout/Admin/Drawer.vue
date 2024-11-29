@@ -9,7 +9,7 @@
     @close="handleClose"
   >
     <div class="logo">
-      <img src="@/assets/SELLO_FLK.png" alt="Logo" />
+      <img src="@/assets/FLK_logo.png" alt="Logo" />
     </div>
 
     <!-- Submenú Gestión Operativa -->
@@ -69,6 +69,11 @@
       <el-menu-item index="2-4">
         <router-link class="nav-link" to="/admin-dashboard/ManageCredentials">
           Gestionar Credenciales
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="2-4">
+        <router-link class="nav-link" to="/admin-dashboard/AsignacionOperador">
+          Asignacion Operador
         </router-link>
       </el-menu-item>
     </el-sub-menu>
@@ -156,11 +161,12 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .el-menu-vertical-demo {
-  background-color: #2e8332a9; /* Negro elegante */
-  color: #000000; /* Naranja corporativo */
-  border-right: none;
-  width: 200px;
-  font-size: 18px;
+  background-color: #ffffff;
+  color: #0f0f0f;
+  width: 250px;
+  transition: all 0.3s;
+  font-size: 16px;
+  border-right: 1px solid #ddd;
 }
 
 .el-menu-vertical-demo.el-menu--collapse {
@@ -203,11 +209,10 @@ onBeforeUnmount(() => {
   color: #000000;
 }
 
+/* Logo */
 .logo img {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  margin: 20px auto;
+  width: 80%;
+  margin: 00px auto;
   display: block;
 }
 
