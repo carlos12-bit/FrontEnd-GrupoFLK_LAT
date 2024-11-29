@@ -20,14 +20,8 @@
         <!-- Subgrupo de Gestión Operativa con opciones -->
         <el-menu-item index="1-1">
           <img src="@/assets/clases.png" alt="Icono Sesiones" class="menu-icon1" />
-          <router-link class="nav-link" to="/operator-dashboard/TeoricalEvaluation">
+          <router-link class="nav-link" to="/operator-dashboard/RealizarEvaluacion">
             Evaluacion Teorica
-          </router-link>
-        </el-menu-item>
-        <el-menu-item index="1-2">
-          <img src="@/assets/MATERIALES.png" alt="Icono Sesiones" class="menu-icon2" />
-          <router-link class="nav-link" to="/operator-dashboard/PracticalEvaluation">
-            Evaluacion Practica
           </router-link>
         </el-menu-item>
         <el-menu-item index="1-2">

@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <h1 class="page-title">Gestión de Cursos</h1>
-    <button @click="goToCreateCourse" class="btn-create">Crear Curso</button>
+    <button @click="goToCreateCourse" class="btn-create">
+  Crear Curso
+</button>
     <div class="controls-container">
       <div class="pagination-controls">
         <label for="registrosPorPagina">Mostrar</label>
@@ -148,7 +150,7 @@ export default {
     };
 
     const goToCreateCourse = () => {
-      router.push("ManageCourses/Create");
+      router.push({ path:"CreateCourses"});
     };
 
     const goToEditCourse = (id) => {
@@ -224,7 +226,7 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: transparent; /* Fondo transparente */
+  background-color: #fcfcfc; /* Fondo transparente */
   border-radius: 10px; /* Bordes suaves */
   box-shadow: none; /* Eliminar sombras */
 }
@@ -260,7 +262,7 @@ export default {
   width: 100%;
   border-collapse: collapse;
   background-color: transparent; /* Fondo transparente */
-  color: #4a5c93;
+  color: #0a0a0a;
 }
 
 .courses-table th {

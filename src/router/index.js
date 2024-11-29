@@ -25,12 +25,13 @@ const routes = [
       { path: 'ManageCredentials', component: () => import('@/views/UseCases/Admin/ManageCredentials/ManageCredentials.vue') },
       { path: 'ManagementServices', component: () => import('@/views/UseCases/Admin/ManagementServices/View.vue') },
       { path: 'ManageRequest', component: () => import('@/views/UseCases/Admin/ManageRequest/ManageRequest.vue') },
-      { path: 'ManageRequest/Details', name: 'detalles' ,component: () => import('@/components/ManageRequest/Details.vue') },
-      { path: 'ManageCourses/Create', name: 'Create', component: () => import('@/components/ManageCourses/Create.vue') },
+      { path: 'ManageRequest/Details/:id', name: 'Details', component: () => import('@/components/ManageRequest/Details.vue') },
+      { path: 'CreateCourses', component: () => import('@/views/UseCases/Admin/CreateCourses/View.vue') },
       { path: 'ManageCourses/Edit', name: 'Edit', component: () => import('@/components/ManageCourses/Edit.vue') },
       { path: 'ManageCourses/Details', name: 'Detail', component: () => import('@/components/ManageCourses/Details.vue') },
       { path: 'ScheduleTraining', component: () => import('@/components/ManageRequest/ScheduleTraining.vue') },
       { path: 'GestionarVisitas', component: () => import('@/views/UseCases/Admin/GestionarVisitas/view.vue') },
+      { path: 'AsignacionOperador', component: () => import('@/views/UseCases/Admin/AsignacionOperador/view.vue') },
     ],
   },
 
@@ -86,12 +87,9 @@ const routes = [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
       { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
       { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
-      { path: 'Courses', component: () => import('@/views/UseCases/Operator/Courses/view.vue') },
       { path: 'ActivitiesCalendar', component: () => import('@/views/UseCases/Operator/ActivitiesCalendar/view.vue') },
       { path: 'CourseMaterials', component: () => import('@/views/UseCases/Operator/CourseMaterials/view.vue') },
-      { path: 'Courses', component: () => import('@/views/UseCases/Operator/Courses/view.vue') },
       { path: 'CertificateState', component: () => import('@/views/UseCases/Operator/CertificateState/view.vue') },
-      { path: 'PracticalEvaluation', component: () => import('@/views/UseCases/Operator/PracticalEvaluation/View.vue') },
       { path: 'TeoricalEvaluation', component: () => import('@/views/UseCases/Operator/TeoricalEvaluation/View.vue') },
       { path: 'PerformanceReport', component: () => import('@/views/UseCases/Operator/PerformanceReport/View.vue') },
       { path: 'RealizarEvaluacion', component: () => import('@/views/UseCases/Operator/RealizarEvaluacion/View.vue') },
@@ -125,10 +123,16 @@ const routes = [
     meta: { requiresAuth: true, role: 'Instructor' },
     children: [
       { path: 'home', component: () => import('@/views/Security/AccessDenied.vue') },
-
+      { path: 'CalendarActivities', component: () => import('@/views/UseCases/Instructor/CalendarActivities/CalendarActivities.vue') },
+      { path: 'GestionarAsistencia', component: () => import('@/views/UseCases/Instructor/GestionarAsistencia/View.vue') },
+      { path: 'ManageEvaluation', component: () => import('@/views/UseCases/Instructor/ManageEvaluation/View.vue') },
+      { path: 'PerformanceReport', component: () => import('@/views/UseCases/Instructor/PerformanceReport/View.vue') },
+      { path: '/ManageEvaluation/CrearEvaluacion', component: () => import('@/views/UseCases/Instructor/ManageEvaluation/CrearEvaluacion.vue') },
+      { path: 'ProgrammerSession', component: () => import('@/views/UseCases/Formador/ProgrammerSession/ProgrammerSession.vue') },
     ],
   },
 ];
+
 // Crear el router
 const router = createRouter({
   history: createWebHistory(),
