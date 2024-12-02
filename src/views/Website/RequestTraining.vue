@@ -10,12 +10,22 @@
           <!-- Campos del formulario -->
           <div class="form-group">
             <label for="nombre_completo">Nombre Completo</label>
-            <input type="text" id="nombre_completo" v-model="form.nombre_completo" required />
+            <input
+              type="text"
+              id="nombre_completo"
+              v-model="form.nombre_completo"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="nro_telefonico">Número Telefónico</label>
-            <input type="tel" id="nro_telefonico" v-model="form.nro_telefonico" required />
+            <input
+              type="tel"
+              id="nro_telefonico"
+              v-model="form.nro_telefonico"
+              required
+            />
           </div>
 
           <div class="form-group">
@@ -25,22 +35,44 @@
 
           <div class="form-group">
             <label for="fecha_nacimiento">Fecha de Nacimiento</label>
-            <input type="date" id="fecha_nacimiento" v-model="form.fecha_nacimiento" required />
+            <input
+              type="date"
+              id="fecha_nacimiento"
+              v-model="form.fecha_nacimiento"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="direccion">Dirección</label>
-            <input type="text" id="direccion" v-model="form.direccion" required />
+            <input
+              type="text"
+              id="direccion"
+              v-model="form.direccion"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="telefono_contacto">Teléfono de Contacto</label>
-            <input type="tel" id="telefono_contacto" v-model="form.telefono_contacto" required />
+            <input
+              type="tel"
+              id="telefono_contacto"
+              v-model="form.telefono_contacto"
+              @input="filterPhoneNumber('telefono_contacto')"
+              maxlength="15"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="correo_electronico">Correo Electrónico</label>
-            <input type="email" id="correo_electronico" v-model="form.correo_electronico" required />
+            <input
+              type="email"
+              id="correo_electronico"
+              v-model="form.correo_electronico"
+              required
+            />
           </div>
 
           <!-- Desplegable para Nacionalidad -->
@@ -48,13 +80,24 @@
             <label for="nacionalidad">Nacionalidad</label>
             <select id="nacionalidad" v-model="form.nacionalidad" required>
               <option value="" disabled>Seleccione un país</option>
-              <option v-for="pais in paises" :key="pais.id" :value="pais.nombre">{{ pais.nombre }}</option>
+              <option
+                v-for="pais in paises"
+                :key="pais.id"
+                :value="pais.nombre"
+              >
+                {{ pais.nombre }}
+              </option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="ocupacion_actual">Ocupación Actual</label>
-            <input type="text" id="ocupacion_actual" v-model="form.ocupacion_actual" required />
+            <input
+              type="text"
+              id="ocupacion_actual"
+              v-model="form.ocupacion_actual"
+              required
+            />
           </div>
 
           <!-- Desplegable para Fk_Curso -->
@@ -62,17 +105,23 @@
             <label for="Fk_Curso">Curso</label>
             <select id="Fk_Curso" v-model="form.fk_curso" required>
               <option value="" disabled>Seleccione un curso</option>
-              <option v-for="curso in cursos" :key="curso.pk_curso" :value="curso.pk_curso">
+              <option
+                v-for="curso in cursos"
+                :key="curso.pk_curso"
+                :value="curso.pk_curso"
+              >
                 {{ curso.titulo_curso }}
               </option>
             </select>
           </div>
 
-
-
           <div class="form-group">
             <label for="nombre_empresa">Nombre de la Empresa</label>
-            <input type="text" id="nombre_empresa" v-model="form.nombre_empresa" />
+            <input
+              type="text"
+              id="nombre_empresa"
+              v-model="form.nombre_empresa"
+            />
           </div>
 
           <div class="form-group">
@@ -81,29 +130,59 @@
           </div>
 
           <div class="form-group">
-            <label for="experiencia_maquinaria">Experiencia en Maquinaria</label>
-            <textarea id="experiencia_maquinaria" v-model="form.experiencia_maquinaria" rows="3"></textarea>
+            <label for="experiencia_maquinaria"
+              >Experiencia en Maquinaria</label
+            >
+            <textarea
+              id="experiencia_maquinaria"
+              v-model="form.experiencia_maquinaria"
+              rows="3"
+            ></textarea>
           </div>
 
           <div class="form-group">
-            <label for="nombre_contacto_emergencia">Nombre de Contacto de Emergencia</label>
-            <input type="text" id="nombre_contacto_emergencia" v-model="form.nombre_contacto_emergencia" />
+            <label for="nombre_contacto_emergencia"
+              >Nombre de Contacto de Emergencia</label
+            >
+            <input
+              type="text"
+              id="nombre_contacto_emergencia"
+              v-model="form.nombre_contacto_emergencia"
+            />
           </div>
 
           <div class="form-group">
-            <label for="relacion_contacto_emergencia">Relación con Contacto de Emergencia</label>
-            <input type="text" id="relacion_contacto_emergencia" v-model="form.relacion_contacto_emergencia" />
+            <label for="relacion_contacto_emergencia"
+              >Relación con Contacto de Emergencia</label
+            >
+            <input
+              type="text"
+              id="relacion_contacto_emergencia"
+              v-model="form.relacion_contacto_emergencia"
+            />
           </div>
 
           <div class="form-group">
-            <label for="telefono_contacto_emergencia">Teléfono de Contacto de Emergencia</label>
-            <input type="tel" id="telefono_contacto_emergencia" v-model="form.telefono_contacto_emergencia" />
+            <label for="telefono_contacto_emergencia"
+              >Teléfono de Contacto de Emergencia</label
+            >
+            <input
+              type="tel"
+              id="telefono_contacto_emergencia"
+              v-model="form.telefono_contacto_emergencia"
+            />
           </div>
 
-
           <div class="form-group">
-            <label for="fecha_inicio_preferida">Fecha de Inicio Preferida</label>
-            <input type="date" id="fecha_inicio_preferida" v-model="form.fecha_inicio_preferida" />
+            <label for="fecha_inicio_preferida"
+              >Fecha de Inicio Preferida</label
+            >
+            <input
+              type="date"
+              id="fecha_inicio_preferida"
+              v-model="form.fecha_inicio_preferida"
+              :min="today"
+            />
           </div>
 
           <div class="form-group">
@@ -118,107 +197,154 @@
           <!-- Campos de archivos -->
           <div class="form-group">
             <label for="dni_adjunto">DNI Adjunto</label>
-            <input type="file" id="dni_adjunto" @change="handleFileUpload('dni_adjunto', $event)" />
+            <input
+              type="file"
+              id="dni_adjunto"
+              @change="handleFileUpload('dni_adjunto', $event)"
+            />
           </div>
 
           <div class="form-group">
-            <label for="certificado_medico_adjunto">Certificado Médico Adjunto</label>
-            <input type="file" id="certificado_medico_adjunto"
-              @change="handleFileUpload('certificado_medico_adjunto', $event)" />
+            <label for="certificado_medico_adjunto"
+              >Certificado Médico Adjunto</label
+            >
+            <input
+              type="file"
+              id="certificado_medico_adjunto"
+              @change="handleFileUpload('certificado_medico_adjunto', $event)"
+            />
           </div>
 
           <div class="form-group">
-            <label for="licencia_conducir_adjunto">Licencia de Conducir Adjunto</label>
-            <input type="file" id="licencia_conducir_adjunto"
-              @change="handleFileUpload('licencia_conducir_adjunto', $event)" />
+            <label for="licencia_conducir_adjunto"
+              >Licencia de Conducir Adjunto</label
+            >
+            <input
+              type="file"
+              id="licencia_conducir_adjunto"
+              @change="handleFileUpload('licencia_conducir_adjunto', $event)"
+            />
           </div>
 
           <div class="form-group">
             <label for="alergias_condiciones">Alergias/Condiciones</label>
-            <textarea id="alergias_condiciones" v-model="form.alergias_condiciones" rows="3"></textarea>
+            <textarea
+              id="alergias_condiciones"
+              v-model="form.alergias_condiciones"
+              rows="3"
+            ></textarea>
           </div>
 
           <div class="form-group">
             <label for="necesidades_especiales">Necesidades Especiales</label>
-            <textarea id="necesidades_especiales" v-model="form.necesidades_especiales" rows="3"></textarea>
+            <textarea
+              id="necesidades_especiales"
+              v-model="form.necesidades_especiales"
+              rows="3"
+            ></textarea>
           </div>
 
           <!-- Consentimientos -->
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="form.consentimiento_participacion" />
-              Consentimiento de Participación
-            </label>
-          </div>
-
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="form.autorizacion_imagen" />
-              Autorización de Imagen
-            </label>
-          </div>
-
-          <div class="form-group">
-            <label>
-              <input type="checkbox" v-model="form.consentimiento_tratamiento_datos" required />
-              Consentimiento para Tratamiento de Datos
-            </label>
+          <div class="form-group consentimientos">
+            <div class="row">
+              <div class="col-12">
+                <label>
+                  <input
+                    type="checkbox"
+                    v-model="form.consentimiento_participacion"
+                  />
+                  Consentimiento de Participación
+                </label>
+              </div>
+              <div class="col-12">
+                <label>
+                  <input type="checkbox" v-model="form.autorizacion_imagen" />
+                  Autorización de Imagen
+                </label>
+              </div>
+              <div class="col-12">
+                <label>
+                  <input
+                    type="checkbox"
+                    v-model="form.consentimiento_tratamiento_datos"
+                  />
+                  Consentimiento para Tratamiento de Datos
+                </label>
+              </div>
+            </div>
           </div>
 
           <!-- Campo de archivo para Firma -->
           <div class="form-group">
             <label for="firma">Firma</label>
-            <input type="file" id="firma" @change="handleFileUpload('firma', $event)" />
+            <input
+              type="file"
+              id="firma"
+              @change="handleFileUpload('firma', $event)"
+            />
           </div>
 
-          <button type="submit">Enviar Solicitud</button>
+          <button type="submit" :disabled="!allCheckboxesChecked">
+            Enviar Solicitud
+          </button>
         </form>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { ref, onMounted } from 'vue';
-import { supabase } from '@/supabase';
-import { sendEmail } from '@/services/elasticEmailService';
+import { ref, onMounted, computed } from "vue";
+import { supabase } from "@/supabase";
+import { sendEmail } from "@/services/elasticEmailService";
+import Swal from "sweetalert2";
 
 export default {
-  name: 'RequestTraining',
+  name: "RequestTraining",
   setup() {
     // Estado del formulario
     const form = ref({
-      nombre_completo: '',
-      nro_telefonico: '',
-      dni: '',
-      fecha_nacimiento: '',
-      direccion: '',
-      telefono_contacto: '',
-      correo_electronico: '',
-      nacionalidad: '',
-      ocupacion_actual: '',
-      nombre_empresa: '',
-      cargo_actual: '',
-      experiencia_maquinaria: '',
-      nombre_contacto_emergencia: '',
-      relacion_contacto_emergencia: '',
-      telefono_contacto_emergencia: '',
+      nombre_completo: "",
+      nro_telefonico: "",
+      dni: "",
+      fecha_nacimiento: "",
+      direccion: "",
+      telefono_contacto: "",
+      correo_electronico: "",
+      nacionalidad: "",
+      ocupacion_actual: "",
+      nombre_empresa: "",
+      cargo_actual: "",
+      experiencia_maquinaria: "",
+      nombre_contacto_emergencia: "",
+      relacion_contacto_emergencia: "",
+      telefono_contacto_emergencia: "",
       fk_curso: null,
-      fecha_inicio_preferida: '',
-      turno_preferido: '',
-      dni_adjunto: '',
-      certificado_medico_adjunto: '',
-      licencia_conducir_adjunto: '',
-      alergias_condiciones: '',
-      necesidades_especiales: '',
+      fecha_inicio_preferida: "",
+      turno_preferido: "",
+      dni_adjunto: "",
+      certificado_medico_adjunto: "",
+      licencia_conducir_adjunto: "",
+      alergias_condiciones: "",
+      necesidades_especiales: "",
       consentimiento_participacion: false,
       autorizacion_imagen: false,
       consentimiento_tratamiento_datos: false,
-      firma: '',
+      firma: "",
     });
 
     // Cargar datos de países y cursos
     const paises = ref([]);
     const cursos = ref([]);
+
+    const formEndpoint = ref("https://formspree.io/f/movqylzn");
+
+    const allCheckboxesChecked = computed(() => {
+      return (
+        form.value.consentimiento_participacion &&
+        form.value.autorizacion_imagen &&
+        form.value.consentimiento_tratamiento_datos
+      );
+    });
 
     const loadData = async () => {
       try {
@@ -243,7 +369,9 @@ export default {
     // Autocompletar datos basados en DNI
     const fetchPersonaData = async (dni) => {
       try {
-        const { data, error } = await supabase.rpc('autofill_persona_data', { dni_input: dni });
+        const { data, error } = await supabase.rpc("autofill_persona_data", {
+          dni_input: dni,
+        });
         if (error) throw error;
         return data.length > 0 ? data[0] : null;
       } catch (error) {
@@ -296,7 +424,15 @@ export default {
       const age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
       const dayDiff = today.getDate() - birthDate.getDate();
-      return monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0) ? age >= 18 : age - 1 >= 18;
+      return monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)
+        ? age >= 18
+        : age - 1 >= 18;
+    };
+
+    const today = ref(new Date().toISOString().split("T")[0]);
+
+    const filterPhoneNumber = (field) => {
+      form.value[field] = form.value[field].replace(/[^0-9]/g, "");
     };
 
     const submitForm = async () => {
@@ -316,32 +452,74 @@ export default {
           return;
         }
 
-        const fileFields = ["dni_adjunto", "certificado_medico_adjunto", "licencia_conducir_adjunto", "firma"];
+        const fileFields = [
+          "dni_adjunto",
+          "certificado_medico_adjunto",
+          "licencia_conducir_adjunto",
+          "firma",
+        ];
         for (const field of fileFields) {
           const filePath = await uploadFile(field, form.value[field]);
           if (filePath) form.value[field] = filePath;
         }
 
-        const { error } = await supabase.from("solicitud_capacitacion").insert([form.value]);
+        const { error } = await supabase
+          .from("solicitud_capacitacion")
+          .insert([form.value]);
         if (error) throw error;
 
-        await sendEmail(
-          form.value.correo_electronico,
-          "Solicitud de Capacitación Recibida",
-          `
-          <p>Estimado(a) ${form.value.nombre_completo},</p>
-          <p>Gracias por solicitar una capacitación. Nos pondremos en contacto con usted pronto.</p>
-          <p>Equipo de Capacitación</p>
-          `
-        );
+        try {
+          const formData = {
+            name: form.nombre_completo,
+            email: form.correo_electronico,
+            message: "Estamos verificanso su solicitud lo más pronto posible",
+          };
+          const response = await fetch(formEndpoint.value, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
 
-        alert("Solicitud enviada con éxito.");
+          if (response.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: 'Correo enviado exitosamente!',
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+          });
+        }
       } catch (error) {
-        console.error("Error al enviar la solicitud:", error);
-        alert("Ocurrió un error al enviar la solicitud.");
+        if (
+          error.message.includes(
+            "duplicate key value violates unique constraint"
+          )
+        ) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "El correo ya está registrado",
+          });
+        }
       }
     };
-    return { form, paises, cursos, handleFileUpload, submitForm };
+    return {
+      form,
+      paises,
+      cursos,
+      handleFileUpload,
+      submitForm,
+      today,
+      filterPhoneNumber,
+      allCheckboxesChecked,
+    };
   },
 };
 </script>
@@ -349,7 +527,7 @@ export default {
 <style scoped>
 /* Estilos existentes */
 .background-container {
-  background-image: url('@/assets/imagen-Solicitud.jpg');
+  background-image: url("@/assets/imagen-Solicitud.jpg");
   background-size: cover;
   background-position: center;
   position: fixed;
