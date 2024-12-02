@@ -65,7 +65,6 @@ export default {
 
     const fetchSesiones = async () => {
       try {
-        // Obtener el correo del usuario autenticado
         const { data: { session }, error: authError } = await supabase.auth.getSession();
 
         if (authError || !session) {
@@ -74,7 +73,6 @@ export default {
 
         userEmail.value = session.user.email;
 
-        // Filtrar sesiones solo para el formador actual
         const { data, error } = await supabase
           .from("sesiones_programadas")
           .select(
@@ -86,7 +84,7 @@ export default {
             ),
             modo:fk_modo_curso (nombre_modo)`
           )
-          .eq("curso.docente_teoria.correo", userEmail.value); // Filtrar por correo del formador
+          .eq("curso.docente_teoria.correo", userEmail.value);
 
         if (error) throw error;
 
@@ -102,7 +100,6 @@ export default {
           docente_practica: sesion.curso.docente_practica?.nombre || "N/A",
         }));
 
-        // Convertir sesiones a eventos para el calendario
         calendarEvents.value = sesiones.value.map((sesion) => ({
           title: sesion.titulo_curso,
           start: `${sesion.fecha_session}T${sesion.hora_inicio}`,
@@ -153,7 +150,6 @@ export default {
     };
 
     const goToProgramarSesion = async () => {
-      // Aquí podrías redirigir a una vista específica o filtrar las tareas programadas
       window.location.href = "\ProgrammerSession";
     };
 
@@ -176,188 +172,132 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
 .sessions-container {
-  max-width: 2000px;
+  max-width: 1400px;
   margin: 0 auto;
-  justify-content: center;
-  /* Centra el carrusel horizontalmente */
-  padding: 05px;
+  padding: 20px;
   text-align: center;
 }
 
 h2 {
-  color: #0a0a0a;
-  margin-bottom: 10px;
-  font-size: 23px;
+  color: #2167ac;
+  margin-bottom: 20px;
+  font-size: 24px;
 }
-.calendar-container{
-  background-color: #f5f7f8;
-}
+
 .add-session-button {
-  position: relative;
-  bottom: 30px;
-  right: 500px;
-  background-color: #95edf0;
-  color: rgb(12, 12, 12);
+  background-color: #4dac50;
+  color: white;
   border: none;
-  padding: 13px 20px;
-  border-radius: 10px;
-  font-size: 16px;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 18px;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  margin: 20px;
 }
 
 .add-session-button:hover {
-  background-color: #459aa0;
+  background-color: #45a049;
 }
 
 .sessions-slider-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Centra el carrusel horizontalmente */
-  gap: 10px;
+  gap: 15px;
   position: relative;
-
+  margin-top: 30px;
 }
 
 .sessions-slider {
   display: flex;
   overflow-x: hidden;
-  /* Oculta la barra de desplazamiento */
-  scroll-behavior: smooth;
-  width: 100%;
-  /* Asegúrate de que se adapte al tamaño */
-  gap: 20px;
-  padding: 10px;
+  gap: 15px;
+  padding: 10px 15px;
+  width: 90%;
+  transition: transform 0.4s ease;
 }
 
 .session-card {
-  flex: 0 0 200px;
-  /* Cambia el ancho de cada tarjeta */
-  background-color: #e8f72086;
-  padding: 15px;
-  /* Reduce el padding */
-  border-radius: 8px;
-  /* Ajusta el radio de las esquinas */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* Reduce la sombra */
+  background-color: #faf8e6;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: left;
-  transition: transform 0.3s ease-in-out;
+  flex: 0 0 250px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.session-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .session-card h3 {
-  font-size: 16px;
-  /* Reduce el tamaño del título */
+  font-size: 18px;
   color: #333;
-  /* Cambia el color si es necesario */
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .session-card p {
   font-size: 14px;
-  /* Reduce el tamaño del texto */
-  margin: 4px 0;
-  /* Ajusta los márgenes entre párrafos */
+  margin: 6px 0;
 }
 
 .session-card a {
-  font-size: 13px;
-  /* Reduce el tamaño del enlace */
+  color: #007bff;
+  font-size: 14px;
+  text-decoration: none;
 }
 
-.sessions-slider {
-  display: flex;
-  overflow-x: hidden;
-  /* Oculta la barra de desplazamiento */
-  scroll-behavior: smooth;
-  width: 90%;
-  /* Ajusta el ancho del carrusel */
-  gap: 15px;
-  /* Reduce el espacio entre tarjetas */
-  padding: 10px;
+.session-card a:hover {
+  text-decoration: underline;
 }
 
 .arrow {
   width: 50px;
-  /* Tamaño de la flecha */
   height: 50px;
-  background-image: url('\flecha-carrusel.png');
-  /* Ruta de tu imagen */
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-color: #4dac50;
+  color: white;
+  border-radius: 50%;
   border: none;
-  /* Sin bordes */
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
 .arrow:hover {
-  transform: scale(1.1);
-  /* Efecto de agrandar al pasar el mouse */
+  transform: scale(1.2);
+  background-color: #45a049;
 }
 
-a {
-  color: #0f79eb;
-  text-decoration: none;
+.arrow.left-arrow {
+  left: -60px;
 }
 
-a:hover {
-  text-decoration: underline;
+.arrow.right-arrow {
+  right: -60px;
 }
 
-.header {
-  background-color: #f5f5f5;
-  text-align: center;
-  font-weight: bold;
-  border: 1px solid #ccc;
-}
-
-.hour {
-  grid-column: 1;
-  text-align: center;
+.calendar-container {
+  margin-top: 40px;
+  padding: 15px;
   background-color: #fff;
-  border: 1px solid #ccc;
-  font-size: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 40px auto;
 }
 
-.cell {
-  border: 1px solid #eee;
-  background-color: #fff;
-}
-
-.session-block {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 5px;
-  line-height: 1.2;
-}
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 20px;
-  width: 80%;
-  max-width: 500px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.calendar-container h2 {
+  color: #2167ac;
+  font-size: 22px;
+  margin-bottom: 20px;
 }
 </style>
+

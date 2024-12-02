@@ -18,8 +18,7 @@
       <el-table-column prop="id" label="ID" width="60" />
       <el-table-column prop="nombre" label="Nombre" sortable />
       <el-table-column prop="apellidos" label="Apellidos" sortable />
-      <el-table-column prop="tipodocumento" label="Tipo de Documento" sortable />
-      <el-table-column prop="numerodocumento" label="Número de Documento" sortable />
+      <el-table-column prop="dni" label="Número de Documento" sortable />
     </el-table>
 
     <div class="pagination-container">
@@ -71,6 +70,7 @@ export default {
         console.error('Error al obtener operadores:', error.message);
       } else {
         operadores.value = data;
+        console.log(operadores.value)
       }
     };
 

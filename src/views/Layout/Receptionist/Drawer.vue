@@ -18,46 +18,58 @@
         <span>Gestionar Usuarios</span>
       </template>
       <el-sub-menu index="1-1">
-        <template #title>
-          Gestionar Operadores
-        </template>
+        <template #title> Gestionar Operadores </template>
         <el-menu-item index="1-1-1">
-          <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperator">
+          <router-link
+            class="nav-link"
+            to="/receptionist-dashboard/RegisterOperator"
+          >
             Lista de Usuarios
           </router-link>
         </el-menu-item>
         <el-menu-item index="1-1-2">
-          <router-link class="nav-link" to="/receptionist-dashboard/RegisterOperador1">
+          <router-link
+            class="nav-link"
+            to="/receptionist-dashboard/RegisterOperador1"
+          >
             Registrar Operador
           </router-link>
         </el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="1-2">
-        <template #title>
-          Gestionar Formadores
-        </template>
+        <template #title> Gestionar Formadores </template>
         <el-menu-item index="1-2-1">
-          <router-link class="nav-link" to="/receptionist-dashboard/RegisterTrainer">
+          <router-link
+            class="nav-link"
+            to="/receptionist-dashboard/RegisterTrainer"
+          >
             Lista de Usuarios
           </router-link>
         </el-menu-item>
         <el-menu-item index="1-2-2">
-          <router-link class="nav-link" to="/receptionist-dashboard/RegisterFormador1">
+          <router-link
+            class="nav-link"
+            to="/receptionist-dashboard/RegisterFormador1"
+          >
             Registrar Formador
           </router-link>
         </el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="1-3">
-        <template #title>
-          Gestionar Instructor
-        </template>
+        <template #title> Gestionar Instructor </template>
         <el-menu-item index="1-3-1">
-          <router-link class="nav-link" to="/receptionist-dashboard/RegisterInstructor">
+          <router-link
+            class="nav-link"
+            to="/receptionist-dashboard/RegisterInstructor"
+          >
             Lista de Usuarios
           </router-link>
         </el-menu-item>
         <el-menu-item index="1-3-2">
-          <router-link class="nav-link" to="/receptionist-dashboard/RegisterInstructor1">
+          <router-link
+            class="nav-link"
+            to="/receptionist-dashboard/RegisterInstructor1"
+          >
             Registrar Instructor
           </router-link>
         </el-menu-item>
@@ -70,9 +82,25 @@
         <el-icon><icon-menu /></el-icon>
         <span>Gestión</span>
       </template>
-      
+      <el-menu-item index="2-1">
+        <router-link
+          class="nav-link"
+          to="/receptionist-dashboard/ManageRequest"
+        >
+          Solicitudes
+        </router-link>
+      </el-menu-item>
+      <el-menu-item index="2-2">
+        <router-link
+          class="nav-link"
+          to="/receptionist-dashboard/ScheduleTraining"
+        >
+          Agendar Capacitación
+        </router-link>
+      </el-menu-item>
+
       <!-- Submenú para "Gestionar Solicitudes" -->
-      <el-sub-menu index="2-1">
+      <!-- <el-sub-menu index="2">
         <template #title>
           Gestionar Solicitudes
         </template>
@@ -86,22 +114,7 @@
             Agendar Capacitación
           </router-link>
         </el-menu-item>
-      </el-sub-menu>
-      <el-sub-menu index="2-2">
-        <template #title>
-          Gestionar Solicitudes
-        </template>
-        <el-menu-item index="2-2-1">
-          <router-link class="nav-link" to="/receptionist-dashboard/ManageRequest">
-            Solicitudes
-          </router-link>
-        </el-menu-item>
-        <el-menu-item index="2-2-2">
-          <router-link class="nav-link" to="/receptionist-dashboard/ScheduleTraining">
-            Agendar Capacitación
-          </router-link>
-        </el-menu-item>
-      </el-sub-menu>       
+      </el-sub-menu>    -->
     </el-sub-menu>
 
     <!-- Botón de Cerrar Sesión -->
@@ -112,11 +125,11 @@
   </el-menu>
 
   <!-- Botón de hamburguesa (solo visible en móviles) -->
-  <button 
-    v-if="isMobile" 
+  <button
+    v-if="isMobile"
     class="hamburger-menu"
     @click="toggleCollapse"
-    :class="{ 'active': isCollapse }"
+    :class="{ active: isCollapse }"
   >
     <span class="bar"></span>
     <span class="bar"></span>
@@ -125,52 +138,58 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { supabase } from '@/supabase'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { supabase } from "@/supabase";
+import { useRouter } from "vue-router";
 
 // Importar íconos de Element Plus
-import { Document, Menu as IconMenu, Location, Setting, User } from '@element-plus/icons-vue'
+import {
+  Document,
+  Menu as IconMenu,
+  Location,
+  Setting,
+  User,
+} from "@element-plus/icons-vue";
 
 // Estado para controlar si el menú está colapsado o no
-const isCollapse = ref(false)
-const isMobile = ref(false)
-const router = useRouter()
+const isCollapse = ref(false);
+const isMobile = ref(false);
+const router = useRouter();
 
 const handleLogout = async () => {
   try {
-    await supabase.auth.signOut()
-    localStorage.removeItem('user')
-    router.push('/login')
+    await supabase.auth.signOut();
+    localStorage.removeItem("user");
+    router.push("/login");
   } catch (error) {
-    console.error('Error al cerrar sesión:', error)
+    console.error("Error al cerrar sesión:", error);
   }
-}
+};
 
 const toggleCollapse = () => {
-  isCollapse.value = !isCollapse.value
-}
+  isCollapse.value = !isCollapse.value;
+};
 
 const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+  console.log(key, keyPath);
+};
 
 const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+  console.log(key, keyPath);
+};
 
 const checkMobile = () => {
-  isMobile.value = window.innerWidth <= 768
-}
+  isMobile.value = window.innerWidth <= 768;
+};
 
 onMounted(() => {
-  checkMobile()
-  window.addEventListener('resize', checkMobile)
-})
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', checkMobile)
-})
+  window.removeEventListener("resize", checkMobile);
+});
 </script>
 
 <style scoped>
@@ -208,7 +227,8 @@ onBeforeUnmount(() => {
   color: #000000;
 }
 
-.el-sub-menu .el-menu-item-group__title, .el-sub-menu .el-sub-menu__title {
+.el-sub-menu .el-menu-item-group__title,
+.el-sub-menu .el-sub-menu__title {
   color: #000000;
   font-size: 19px;
   font-weight: 600;
@@ -218,11 +238,13 @@ onBeforeUnmount(() => {
   color: #000000;
 }
 
-.el-menu-item .el-icon, .el-sub-menu .el-icon {
+.el-menu-item .el-icon,
+.el-sub-menu .el-icon {
   color: #000000;
 }
 
-.el-menu-item.is-active .el-icon, .el-menu-item:hover .el-icon {
+.el-menu-item.is-active .el-icon,
+.el-menu-item:hover .el-icon {
   color: #000000;
 }
 
@@ -234,8 +256,7 @@ onBeforeUnmount(() => {
   display: block;
 }
 
-.menu-item-word
-{
+.menu-item-word {
   display: block;
   line-height: 1.2; /* Ajusta la altura de línea para un espacio pequeño */
 }

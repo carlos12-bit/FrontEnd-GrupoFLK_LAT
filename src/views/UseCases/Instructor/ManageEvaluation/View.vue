@@ -50,9 +50,11 @@
             <td>{{ formatFecha(evaluacion.fecha_creacion) }}</td>
             <td>{{ getCursoTitulo(evaluacion.fk_curso) }}</td>
             <td>
-              <button @click="viewEvaluacion(evaluacion)" class="view-btn">Ver</button>
-              <button @click="deleteEvaluacion(evaluacion.pk_evaluacion_practica)" class="delete-btn">
-                Eliminar
+              <button @click="viewEvaluacion(evaluacion)" class="view-btn">
+                <i class="fa fa-eye"></i>
+              </button>
+              <button @click="deleteEvaluacion(evaluacion.pk_evaluacion_practica)" class="btn btn-warning">
+                <i class="fa fa-trash"></i>
               </button>
             </td>
           </tr>

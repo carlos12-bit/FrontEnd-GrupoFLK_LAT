@@ -3,12 +3,14 @@
     <h1 class="page-title">Gestión de Solicitudes de Capacitación</h1>
 
     <!-- Tabla de solicitudes generales -->
-  
+
     <div class="controls-container">
       <div class="pagination-controls">
         <label for="registrosPorPagina">Mostrar</label>
         <select v-model="registrosPorPagina" id="registrosPorPagina">
-          <option v-for="num in [5, 10, 20]" :key="num" :value="num">{{ num }}</option>
+          <option v-for="num in [5, 10, 20]" :key="num" :value="num">
+            {{ num }}
+          </option>
         </select>
         <span>registros</span>
       </div>
@@ -33,16 +35,28 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="solicitud in solicitudesPaginadas" :key="solicitud.id_solicitud">
+        <tr
+          v-for="solicitud in solicitudesPaginadas"
+          :key="solicitud.id_solicitud"
+        >
           <td>{{ solicitud.dni }}</td>
           <td>{{ solicitud.nombre_completo }}</td>
           <td>{{ getNombreCurso(solicitud.fk_curso) }}</td>
           <td>{{ formatFecha(solicitud.fecha_solicitud) }}</td>
           <td>{{ solicitud.estado || "Sin asignar" }}</td>
           <td>
-            <button @click="viewSolicitud(solicitud)" class="view-btn">Ver</button>
-            <button @click="gestionarSolicitud(solicitud, 'aceptado')" class="view-btn">Aceptar</button>
-            <button @click="abrirModalRechazo(solicitud)" class="view-btn">Rechazar</button>
+            <button @click="viewSolicitud(solicitud)" class="view-btn">
+              Ver
+            </button>
+            <button
+              @click="gestionarSolicitud(solicitud, 'aceptado')"
+              class="view-btn"
+            >
+              Aceptar
+            </button>
+            <button @click="abrirModalRechazo(solicitud)" class="view-btn">
+              Rechazar
+            </button>
           </td>
         </tr>
       </tbody>
@@ -52,11 +66,20 @@
     <div class="pagination">
       <span>
         Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }} a
-        {{ Math.min(paginaActual * registrosPorPagina, solicitudesFiltradas.length) }} de
-        {{ solicitudesFiltradas.length }} registros
+        {{
+          Math.min(
+            paginaActual * registrosPorPagina,
+            solicitudesFiltradas.length
+          )
+        }}
+        de {{ solicitudesFiltradas.length }} registros
       </span>
-      <button @click="irPrimeraPagina" :disabled="paginaActual === 1">Primero</button>
-      <button @click="irPaginaAnterior" :disabled="paginaActual === 1">Anterior</button>
+      <button @click="irPrimeraPagina" :disabled="paginaActual === 1">
+        Primero
+      </button>
+      <button @click="irPaginaAnterior" :disabled="paginaActual === 1">
+        Anterior
+      </button>
       <input
         type="number"
         v-model.number="paginaActual"
@@ -65,20 +88,35 @@
         @change="validarPagina"
         class="pagina-input"
       />
-      <button @click="irPaginaSiguiente" :disabled="paginaActual === numeroPaginas">
+      <button
+        @click="irPaginaSiguiente"
+        :disabled="paginaActual === numeroPaginas"
+      >
         Siguiente
       </button>
-      <button @click="irUltimaPagina" :disabled="paginaActual === numeroPaginas">Último</button>
+      <button
+        @click="irUltimaPagina"
+        :disabled="paginaActual === numeroPaginas"
+      >
+        Último
+      </button>
     </div>
 
     <!-- Modal de rechazo -->
     <div v-if="mostrarModalRechazo" class="modal-overlay">
       <div class="modal-content">
         <h3>Motivo de Rechazo</h3>
-        <textarea v-model="motivoRechazo" placeholder="Ingrese el motivo del rechazo"></textarea>
+        <textarea
+          v-model="motivoRechazo"
+          placeholder="Ingrese el motivo del rechazo"
+        ></textarea>
         <div class="modal-buttons">
-          <button @click="confirmarRechazo" class="btn-cerrar-modal">Confirmar</button>
-          <button @click="cerrarModalRechazo" class="btn-cerrar-modal">Cancelar</button>
+          <button @click="confirmarRechazo" class="btn-cerrar-modal">
+            Confirmar
+          </button>
+          <button @click="cerrarModalRechazo" class="btn-cerrar-modal">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
@@ -94,101 +132,115 @@
       />
     </div>
     <div class="dashboard-aceptadas">
-  <button @click="prevCard" class="carousel-button left">‹</button>
-  <div class="aceptadas-grid" ref="aceptadasGrid">
-    <div
-      v-for="solicitud in solicitudesAceptadasFiltradas"
-      :key="solicitud.id_solicitud"
-      class="aceptada-card"
-      @click="abrirModalDetalles(solicitud)"
-    >
-      <h3>DNI: {{ solicitud.dni }}</h3>
-      <h4>{{ getNombreCurso(solicitud.fk_curso) || "Sin curso" }}</h4>
-      <p><strong>Fecha de Solicitud:</strong> {{ formatFecha(solicitud.fecha_solicitud) }}</p>
-      <p><strong>Solicitante:</strong> {{ solicitud.nombre_completo }}</p>
+      <button @click="prevCard" class="carousel-button left">‹</button>
+      <div class="aceptadas-grid" ref="aceptadasGrid">
+        <div
+          v-for="solicitud in solicitudesAceptadasFiltradas"
+          :key="solicitud.id_solicitud"
+          class="aceptada-card"
+          @click="abrirModalDetalles(solicitud)"
+        >
+          <h3>DNI: {{ solicitud.dni }}</h3>
+          <h4>{{ getNombreCurso(solicitud.fk_curso) || "Sin curso" }}</h4>
+          <p>
+            <strong>Fecha de Solicitud:</strong>
+            {{ formatFecha(solicitud.fecha_solicitud) }}
+          </p>
+          <p><strong>Solicitante:</strong> {{ solicitud.nombre_completo }}</p>
+        </div>
+      </div>
+      <button @click="nextCard" class="carousel-button right">›</button>
     </div>
-  </div>
-  <button @click="nextCard" class="carousel-button right">›</button>
-</div>
-
 
     <!-- Modal de detalles (Segunda Tabla) -->
     <div v-if="mostrarModalDetalles" class="modal-overlay">
-  <div class="modal-content">
-    <!-- Botón cerrar en la esquina -->
-    <button class="modal-close" @click="cerrarModalDetalles">×</button>
-    <h3>Detalles de la Solicitud</h3>
-    <div class="modal-details">
-      <!-- Campos en diseño compacto -->
-      <div class="detail-item">
-        <div class="detail-title">ID Solicitud:</div>
-        <div class="detail-value">{{ solicitudActual.id_solicitud }}</div>
+      <div class="modal-content">
+        <!-- Botón cerrar en la esquina -->
+        <button class="modal-close" @click="cerrarModalDetalles">×</button>
+        <h3>Detalles de la Solicitud</h3>
+        <div class="modal-details">
+          <!-- Campos en diseño compacto -->
+          <div class="detail-item">
+            <div class="detail-title">ID Solicitud:</div>
+            <div class="detail-value">{{ solicitudActual.id_solicitud }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">DNI:</div>
+            <div class="detail-value">{{ solicitudActual.dni }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Nombre Completo:</div>
+            <div class="detail-value">
+              {{ solicitudActual.nombre_completo }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Número Telefónico:</div>
+            <div class="detail-value">{{ solicitudActual.nro_telefonico }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Fecha de Nacimiento:</div>
+            <div class="detail-value">
+              {{ formatFecha(solicitudActual.fecha_nacimiento) }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Dirección:</div>
+            <div class="detail-value">{{ solicitudActual.direccion }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Teléfono de Contacto:</div>
+            <div class="detail-value">
+              {{ solicitudActual.telefono_contacto }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Correo Electrónico:</div>
+            <div class="detail-value">
+              {{ solicitudActual.correo_electronico }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Nacionalidad:</div>
+            <div class="detail-value">{{ solicitudActual.nacionalidad }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Ocupación Actual:</div>
+            <div class="detail-value">
+              {{ solicitudActual.ocupacion_actual }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Curso Solicitado (ID):</div>
+            <div class="detail-value">{{ solicitudActual.fk_curso }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Nombre de la Empresa:</div>
+            <div class="detail-value">{{ solicitudActual.nombre_empresa }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Cargo Actual:</div>
+            <div class="detail-value">{{ solicitudActual.cargo_actual }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Experiencia en Maquinaria:</div>
+            <div class="detail-value">
+              {{ solicitudActual.experiencia_maquinaria }}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-title">Estado:</div>
+            <div class="detail-value">{{ solicitudActual.estado }}</div>
+          </div>
+        </div>
+        <!-- Botón de cerrar al final -->
+        <div class="modal-buttons">
+          <button @click="cerrarModalDetalles" class="btn-cerrar-modal">
+            Cerrar
+          </button>
+        </div>
       </div>
-      <div class="detail-item">
-        <div class="detail-title">DNI:</div>
-        <div class="detail-value">{{ solicitudActual.dni }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Nombre Completo:</div>
-        <div class="detail-value">{{ solicitudActual.nombre_completo }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Número Telefónico:</div>
-        <div class="detail-value">{{ solicitudActual.nro_telefonico }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Fecha de Nacimiento:</div>
-        <div class="detail-value">{{ formatFecha(solicitudActual.fecha_nacimiento) }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Dirección:</div>
-        <div class="detail-value">{{ solicitudActual.direccion }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Teléfono de Contacto:</div>
-        <div class="detail-value">{{ solicitudActual.telefono_contacto }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Correo Electrónico:</div>
-        <div class="detail-value">{{ solicitudActual.correo_electronico }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Nacionalidad:</div>
-        <div class="detail-value">{{ solicitudActual.nacionalidad }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Ocupación Actual:</div>
-        <div class="detail-value">{{ solicitudActual.ocupacion_actual }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Curso Solicitado (ID):</div>
-        <div class="detail-value">{{ solicitudActual.fk_curso }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Nombre de la Empresa:</div>
-        <div class="detail-value">{{ solicitudActual.nombre_empresa }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Cargo Actual:</div>
-        <div class="detail-value">{{ solicitudActual.cargo_actual }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Experiencia en Maquinaria:</div>
-        <div class="detail-value">{{ solicitudActual.experiencia_maquinaria }}</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-title">Estado:</div>
-        <div class="detail-value">{{ solicitudActual.estado }}</div>
-      </div>
-      
     </div>
-    <!-- Botón de cerrar al final -->
-    <div class="modal-buttons">
-      <button @click="cerrarModalDetalles" class="btn-cerrar-modal">Cerrar</button>
-    </div>
-  </div>
-</div>
-
   </div>
 </template>
 
@@ -212,19 +264,22 @@ export default {
     const solicitudActual = ref(null);
     const router = useRouter();
 
+    const formEndpoint = ref("https://formspree.io/f/movqylzn");
+
     // Funciones para cargar datos
     const fetchSolicitudes = async () => {
-  try {
-    const { data, error } = await supabase.from("solicitud_capacitacion").select("*");
-    if (error) throw error;
+      try {
+        const { data, error } = await supabase
+          .from("solicitud_capacitacion")
+          .select("*");
+        if (error) throw error;
 
-    console.log("Solicitudes cargadas:", data); // Verificar los datos obtenidos en consola
-    solicitudes.value = data;
-  } catch (error) {
-    console.error("Error al cargar las solicitudes:", error.message);
-  }
-};
-
+        console.log("Solicitudes cargadas:", data); // Verificar los datos obtenidos en consola
+        solicitudes.value = data;
+      } catch (error) {
+        console.error("Error al cargar las solicitudes:", error.message);
+      }
+    };
 
     const fetchCursos = async () => {
       const { data, error } = await supabase.from("cursos").select("*");
@@ -233,33 +288,41 @@ export default {
 
     // Computed: Filtrar y paginar solicitudes
     const solicitudesFiltradas = computed(() => {
-  return solicitudes.value
-    .filter(
-      (solicitud) =>
-        !searchQuery.value ||
-        (getNombreCurso(solicitud.fk_curso) || "").toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-    .sort((a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud)); // Ordenar por fecha descendente
-});
-
+      return solicitudes.value
+        .filter(
+          (solicitud) =>
+            !searchQuery.value ||
+            (getNombreCurso(solicitud.fk_curso) || "")
+              .toLowerCase()
+              .includes(searchQuery.value.toLowerCase())
+        )
+        .sort(
+          (a, b) => new Date(b.fecha_solicitud) - new Date(a.fecha_solicitud)
+        ); // Ordenar por fecha descendente
+    });
 
     const solicitudesPaginadas = computed(() => {
       const inicio = (paginaActual.value - 1) * registrosPorPagina.value;
-      return solicitudesFiltradas.value.slice(inicio, inicio + registrosPorPagina.value);
+      return solicitudesFiltradas.value.slice(
+        inicio,
+        inicio + registrosPorPagina.value
+      );
     });
 
     // Nueva propiedad computada: Filtrar solicitudes aceptadas
     const solicitudesAceptadasFiltradas = computed(() => {
-  return solicitudes.value.filter(
-    (solicitud) =>
-      solicitud.estado === "Aceptada" &&
-      (!searchId.value || solicitud.dni.toString().includes(searchId.value))
-  );
-});
+      return solicitudes.value.filter(
+        (solicitud) =>
+          solicitud.estado === "Aceptada" &&
+          (!searchId.value || solicitud.dni.toString().includes(searchId.value))
+      );
+    });
 
     // Computed: Número total de páginas
     const numeroPaginas = computed(() => {
-      return Math.ceil(solicitudesFiltradas.value.length / registrosPorPagina.value);
+      return Math.ceil(
+        solicitudesFiltradas.value.length / registrosPorPagina.value
+      );
     });
 
     // Funciones de paginación
@@ -281,7 +344,8 @@ export default {
 
     const validarPagina = () => {
       if (paginaActual.value < 1) paginaActual.value = 1;
-      if (paginaActual.value > numeroPaginas.value) paginaActual.value = numeroPaginas.value;
+      if (paginaActual.value > numeroPaginas.value)
+        paginaActual.value = numeroPaginas.value;
     };
 
     const gestionarSolicitud = async (solicitud, estado) => {
@@ -289,14 +353,65 @@ export default {
         const nuevoEstado = estado === "aceptado" ? "Aceptada" : "Rechazada";
         const { error } = await supabase
           .from("solicitud_capacitacion")
-          .update({ estado: nuevoEstado, motivo_rechazo: estado === "rechazado" ? motivoRechazo.value : null })
+          .update({
+            estado: nuevoEstado,
+            motivo_rechazo: estado === "rechazado" ? motivoRechazo.value : null,
+          })
           .eq("id_solicitud", solicitud.id_solicitud);
 
         if (error) throw error;
 
-        
+        try {
+          if (nuevoEstado == "Aceptada") {
+            const formData = {
+              name: solicitud.nombre_completo,
+              email: solicitud.correo_electronico,
+              message: "Su solicitud ha sido aprobado",
+            };
+            const response = await fetch(formEndpoint.value, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
 
-        alert(`Solicitud ${nuevoEstado}`);
+            if (response.ok) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Correo enviado exitosamente!",
+              });
+            }
+          } else {
+            const formData = {
+              name: solicitud.nombre_completo,
+              email: solicitud.correo_electronico,
+              message: "Su solicitud ha sido rechazada",
+            };
+            const response = await fetch(formEndpoint.value, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+              Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Correo enviado exitosamente!",
+              });
+            }
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+          });
+        }
         fetchSolicitudes();
       } catch (error) {
         console.error(`Error al ${estado} la solicitud:`, error);
@@ -317,8 +432,6 @@ export default {
       mostrarModalRechazo.value = false;
       motivoRechazo.value = "";
     };
-
-     
 
     // Modal de detalles
     const abrirModalDetalles = (solicitud) => {
@@ -343,14 +456,13 @@ export default {
 
     // Utilidades
     const formatFecha = (fecha) => {
-  if (!fecha) return "Fecha no disponible";
-  const date = new Date(fecha);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
-};
-
+      if (!fecha) return "Fecha no disponible";
+      const date = new Date(fecha);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    };
 
     const getNombreCurso = (fk_curso) => {
       const curso = cursos.value.find((c) => c.pk_curso === fk_curso);
@@ -358,7 +470,10 @@ export default {
     };
 
     const viewSolicitud = (solicitud) => {
-      router.push({ path: "ManageRequest/Details", query: { id: solicitud.id_solicitud } });
+      router.push({
+        path: "ManageRequest/Details",
+        query: { id: solicitud.id_solicitud },
+      });
     };
 
     // Inicialización
@@ -872,6 +987,3 @@ textarea:focus {
   }
 }
 </style>
-
-
-

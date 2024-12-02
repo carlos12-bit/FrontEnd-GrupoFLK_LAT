@@ -20,10 +20,18 @@
           <td>{{ curso.titulo }}</td>
           <td>{{ formatFecha(curso.fecha_inicio) }}</td>
           <td>{{ formatFecha(curso.fecha_fin) }}</td>
-          <td>{{ curso.estado ? 'Activo' : 'Inactivo' }}</td>
           <td>
-            <button @click="abrirVerModal(curso)" class="btn-ver">Ver</button>
-            <button @click="abrirActualizarModal(curso)" class="btn-actualizar">Actualizar</button>
+            <span :class="curso.estado ? 'status-active' : 'status-inactive'">
+              {{ curso.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <button @click="abrirVerModal(curso)" class="btn btn-primary">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button @click="abrirActualizarModal(curso)" class="btn btn-success">
+              <i class="fas fa-edit"></i>
+            </button>
           </td>
         </tr>
       </tbody>
@@ -39,10 +47,15 @@
           <p><strong>Título:</strong> {{ cursoSeleccionado.titulo }}</p>
           <p><strong>Fecha Inicio:</strong> {{ formatFecha(cursoSeleccionado.fecha_inicio) }}</p>
           <p><strong>Fecha Fin:</strong> {{ formatFecha(cursoSeleccionado.fecha_fin) }}</p>
-          <p><strong>Estado:</strong> {{ cursoSeleccionado.estado ? 'Activo' : 'Inactivo' }}</p>
+          <p>
+            <strong>Estado:</strong>
+            <span :class="cursoSeleccionado.estado ? 'status-active' : 'status-inactive'">
+              {{ cursoSeleccionado.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </p>
         </div>
         <div class="modal-footer">
-          <button @click="cerrarVerModal" class="btn-cerrar">Cerrar</button>
+          <button @click="cerrarVerModal" class="btn btn-danger">Cerrar</button>
         </div>
       </div>
     </div>
@@ -88,8 +101,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn-guardar">Guardar</button>
-            <button type="button" @click="cerrarActualizarModal" class="btn-cerrar">Cancelar</button>
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" @click="cerrarActualizarModal" class="btn btn-danger">Cancelar</button>
           </div>
         </form>
       </div>
@@ -199,7 +212,58 @@ export default {
   },
 };
 </script>
-<style>
+
+<style scoped>
+/* Nuevas clases de estado */
+.status-active {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-inactive {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+/* Botones reutilizables */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+</style>
+
+<!-- <style>
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -397,4 +461,4 @@ export default {
 .modal-content {
   animation: fadeIn 0.3s ease-out;
 }
-</style>
+</style> -->
