@@ -30,6 +30,7 @@
             <th>Observaciones</th>
             <th>Fecha Creación</th>
             <th>Curso</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -49,13 +50,21 @@
             <td>{{ evaluacion.observaciones }}</td>
             <td>{{ formatFecha(evaluacion.fecha_creacion) }}</td>
             <td>{{ getCursoTitulo(evaluacion.fk_curso) }}</td>
+            <td>{{ evaluacion.estado === 1 ? 'Activo' : 'Desactivado' }}</td>
             <td>
               <button @click="viewEvaluacion(evaluacion)" class="view-btn">
                 <i class="fa fa-eye"></i>
               </button>
-              <button @click="deleteEvaluacion(evaluacion.pk_evaluacion_practica)" class="btn btn-warning">
-                <i class="fa fa-trash"></i>
+
+              <button @click="calificarEvaluacion(evaluacion.pk_evaluacion_practica)" class="btn btn-success">
+                <i class="fa fa-pencil-alt"></i>
               </button>
+
+              <button @click="cambiarEstadoEvaluacion(evaluacion.pk_evaluacion_practica, evaluacion.estado)" class="btn btn-primary">
+              <i class="fa fa-toggle-on"></i>
+            </button>
+
+
             </td>
           </tr>
         </tbody>
@@ -120,7 +129,27 @@
         if (!error) evaluaciones.value = data;
         else console.error("Error al obtener las evaluaciones:", error.message);
       };
-  
+      
+    // Función para cambiar el estado de la evaluación (de 1 a 0 o viceversa)
+    const cambiarEstadoEvaluacion = async (id, estadoActual) => {
+      if (estadoActual === 1) {
+        const nuevoEstado = 0;
+        const { data, error } = await supabase
+          .from("evaluacion_practica")
+          .update({ estado: nuevoEstado })
+          .eq("pk_evaluacion_practica", id);
+
+        if (error) {
+          console.error("Error al cambiar el estado:", error.message);
+        } else {
+          console.log("Estado actualizado:", data);
+          fetchEvaluaciones();
+        }
+      } else {
+        console.log("El estado ya está desactivado (0), no se realizará ningún cambio.");
+      }
+    };
+
       const fetchCursos = async () => {
         const { data, error } = await supabase.from("cursos").select("*");
         if (!error) cursos.value = data;
@@ -227,6 +256,7 @@
         goToCreateEvaluacion,
         viewEvaluacion,
         searchQuery,
+        cambiarEstadoEvaluacion
       };
     },
   };

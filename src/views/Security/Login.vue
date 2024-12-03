@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { login } from '@/auth'; // Importar la función login desde auth.js
+import { login,GetUser  } from '@/auth'; // Importar la función login desde auth.js
 
 export default {
   data() {
@@ -71,6 +71,9 @@ export default {
         localStorage.setItem('user', JSON.stringify(user)); // Esto ya se hace en la función login
         localStorage.setItem('jwt', jwt); // El JWT también ya se guarda en la función
 
+        const userId = GetUser(); // Obtener el ID del usuario logueado
+
+        console.log("ID del usuario:", userId); // Verifica el I
         // Redirigir al dashboard correspondiente según el rol del usuario
         switch (rolId) {
           case 1: // Nuevo

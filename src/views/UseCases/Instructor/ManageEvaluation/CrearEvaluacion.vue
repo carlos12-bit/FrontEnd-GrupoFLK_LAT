@@ -119,7 +119,7 @@ export default {
 
     // Obtener todos los operadores disponibles
     const fetchOperadores = async () => {
-      const { data, error } = await supabase.from("operadores").select("Pk_Alumno, nombre");
+      const { data, error } = await supabase.from("Operador").select("Pk_Alumno, nombre");
       if (!error) {
         operadores.value = data;
       } else {
