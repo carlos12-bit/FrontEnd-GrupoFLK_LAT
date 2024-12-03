@@ -23,17 +23,9 @@
               <el-radio-button :value="false">No</el-radio-button>
             </el-radio-group>
 
-            <el-button
-              size="small"
-              type="primary"
-              @click="toggleRespuestaInput(pregunta.pregunta_id)"
-              style="margin-top: 10px;"
-            >
-              {{ answers[pregunta.pregunta_id].showRespuesta ? 'Eliminar Respuesta' : 'Añadir Respuesta' }}
-            </el-button>
-
+            <!-- Mostrar cuadro de texto si la respuesta es "Sí" o "No" y permitir ingresar una respuesta opcional -->
             <el-input
-              v-if="answers[pregunta.pregunta_id].showRespuesta"
+              v-if="answers[pregunta.pregunta_id].estado !== null"
               type="text"
               v-model="answers[pregunta.pregunta_id].respuesta"
               placeholder="Ingrese una respuesta opcional"
@@ -101,21 +93,12 @@ export default {
             answers.value[pregunta.pregunta_id] = {
               estado: null,
               respuesta: "",
-              showRespuesta: false,
             };
           });
         }
       } catch (error) {
         ElMessage.error("Error inesperado al cargar preguntas.");
         console.error(error);
-      }
-    };
-
-    const toggleRespuestaInput = (preguntaId) => {
-      answers.value[preguntaId].showRespuesta =
-        !answers.value[preguntaId].showRespuesta;
-      if (!answers.value[preguntaId].showRespuesta) {
-        answers.value[preguntaId].respuesta = ""; // Limpiar respuesta si se elimina el input
       }
     };
 

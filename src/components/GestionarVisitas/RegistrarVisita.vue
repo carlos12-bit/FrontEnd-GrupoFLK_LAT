@@ -416,6 +416,7 @@ export default {
     };
     const submitInspection = async () => {
   try {
+    // Validar si los campos esenciales están seleccionados
     if (!selectedDate.value || !selectedTurno.value) {
       await ElMessageBox.alert('Por favor, seleccione una fecha y turno.', 'Validación requerida', {
         type: 'warning',
@@ -423,28 +424,30 @@ export default {
       return;
     }
 
-    // Calcular inicio y fin de la inspección basado en la fecha y turno
     let fechaInicio;
-    let fechaFin;
+let fechaFin;
+const dateStr = selectedDate.value.toISOString().split('T')[0];  // Aseguramos que la fecha esté en formato ISO sin zona horaria
 
-    const dateStr = selectedDate.value.toISOString().split('T')[0];
+// Calcular las fechas de inicio y fin para cada turno
+if (selectedTurno.value === 'mañana') {
+  // Turno mañana de 08:00 a 12:00
+  fechaInicio = new Date(`${dateStr}T08:00:00Z`);  // Aseguramos el formato UTC con 'Z' al final
+  fechaFin = new Date(`${dateStr}T12:00:00Z`);
+} else if (selectedTurno.value === 'tarde') {
+  // Turno tarde de 13:00 a 17:00
+  fechaInicio = new Date(`${dateStr}T13:00:00Z`);  // Aseguramos el formato UTC con 'Z' al final
+  fechaFin = new Date(`${dateStr}T17:00:00Z`);
+} else {
+  await ElMessageBox.alert('Turno inválido.', 'Error', {
+    type: 'error',
+  });
+  return;
+}
 
-    if (selectedTurno.value === 'mañana') {
-      fechaInicio = new Date(`${dateStr}T08:00:00`);
-      fechaFin = new Date(`${dateStr}T12:00:00`);
-    } else if (selectedTurno.value === 'tarde') {
-      fechaInicio = new Date(`${dateStr}T13:00:00`);
-      fechaFin = new Date(`${dateStr}T17:00:00`);
-    } else {
-      await ElMessageBox.alert('Turno inválido.', 'Error', {
-        type: 'error',
-      });
-      return;
-    }
 
     // Verificar si ya existe una inspección para el inspector en la fecha seleccionada
     const { data: inspectorInspections, error: inspectorError } = await supabase.rpc('fetch_fechas_por_inspector', {
-      p_inspector_id: newInspection.inspector_id,
+      p_inspector_id: newInspection.inspector_id, // Usamos el ID del inspector seleccionado
     });
 
     if (inspectorError) throw inspectorError;
@@ -478,7 +481,7 @@ export default {
 
     // Obtener inspecciones existentes del certificador
     const { data: certificadorInspections, error: certificadorError } = await supabase.rpc('fetch_fechas_por_certificador', {
-      p_certificador_id: newInspection.certificador_id,
+      p_certificador_id: newInspection.certificador_id, // Usamos el ID del certificador seleccionado
     });
     if (certificadorError) throw certificadorError;
 
@@ -502,7 +505,7 @@ export default {
     newInspection.fecha_de_creacion = new Date().toISOString();
     newInspection.fecha_de_modificacion = new Date().toISOString();
 
-    // Insertar inspección en la base de datos
+    // Insertar la inspección en la base de datos
     const { data: insertedInspections, error } = await supabase.from('inspeccion').insert([newInspection]).select('id');
     if (error) throw error;
 
@@ -529,6 +532,7 @@ export default {
       type: 'success',
     });
 
+    // Llamar a la función de actualización de tabla y restablecer los campos
     emit('refreshTable');
     resetInspectionData();
     resetAllData(); // Limpiar todos los campos después de registrar
